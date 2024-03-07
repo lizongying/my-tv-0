@@ -22,7 +22,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Run build with Gradle wrapper
-        run: ./gradlew assembleRelease -PIS_SO_BUILD=false
+        run: ./gradlew assembleRelease
 
       - name: Sign app APK
         id: sign_app
@@ -55,5 +55,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{ steps.sign_app.outputs.signedReleaseFile }}
-          asset_name: my-tv-${{ github.ref_name }}.apk
+          asset_name: my-tv-0-${{ github.ref_name }}.apk
           asset_content_type: application/vnd.android.package-archive
