@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/info_fragment"
+    android:layout_width="320dp"
+    android:layout_height="80dp"
+    android:layout_gravity="center_horizontal|bottom"
+    android:layout_marginBottom="20dp"
+    android:background="@drawable/rounded_background">
+
+    <ImageView
+        android:id="@+id/info_logo"
+        android:layout_width="100dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="8dp"
+        android:padding="10dp" />
+
+    <LinearLayout
+        android:layout_width="216dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="100dp"
+        android:background="#FF263238"
+        android:gravity="start|center_vertical"
+        android:orientation="vertical"
+        android:padding="7dp">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginTop="0dp"
+            android:gravity="start"
+            android:textColor="#FFEEEEEE"
+            android:textSize="22sp" />
+
+        <TextView
+            android:id="@+id/info_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginTop="8dp"
+            android:gravity="start"
+            android:singleLine="true"
+            android:textColor="#B3EEEEEE"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="8dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:background="@drawable/rounded_background2" />
+</FrameLayout>
