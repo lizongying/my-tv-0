@@ -1,6 +1,12 @@
 # 我的电视·〇
 
-电视播放软件，可以自定义源
+电视网络视频播放软件，可以自定义视频源
+
+[my-tv-0](https://github.com/lizongying/my-tv-0)
+
+可以通过本地服务器，导入视频源
+
+[my-tv-server](https://github.com/lizongying/my-tv-server)
 
 ## 使用
 
