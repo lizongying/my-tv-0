@@ -19,8 +19,8 @@ body:
       label: 我的电视·〇 版本
       description: 请选择正在使用的版本
       options:
-        - 最新稳定版
-        - 最新 CI 版
+        - v1.0.1
+        - v1.0.0
     validations:
       required: true
   - type: textarea
