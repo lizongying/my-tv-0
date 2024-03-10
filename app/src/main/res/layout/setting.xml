@@ -1,21 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/setting"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_gravity="end"
     >
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:gravity="bottom"
+        android:paddingTop="20dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:background="#FF263238"
+        >
         <LinearLayout
             android:layout_width="300dp"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:orientation="vertical"
-            android:paddingTop="20dp"
-            android:paddingLeft="7dp"
-            android:paddingRight="7dp"
-            android:background="#FF263238"
-            >
+            android:gravity="top">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -35,10 +41,11 @@
                 >
                 <Button
                     android:id="@+id/check_version"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="100dp"
+                    android:layout_height="40dp"
                     android:layout_marginEnd="10dp"
                     android:text="@string/check_version"
+                    android:textSize="14sp"
                     />
                 <ProgressBar
                     android:visibility="gone"
@@ -70,11 +77,35 @@
                 android:layout_marginTop="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <EditText
+                    android:id="@+id/my_edit_text"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="200dp"
+                    android:layout_height="40dp"
+                    android:textSize="14sp"
+                    android:autofillHints=""
+                    android:hint="@string/channels"
+                    android:inputType="textUri" />
+                <Button
+                    android:id="@+id/confirm_button"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="100dp"
+                    android:layout_height="40dp"
+                    android:textSize="14sp"
+                    android:text="@string/confirm" />
+
+            </LinearLayout>
         </LinearLayout>
         <ImageView
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_gravity="bottom"
+            android:contentDescription="@string/appreciate"
             android:src="@drawable/appreciate"
             android:background="@color/white" />
     </LinearLayout>
-</FrameLayout>
+</LinearLayout>

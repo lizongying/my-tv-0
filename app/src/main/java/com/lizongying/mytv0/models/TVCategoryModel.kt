@@ -18,6 +18,10 @@ class TVCategoryModel : ViewModel() {
         _position.value = position
     }
 
+    fun setTVListModelList(tvTVListModelList: MutableList<TVListModel>) {
+        _tvCategoryModel.value = tvTVListModelList
+    }
+
     fun addTVListModel(tvListModel: TVListModel) {
         if (_tvCategoryModel.value == null) {
             _tvCategoryModel.value = mutableListOf(tvListModel)

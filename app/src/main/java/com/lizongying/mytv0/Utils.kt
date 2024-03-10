@@ -76,4 +76,19 @@ object Utils {
     }
 
     fun isTmallDevice() = Build.MANUFACTURER.equals("Tmall", ignoreCase = true)
+
+    fun formatUrl(url: String): String {
+        // Check if the URL already starts with "http://" or "https://"
+        if (url.startsWith("http://") || url.startsWith("https://")) {
+            return url
+        }
+
+        // Check if the URL starts with "//"
+        if (url.startsWith("//")) {
+            return "http://$url"
+        }
+
+        // Otherwise, add "http://" to the beginning of the URL
+        return "http://${url}"
+    }
 }

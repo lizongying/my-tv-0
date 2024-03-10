@@ -25,7 +25,9 @@ class MainActivity : FragmentActivity() {
 
     private val handler = Handler(Looper.myLooper()!!)
     private val delayHideMenu = 10000L
-    private val delayHideSetting = 10000L
+    private val delayHideSetting = 60000L
+
+    private var doubleBackToExitPressedOnce = false
 
     private var position = 0
 
@@ -37,13 +39,24 @@ class MainActivity : FragmentActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
 
+        val packageInfo = getPackageInfo()
+        val versionName = packageInfo.versionName
+        val versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            packageInfo.longVersionCode
+        } else {
+            packageInfo.versionCode.toLong()
+        }
+        settingFragment = SettingFragment(versionName, versionCode)
+
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                 .add(R.id.main_browse_fragment, playerFragment)
                 .add(R.id.main_browse_fragment, infoFragment)
                 .add(R.id.main_browse_fragment, channelFragment)
                 .add(R.id.main_browse_fragment, menuFragment)
+                .add(R.id.main_browse_fragment, settingFragment)
                 .hide(menuFragment)
+                .hide(settingFragment)
                 .commitNow()
         }
 
@@ -72,15 +85,6 @@ class MainActivity : FragmentActivity() {
         }
 
         TVList.setPosition(SP.position)
-
-        val packageInfo = getPackageInfo()
-        val versionName = packageInfo.versionName
-        val versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            packageInfo.longVersionCode
-        } else {
-            packageInfo.versionCode.toLong()
-        }
-        settingFragment = SettingFragment(versionName, versionCode)
     }
 
     fun play(position: Int) {
@@ -112,7 +116,7 @@ class MainActivity : FragmentActivity() {
         handler.postDelayed(hideMenu, delayHideMenu)
     }
 
-    val hideMenu = Runnable {
+    private val hideMenu = Runnable {
         if (!menuFragment.isHidden) {
             supportFragmentManager.beginTransaction().hide(menuFragment).commit()
         }
@@ -162,7 +166,7 @@ class MainActivity : FragmentActivity() {
 
 
     private fun channelUp() {
-        if (menuFragment.isHidden) {
+        if (menuFragment.isHidden && settingFragment.isHidden) {
             if (SP.channelReversal) {
                 next()
                 return
@@ -172,7 +176,7 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun channelDown() {
-        if (menuFragment.isHidden) {
+        if (menuFragment.isHidden && settingFragment.isHidden) {
             if (SP.channelReversal) {
                 prev()
                 return
@@ -186,35 +190,23 @@ class MainActivity : FragmentActivity() {
             hideMenuFragment()
             return
         }
-//
-//        if (doubleBackToExitPressedOnce) {
-//            super.onBackPressed()
-//            return
-//        }
-//
-//        doubleBackToExitPressedOnce = true
-//        Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show()
-//
-//        Handler(Looper.getMainLooper()).postDelayed({
-//            doubleBackToExitPressedOnce = false
-//        }, 2000)
-    }
 
-
-    private fun showSetting() {
-        if (!menuFragment.isHidden) {
+        if (!settingFragment.isHidden) {
+            hideSettingFragment()
             return
         }
 
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed()
+            return
+        }
 
-//        Log.i(TAG, "settingFragment ${settingFragment.isVisible}")
-//        if (!settingFragment.isVisible) {
-//            settingFragment.show(supportFragmentManager, "setting")
-//            settingActive()
-//        } else {
-//            handler.removeCallbacks(hideSetting)
-//            settingFragment.dismiss()
-//        }
+        doubleBackToExitPressedOnce = true
+        Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show()
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            doubleBackToExitPressedOnce = false
+        }, 2000)
     }
 
     fun switchMainFragment() {
@@ -232,16 +224,37 @@ class MainActivity : FragmentActivity() {
     }
 
 
-    private fun showMenuFragment() {
+    private fun showMenu() {
+        if (!settingFragment.isHidden) {
+            return
+        }
+
         supportFragmentManager.beginTransaction()
             .show(menuFragment)
-            .commitNow()
+            .commit()
         menuActive()
+    }
+
+    private fun showSetting() {
+        if (!menuFragment.isHidden) {
+            return
+        }
+
+        supportFragmentManager.beginTransaction()
+            .show(settingFragment)
+            .commit()
+        settingActive()
     }
 
     fun hideMenuFragment() {
         supportFragmentManager.beginTransaction()
             .hide(menuFragment)
+            .commit()
+    }
+
+    fun hideSettingFragment() {
+        supportFragmentManager.beginTransaction()
+            .hide(settingFragment)
             .commit()
     }
 
@@ -358,11 +371,13 @@ class MainActivity : FragmentActivity() {
             }
 
             KeyEvent.KEYCODE_DPAD_LEFT -> {
-                showMenuFragment()
+                showMenu()
+//                return true
             }
 
             KeyEvent.KEYCODE_DPAD_RIGHT -> {
-                channelDown()
+                showSetting()
+//                return true
             }
         }
         return false

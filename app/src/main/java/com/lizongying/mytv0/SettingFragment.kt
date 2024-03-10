@@ -1,11 +1,13 @@
 package com.lizongying.mytv0
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.lizongying.mytv0.databinding.SettingBinding
+import com.lizongying.mytv0.models.TVList
 
 
 class SettingFragment(
@@ -27,7 +29,7 @@ class SettingFragment(
         _binding = SettingBinding.inflate(inflater, container, false)
 
         _binding?.version?.text =
-            "当前版本: $versionName\n获取最新: https://github.com/lizongying/my-tv/releases/"
+            "当前版本: $versionName\n获取最新: https://github.com/lizongying/my-tv-0/releases/"
 
         val switchChannelReversal = _binding?.switchChannelReversal
         switchChannelReversal?.isChecked = SP.channelReversal
@@ -51,6 +53,18 @@ class SettingFragment(
         }
 
 //        _binding?.checkVersion?.setOnClickListener(OnClickListenerCheckVersion(updateManager))
+
+        binding.confirmButton.setOnClickListener {
+            val uriEditText = binding.myEditText
+            var uri = uriEditText.text.toString()
+
+            uri = Utils.formatUrl(uri)
+            if (Uri.parse(uri).isAbsolute) {
+                TVList.update(uri)
+            } else {
+                uriEditText.error = "无效的地址"
+            }
+        }
 
         return binding.root
     }

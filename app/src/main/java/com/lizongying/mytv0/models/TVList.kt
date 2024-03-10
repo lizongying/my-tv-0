@@ -5,6 +5,10 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.lizongying.mytv0.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 object TVList {
@@ -13,7 +17,7 @@ object TVList {
     private lateinit var serverUrl: String
     private lateinit var list: List<TV>
     lateinit var listModel: List<TVModel>
-    lateinit var categoryModel: TVCategoryModel
+    val categoryModel = TVCategoryModel()
 
     private val _position = MutableLiveData<Int>()
     val position: LiveData<Int>
@@ -30,23 +34,43 @@ object TVList {
             context.resources.openRawResource(R.raw.channels).bufferedReader()
                 .use { it.readText() }
         }
+        Log.i("", "channel $str")
         str2List(str)
     }
 
-    fun update() {
-        val client = okhttp3.OkHttpClient()
-        val request = okhttp3.Request.Builder().url(serverUrl).build()
-        client.newCall(request).execute().use { response ->
-            if (response.isSuccessful) {
-                val file = File(appDirectory, FILE_NAME)
-                if (!file.exists()) {
-                    file.createNewFile()
+    private fun update() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                Log.i("", "do request $serverUrl")
+                val client = okhttp3.OkHttpClient()
+                val request = okhttp3.Request.Builder().url(serverUrl).build()
+                val response = client.newCall(request).execute()
+
+                if (response.isSuccessful) {
+                    val file = File(appDirectory, FILE_NAME)
+                    if (!file.exists()) {
+                        file.createNewFile()
+                    }
+                    val str = response.body()!!.string()
+                    Log.i("", "request str $str")
+
+                    file.writeText(str)
+                    withContext(Dispatchers.Main) {
+                        str2List(str)
+                    }
+                } else {
+                    Log.e("", "request status ${response.code()}")
                 }
-                val str = response.body()!!.string()
-                file.writeText(str)
-                str2List(str)
+            } catch (e: Exception) {
+                Log.e("", "request error $e")
             }
         }
+    }
+
+    fun update(serverUrl: String) {
+        this.serverUrl = serverUrl
+        Log.i("", "update $serverUrl")
+        update()
     }
 
     private fun str2List(str: String) {
@@ -84,10 +108,7 @@ object TVList {
             category.add(tvListModel)
         }
 
-        categoryModel = TVCategoryModel()
-        for (v in category) {
-            categoryModel.addTVListModel(v)
-        }
+        categoryModel.setTVListModelList(category)
     }
 
     fun getTVModel(idx: Int): TVModel {
