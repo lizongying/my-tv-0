@@ -64,7 +64,7 @@ class ListAdapter(
 
         view.isFocusable = true
         view.isFocusableInTouchMode = true
-        view.alpha = 0.8F
+//        view.alpha = 0.8F
 
         if (!defaultFocused && position == defaultFocus) {
             view.requestFocus()
@@ -134,7 +134,8 @@ class ListAdapter(
             if (hasFocus) {
                 binding.textView.setTextColor(ContextCompat.getColor(context, R.color.white))
                 binding.description.setTextColor(ContextCompat.getColor(context, R.color.white))
-                binding.root.alpha = 1.0F
+//                binding.root.alpha = 1.0F
+                binding.root.setBackgroundResource(R.color.focus)
             } else {
                 binding.textView.setTextColor(ContextCompat.getColor(context, R.color.title_blur))
                 binding.description.setTextColor(
@@ -143,7 +144,8 @@ class ListAdapter(
                         R.color.description_blur
                     )
                 )
-                binding.root.alpha = 0.8F
+//                binding.root.alpha = 0.8F
+                binding.root.setBackgroundResource(R.color.blur)
             }
         }
     }
