@@ -40,6 +40,7 @@ android {
 }
 
 dependencies {
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     val media3Version = "1.3.0-rc01"
     implementation("androidx.media3:media3-ui:$media3Version")
 
@@ -66,4 +67,5 @@ dependencies {
     implementation("com.google.android.exoplayer:exoplayer-hls:$exoplayerVersion")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0-RC")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 }

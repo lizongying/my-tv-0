@@ -2,6 +2,7 @@ package com.lizongying.mytv0
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -64,6 +65,18 @@ class SettingFragment(
             } else {
                 uriEditText.error = "无效的地址"
             }
+        }
+
+        binding.appreciate.setOnClickListener {
+            val imageModalFragment = AppreciateModalFragment()
+
+            // Pass the drawable ID as an argument
+            val args = Bundle()
+            args.putInt(AppreciateModalFragment.KEY, R.drawable.appreciate)
+            imageModalFragment.arguments = args
+
+            imageModalFragment.show(requireFragmentManager(), AppreciateModalFragment.TAG)
+            Log.i(TAG,"appreciate setOnClickListener")
         }
 
         return binding.root

@@ -6,106 +6,95 @@
     android:layout_gravity="end"
     >
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="300dp"
         android:layout_height="match_parent"
-        android:layout_gravity="bottom"
         android:orientation="vertical"
-        android:gravity="bottom"
         android:paddingTop="20dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:background="#FF263238"
         >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textSize="16sp" />
+        <TextView
+            android:id="@+id/version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="当前版本: $versionName\n获取最新: https://github.com/lizongying/my-tv/releases/"
+            />
         <LinearLayout
             android:layout_width="300dp"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="top">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/app_name"
-                android:textSize="16sp" />
-            <TextView
-                android:id="@+id/version"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="当前版本: $versionName\n获取最新: https://github.com/lizongying/my-tv/releases/"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+            <Button
+                android:id="@+id/check_version"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="10dp"
+                android:text="@string/check_version"
+                android:textSize="14sp"
                 />
-            <LinearLayout
-                android:layout_width="300dp"
+            <ProgressBar
+                android:visibility="gone"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
-                <Button
-                    android:id="@+id/check_version"
-                    android:layout_width="100dp"
-                    android:layout_height="40dp"
-                    android:layout_marginEnd="10dp"
-                    android:text="@string/check_version"
-                    android:textSize="14sp"
-                    />
-                <ProgressBar
-                    android:visibility="gone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    />
-                <TextView
-                    android:id="@+id/version_name"
-                    android:text=""
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <Switch
-                android:id="@+id/switch_channel_reversal"
-                android:text="@string/title_channel_reversal"
-                android:layout_marginTop="10dp"
-                android:layout_width="match_parent"
+                />
+            <TextView
+                android:id="@+id/version_name"
+                android:text=""
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
-            <Switch
-                android:id="@+id/switch_channel_num"
-                android:text="@string/title_channel_num"
-                android:layout_marginTop="10dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-            <Switch
-                android:id="@+id/switch_boot_startup"
-                android:text="@string/title_boot_startup"
-                android:layout_marginTop="10dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <EditText
-                    android:id="@+id/my_edit_text"
-                    android:layout_marginTop="10dp"
-                    android:layout_width="200dp"
-                    android:layout_height="40dp"
-                    android:textSize="14sp"
-                    android:autofillHints=""
-                    android:hint="@string/channels"
-                    android:inputType="textUri" />
-                <Button
-                    android:id="@+id/confirm_button"
-                    android:layout_marginTop="10dp"
-                    android:layout_width="100dp"
-                    android:layout_height="40dp"
-                    android:textSize="14sp"
-                    android:text="@string/confirm" />
-
-            </LinearLayout>
         </LinearLayout>
-        <ImageView
+        <Button
+            android:id="@+id/appreciate"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="10dp"
+            android:text="@string/appreciate"
+            android:textSize="14sp"
+            />
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_gravity="bottom"
-            android:contentDescription="@string/appreciate"
-            android:src="@drawable/appreciate"
-            android:background="@color/white" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <Button
+                android:id="@+id/confirm_button"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:textSize="14sp"
+                android:text="@string/confirm" />
+            <EditText
+                android:id="@+id/my_edit_text"
+                android:layout_width="200dp"
+                android:layout_height="40dp"
+                android:textSize="14sp"
+                android:autofillHints=""
+                android:hint="@string/channels"
+                android:inputType="textUri" />
+        </LinearLayout>
+
+        <Switch
+            android:id="@+id/switch_channel_reversal"
+            android:text="@string/title_channel_reversal"
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <Switch
+            android:id="@+id/switch_channel_num"
+            android:text="@string/title_channel_num"
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <Switch
+            android:id="@+id/switch_boot_startup"
+            android:text="@string/title_boot_startup"
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 </LinearLayout>
