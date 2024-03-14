@@ -7,7 +7,9 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.GestureDetector
 import android.view.KeyEvent
+import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
@@ -30,6 +32,8 @@ class MainActivity : FragmentActivity() {
     private var doubleBackToExitPressedOnce = false
 
     private var position = 0
+
+    private lateinit var gestureDetector: GestureDetector
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +64,8 @@ class MainActivity : FragmentActivity() {
                 .commitNow()
         }
 
+        gestureDetector = GestureDetector(this, GestureListener())
+
         TVList.listModel.forEach { tvModel ->
             tvModel.errInfo.observe(this) { _ ->
                 if (tvModel.errInfo.value != null
@@ -85,6 +91,40 @@ class MainActivity : FragmentActivity() {
         }
 
         TVList.setPosition(SP.position)
+    }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        if (event != null) {
+            gestureDetector.onTouchEvent(event)
+        }
+        return super.onTouchEvent(event)
+    }
+
+    private inner class GestureListener : GestureDetector.SimpleOnGestureListener() {
+
+        override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+            showMenu()
+            return true
+        }
+
+        override fun onFling(
+            e1: MotionEvent?,
+            e2: MotionEvent,
+            velocityX: Float,
+            velocityY: Float
+        ): Boolean {
+            if (velocityY > 0) {
+                if (menuFragment.isHidden && settingFragment.isHidden) {
+                    prev()
+                }
+            }
+            if (velocityY < 0) {
+                if (menuFragment.isHidden && settingFragment.isHidden) {
+                    next()
+                }
+            }
+            return super.onFling(e1, e2, velocityX, velocityY)
+        }
     }
 
     fun play(position: Int) {
@@ -129,7 +169,7 @@ class MainActivity : FragmentActivity() {
 
     private val hideSetting = Runnable {
         if (!settingFragment.isHidden) {
-            supportFragmentManager.beginTransaction().hide(settingFragment).commit()
+            supportFragmentManager.beginTransaction().hide(settingFragment).commitNow()
         }
     }
 

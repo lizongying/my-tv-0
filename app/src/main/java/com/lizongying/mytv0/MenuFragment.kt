@@ -17,11 +17,11 @@ import com.lizongying.mytv0.models.TVList
 import com.lizongying.mytv0.models.TVListModel
 import com.lizongying.mytv0.models.TVModel
 
-class MenuFragment : Fragment(), CategoryAdapter.ItemListener, ListAdapter.ItemListener {
+class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemListener {
     private var _binding: MenuBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var categoryAdapter: CategoryAdapter
+    private lateinit var groupAdapter: GroupAdapter
     private lateinit var listAdapter: ListAdapter
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -35,20 +35,20 @@ class MenuFragment : Fragment(), CategoryAdapter.ItemListener, ListAdapter.ItemL
     ): View {
         _binding = MenuBinding.inflate(inflater, container, false)
 
-        categoryAdapter = CategoryAdapter(
+        groupAdapter = GroupAdapter(
             context!!,
-            binding.category,
-            TVList.categoryModel,
+            binding.group,
+            TVList.groupModel,
         )
-        binding.category.adapter = categoryAdapter
-        binding.category.layoutManager =
+        binding.group.adapter = groupAdapter
+        binding.group.layoutManager =
             LinearLayoutManager(context)
-        categoryAdapter.setItemListener(this)
+        groupAdapter.setItemListener(this)
 
         listAdapter = ListAdapter(
             context!!,
             binding.list,
-            TVList.categoryModel.getTVListModel(TVList.categoryModel.position.value!!)!!,
+            TVList.groupModel.getTVListModel(TVList.groupModel.position.value!!)!!,
         )
         binding.list.adapter = listAdapter
         binding.list.layoutManager =
@@ -86,8 +86,8 @@ class MenuFragment : Fragment(), CategoryAdapter.ItemListener, ListAdapter.ItemL
                     Toast.makeText(context, "暂无频道", Toast.LENGTH_LONG).show()
                     return true
                 }
-                binding.category.visibility = GONE
-                categoryAdapter.focusable(false)
+                binding.group.visibility = GONE
+                groupAdapter.focusable(false)
                 listAdapter.focusable(true)
                 listAdapter.toPosition(listAdapter.tvListModel.position.value!!)
                 return true
@@ -104,12 +104,12 @@ class MenuFragment : Fragment(), CategoryAdapter.ItemListener, ListAdapter.ItemL
     override fun onKey(listAdapter: ListAdapter, keyCode: Int): Boolean {
         when (keyCode) {
             KeyEvent.KEYCODE_DPAD_LEFT -> {
-                binding.category.visibility = VISIBLE
-                categoryAdapter.focusable(true)
+                binding.group.visibility = VISIBLE
+                groupAdapter.focusable(true)
                 listAdapter.focusable(false)
                 listAdapter.clear()
-                Log.i(TAG, "category toPosition on left")
-                categoryAdapter.toPosition(TVList.categoryModel.position.value!!)
+                Log.i(TAG, "group toPosition on left")
+                groupAdapter.toPosition(TVList.groupModel.position.value!!)
                 return true
             }
         }
@@ -120,25 +120,25 @@ class MenuFragment : Fragment(), CategoryAdapter.ItemListener, ListAdapter.ItemL
         super.onHiddenChanged(hidden)
         if (!hidden) {
             if (binding.list.isVisible) {
-//                if (binding.category.isVisible) {
-//                    categoryAdapter.focusable(true)
+//                if (binding.group.isVisible) {
+//                    groupAdapter.focusable(true)
 //                    listAdapter.focusable(false)
 //                } else {
-//                    categoryAdapter.focusable(false)
+//                    groupAdapter.focusable(false)
 //                    listAdapter.focusable(true)
 //                }
                 Log.i(TAG, "list on show toPosition ${listAdapter.tvListModel.position.value!!}")
                 listAdapter.toPosition(listAdapter.tvListModel.position.value!!)
             }
-            if (binding.category.isVisible) {
-//                categoryAdapter.focusable(true)
+            if (binding.group.isVisible) {
+//                groupAdapter.focusable(true)
 //                listAdapter.focusable(false)
-                Log.i(TAG, "category on show toPosition ${TVList.categoryModel.position.value!!}")
-                categoryAdapter.toPosition(TVList.categoryModel.position.value!!)
+                Log.i(TAG, "group on show toPosition ${TVList.groupModel.position.value!!}")
+                groupAdapter.toPosition(TVList.groupModel.position.value!!)
             }
         } else {
             view?.post {
-                categoryAdapter.visiable = false
+                groupAdapter.visiable = false
                 listAdapter.visiable = false
             }
         }
@@ -146,7 +146,7 @@ class MenuFragment : Fragment(), CategoryAdapter.ItemListener, ListAdapter.ItemL
 
     override fun onResume() {
         super.onResume()
-//        categoryAdapter.toPosition(TVList.categoryModel.position.value!!)
+//        groupAdapter.toPosition(TVList.groupModel.position.value!!)
     }
 
     override fun onDestroyView() {

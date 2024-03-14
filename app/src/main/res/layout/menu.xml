@@ -7,7 +7,7 @@
     android:orientation="horizontal"
     >
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/category"
+            android:id="@+id/group"
             android:layout_width="150dp"
             android:layout_height="match_parent"
             android:layout_marginEnd="1dp"

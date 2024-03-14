@@ -1,6 +1,5 @@
 package com.lizongying.mytv0.models
 
-import android.net.Uri
 import androidx.annotation.OptIn
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -40,7 +39,15 @@ class TVModel(var tv: TV) : ViewModel() {
     }
 
     fun getVideoUrl(): String? {
-        return _videoIndex.value?.let { tv.videoUrl[it] }
+        if (_videoIndex.value == null || tv.uris.isEmpty()) {
+            return null
+        }
+
+        if (_videoIndex.value!! >= tv.uris.size) {
+            return null
+        }
+
+        return tv.uris[_videoIndex.value!!]
     }
 
     private val _ready = MutableLiveData<Boolean>()
@@ -72,7 +79,7 @@ class TVModel(var tv: TV) : ViewModel() {
         tv.headers?.let { httpDataSource.setDefaultRequestProperties(it) }
 
         return HlsMediaSource.Factory(httpDataSource).createMediaSource(
-                    MediaItem.fromUri(_videoUrl.value!!)
+            MediaItem.fromUri(_videoUrl.value!!)
         )
     }
 

@@ -8,17 +8,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.lizongying.mytv0.databinding.CategoryItemBinding
-import com.lizongying.mytv0.models.TVCategoryModel
+import com.lizongying.mytv0.databinding.GroupItemBinding
+import com.lizongying.mytv0.models.TVGroupModel
 import com.lizongying.mytv0.models.TVListModel
 
 
-class CategoryAdapter(
+class GroupAdapter(
     private val context: Context,
     private val recyclerView: RecyclerView,
-    private var tvCategoryModel: TVCategoryModel,
+    private var tvgroupModel: TVGroupModel,
 ) :
-    RecyclerView.Adapter<CategoryAdapter.ViewHolder>() {
+    RecyclerView.Adapter<GroupAdapter.ViewHolder>() {
 
     private var listener: ItemListener? = null
     private var focused: View? = null
@@ -29,7 +29,7 @@ class CategoryAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(context)
-        val binding = CategoryItemBinding.inflate(inflater, parent, false)
+        val binding = GroupItemBinding.inflate(inflater, parent, false)
         binding.root.isFocusable = true
         binding.root.isFocusableInTouchMode = true
         return ViewHolder(context, binding)
@@ -51,7 +51,7 @@ class CategoryAdapter(
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        val tvListModel = tvCategoryModel.getTVListModel(position)!!
+        val tvListModel = tvgroupModel.getTVListModel(position)!!
         val view = viewHolder.itemView
         view.tag = position
 
@@ -67,8 +67,8 @@ class CategoryAdapter(
                 viewHolder.focus(true)
                 focused = view
                 if (visiable) {
-                    if (position != tvCategoryModel.position.value) {
-                        tvCategoryModel.setPosition(position)
+                    if (position != tvgroupModel.position.value) {
+                        tvgroupModel.setPosition(position)
                     }
                 } else {
                     visiable = true
@@ -102,9 +102,9 @@ class CategoryAdapter(
         viewHolder.bind(tvListModel.getName())
     }
 
-    override fun getItemCount() = tvCategoryModel.size()
+    override fun getItemCount() = tvgroupModel.size()
 
-    class ViewHolder(private val context: Context, private val binding: CategoryItemBinding) :
+    class ViewHolder(private val context: Context, private val binding: GroupItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(text: String) {
             binding.textView.text = text
@@ -126,7 +126,7 @@ class CategoryAdapter(
 
     fun toPosition(position: Int) {
         recyclerView.post {
-            Log.i(TAG, "category smoothScrollToPosition $position")
+            Log.i(TAG, "group smoothScrollToPosition $position")
             recyclerView.scrollToPosition(position)
             recyclerView.getChildAt(position)?.isSelected
             recyclerView.getChildAt(position)?.requestFocus()

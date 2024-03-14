@@ -17,7 +17,7 @@ object SP {
     // Position in list of the selected channel item
     private const val KEY_POSITION = "position"
 
-    private const val KEY_POSITION_CATEGORY = "position_category"
+    private const val KEY_POSITION_CATEGORY = "position_group"
 
     private const val KEY_POSITION_SUB = "position_sub"
 

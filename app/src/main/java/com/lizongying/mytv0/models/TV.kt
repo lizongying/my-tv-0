@@ -4,27 +4,28 @@ import java.io.Serializable
 
 data class TV(
     var id: Int = 0,
-    var programId: String = "",
+    var name: String = "",
     var title: String = "",
     var description: String? = null,
     var logo: String = "",
     var image: String? = null,
-    var videoUrl: List<String>,
+    var uris: List<String>,
     var headers: Map<String, String>? = null,
-    var category: String = "",
+    var group: String = "",
     var child: List<TV>,
 ) : Serializable {
 
     override fun toString(): String {
         return "TV{" +
                 "id=" + id +
-                ", programId='" + programId + '\'' +
+                ", name='" + name + '\'' +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", logo='" + logo + '\'' +
                 ", image='" + image + '\'' +
-                ", videoUrl='" + videoUrl + '\'' +
-                ", category='" + category + '\'' +
+                ", uris='" + uris + '\'' +
+                ", headers='" + headers + '\'' +
+                ", group='" + group + '\'' +
                 '}'
     }
 }

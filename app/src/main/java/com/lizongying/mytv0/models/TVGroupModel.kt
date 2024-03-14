@@ -5,10 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.lizongying.mytv0.SP
 
-class TVCategoryModel : ViewModel() {
-    private val _tvCategoryModel = MutableLiveData<MutableList<TVListModel>>()
-    val tvCategoryModel: LiveData<MutableList<TVListModel>>
-        get() = _tvCategoryModel
+class TVGroupModel : ViewModel() {
+    private val _tvGroupModel = MutableLiveData<MutableList<TVListModel>>()
+    val tvGroupModel: LiveData<MutableList<TVListModel>>
+        get() = _tvGroupModel
 
     private val _position = MutableLiveData<Int>()
     val position: LiveData<Int>
@@ -19,31 +19,30 @@ class TVCategoryModel : ViewModel() {
     }
 
     fun setTVListModelList(tvTVListModelList: MutableList<TVListModel>) {
-        _tvCategoryModel.value = tvTVListModelList
+        _tvGroupModel.value = tvTVListModelList
     }
 
     fun addTVListModel(tvListModel: TVListModel) {
-        if (_tvCategoryModel.value == null) {
-            _tvCategoryModel.value = mutableListOf(tvListModel)
+        if (_tvGroupModel.value == null) {
+            _tvGroupModel.value = mutableListOf(tvListModel)
             return
         }
-        _tvCategoryModel.value?.add(tvListModel)
+        _tvGroupModel.value?.add(tvListModel)
     }
 
     fun getTVListModel(idx: Int): TVListModel? {
-        return _tvCategoryModel.value?.get(idx)
+        return _tvGroupModel.value?.get(idx)
     }
 
     init {
         _position.value = SP.positionCategory
-        _position.value = 2
     }
 
     fun size(): Int {
-        if (_tvCategoryModel.value == null) {
+        if (_tvGroupModel.value == null) {
             return 0
         }
 
-        return _tvCategoryModel.value!!.size
+        return _tvGroupModel.value!!.size
     }
 }
