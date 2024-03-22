@@ -31,8 +31,6 @@ class MainActivity : FragmentActivity() {
 
     private var doubleBackToExitPressedOnce = false
 
-    private var position = 0
-
     private lateinit var gestureDetector: GestureDetector
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -136,7 +134,7 @@ class MainActivity : FragmentActivity() {
     }
 
     fun prev() {
-        position = TVList.position.value?.dec() ?: 0
+        var position = TVList.position.value?.dec() ?: 0
         if (position == -1) {
             position = TVList.size() - 1
         }
@@ -144,7 +142,7 @@ class MainActivity : FragmentActivity() {
     }
 
     fun next() {
-        position = TVList.position.value?.inc() ?: 0
+        var position = TVList.position.value?.inc() ?: 0
         if (position == TVList.size()) {
             position = 0
         }
@@ -429,6 +427,13 @@ class MainActivity : FragmentActivity() {
         }
 
         return super.onKeyDown(keyCode, event)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        SP.positionGroup = TVList.groupModel.position.value!!
+        SP.position = TVList.position.value!!
+        Log.i(TAG, "position ${TVList.position.value!!} saved")
     }
 
     companion object {

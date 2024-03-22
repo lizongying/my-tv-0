@@ -17,7 +17,7 @@ object SP {
     // Position in list of the selected channel item
     private const val KEY_POSITION = "position"
 
-    private const val KEY_POSITION_CATEGORY = "position_group"
+    private const val KEY_POSITION_GROUP = "position_group"
 
     private const val KEY_POSITION_SUB = "position_sub"
 
@@ -49,9 +49,9 @@ object SP {
         get() = sp.getInt(KEY_POSITION, 0)
         set(value) = sp.edit().putInt(KEY_POSITION, value).apply()
 
-    var positionCategory: Int
-        get() = sp.getInt(KEY_POSITION_CATEGORY, 0)
-        set(value) = sp.edit().putInt(KEY_POSITION_CATEGORY, value).apply()
+    var positionGroup: Int
+        get() = sp.getInt(KEY_POSITION_GROUP, 0)
+        set(value) = sp.edit().putInt(KEY_POSITION_GROUP, value).apply()
 
     var positionSub: Int
         get() = sp.getInt(KEY_POSITION_SUB, 0)
