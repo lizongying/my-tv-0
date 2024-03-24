@@ -26,8 +26,8 @@ class SettingFragment: Fragment() {
 
         _binding = SettingBinding.inflate(inflater, container, false)
 
-        _binding?.version?.text =
-            "当前版本: v${context.appVersionName}\n获取最新: https://github.com/lizongying/my-tv-0/releases/"
+        binding.versionName.text = "当前版本: v${context.appVersionName}"
+        binding.version.text = "https://github.com/lizongying/my-tv-0"
 
         val switchChannelReversal = _binding?.switchChannelReversal
         switchChannelReversal?.isChecked = SP.channelReversal
