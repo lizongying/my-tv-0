@@ -40,6 +40,7 @@
 更多地址 [my-tv](https://lyrics.run/my-tv-0.html)
 
 ![image](./screenshots/img.png)
+![image](./screenshots/img_1.png)
 
 ## 更新日志
 
