@@ -4,16 +4,36 @@
 
 [my-tv-0](https://github.com/lizongying/my-tv-0)
 
-可以通过本地服务器，导入视频源
-
-[my-tv-server](https://github.com/lizongying/my-tv-server)
-
 ## 使用
 
 * 遥控器左键/触屏单击打开节目列表
 * 遥控器右键/触屏双击打开配置
 * 遥控器返回键关闭节目列表/配置
 * 打开配置页后，配置地址后并确认，更新节目列表
+
+可以通过本地服务器，导入视频源
+
+[my-tv-server](https://github.com/lizongying/my-tv-server)
+
+目前仅支持json格式，其他格式可以配合[my-tv-server](https://github.com/lizongying/my-tv-server)进行转换
+配置格式：
+
+```json
+[
+  {
+    "group": "组名",
+    "logo": "图标",
+    "name": "标准标题，用于自动获取节目等信息",
+    "title": "显示标题",
+    "uris": [
+      "视频链接"
+    ]
+  }
+]
+```
+
+注意：
+配置地址更新后，如遇到之前节目还存在的情况，可能需要重启软件后生效，后面会进行优化
 
 下载安装 [releases](https://github.com/lizongying/my-tv-0/releases/)
 
