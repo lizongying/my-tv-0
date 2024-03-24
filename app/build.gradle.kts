@@ -1,3 +1,5 @@
+import java.io.BufferedReader
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -11,10 +13,8 @@ android {
         applicationId = "com.lizongying.mytv0"
         minSdk = 23
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
-
-
+        versionCode = getVersionCode()
+        versionName = getVersionName()
     }
 
     buildFeatures {
@@ -36,6 +36,30 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+}
+
+fun getVersionCode(): Int {
+    return try {
+        val process = Runtime.getRuntime().exec("git describe --tags --always")
+        process.waitFor()
+        val arr = (process.inputStream.bufferedReader().use(BufferedReader::readText).trim()
+            .replace("v", "").replace(".", " ").replace("-", " ") + " 0").split(" ")
+        val versionCode =
+            arr[0].toInt() * 16777216 + arr[1].toInt() * 65536 + arr[2].toInt() * 256 + arr[3].toInt()
+        versionCode
+    } catch (ignored: Exception) {
+        0
+    }
+}
+
+fun getVersionName(): String {
+    return try {
+        val process = Runtime.getRuntime().exec("git describe --tags --always")
+        process.waitFor()
+        process.inputStream.bufferedReader().use(BufferedReader::readText).trim().removePrefix("v")
+    } catch (ignored: Exception) {
+        "1.0.0"
     }
 }
 

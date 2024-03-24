@@ -23,7 +23,7 @@ class MainActivity : FragmentActivity() {
     private var infoFragment = InfoFragment()
     private var channelFragment = ChannelFragment()
     private var menuFragment = MenuFragment()
-    private lateinit var settingFragment: SettingFragment
+    private var settingFragment = SettingFragment()
 
     private val handler = Handler(Looper.myLooper()!!)
     private val delayHideMenu = 10000L
@@ -40,15 +40,6 @@ class MainActivity : FragmentActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-
-        val packageInfo = getPackageInfo()
-        val versionName = packageInfo.versionName
-        val versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            packageInfo.longVersionCode
-        } else {
-            packageInfo.versionCode.toLong()
-        }
-        settingFragment = SettingFragment(versionName, versionCode)
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
@@ -102,6 +93,11 @@ class MainActivity : FragmentActivity() {
 
         override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
             showMenu()
+            return true
+        }
+
+        override fun onDoubleTap(e: MotionEvent): Boolean {
+            showSetting()
             return true
         }
 

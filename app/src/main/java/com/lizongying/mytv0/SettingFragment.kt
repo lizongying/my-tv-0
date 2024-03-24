@@ -11,26 +11,23 @@ import com.lizongying.mytv0.databinding.SettingBinding
 import com.lizongying.mytv0.models.TVList
 
 
-class SettingFragment(
-    private val versionName: String,
-    private val versionCode: Long,
-) :
-    Fragment() {
+class SettingFragment: Fragment() {
 
     private var _binding: SettingBinding? = null
     private val binding get() = _binding!!
 
-//    private lateinit var updateManager: UpdateManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        val context = requireContext()
+
         _binding = SettingBinding.inflate(inflater, container, false)
 
         _binding?.version?.text =
-            "当前版本: $versionName\n获取最新: https://github.com/lizongying/my-tv-0/releases/"
+            "当前版本: v${context.appVersionName}\n获取最新: https://github.com/lizongying/my-tv-0/releases/"
 
         val switchChannelReversal = _binding?.switchChannelReversal
         switchChannelReversal?.isChecked = SP.channelReversal
@@ -53,7 +50,8 @@ class SettingFragment(
             (activity as MainActivity).settingActive()
         }
 
-//        _binding?.checkVersion?.setOnClickListener(OnClickListenerCheckVersion(updateManager))
+        val updateManager = UpdateManager(context, this, context.appVersionCode)
+        binding.checkVersion.setOnClickListener(OnClickListenerCheckVersion(updateManager))
 
         binding.confirmButton.setOnClickListener {
             val uriEditText = binding.myEditText
@@ -76,10 +74,17 @@ class SettingFragment(
             imageModalFragment.arguments = args
 
             imageModalFragment.show(requireFragmentManager(), AppreciateModalFragment.TAG)
-            Log.i(TAG,"appreciate setOnClickListener")
+            Log.i(TAG, "appreciate setOnClickListener")
         }
 
         return binding.root
+    }
+
+    internal class OnClickListenerCheckVersion(private val updateManager: UpdateManager) :
+        View.OnClickListener {
+        override fun onClick(view: View?) {
+            updateManager.checkAndUpdate()
+        }
     }
 
     fun setVersionName(versionName: String) {
@@ -89,11 +94,6 @@ class SettingFragment(
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-//        updateManager.destroy()
     }
 
     companion object {
