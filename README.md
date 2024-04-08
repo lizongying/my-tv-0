@@ -32,9 +32,6 @@
 ]
 ```
 
-注意：
-配置地址更新后，如遇到之前节目还存在的情况，可能需要重启软件后生效，后面会进行优化
-
 下载安装 [releases](https://github.com/lizongying/my-tv-0/releases/)
 
 更多地址 [my-tv](https://lyrics.run/my-tv-0.html)
@@ -43,6 +40,12 @@
 ![image](./screenshots/img_1.png)
 
 ## 更新日志
+
+### v1.0.5
+
+* 修复频道配置错误时可能崩溃的问题
+* 修复更新频道配置时可能不生效的问题
+* 修复图标为空时可能崩溃的问题
 
 ### v1.0.4
 

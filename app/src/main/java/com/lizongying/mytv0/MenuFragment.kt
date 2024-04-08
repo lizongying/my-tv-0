@@ -45,16 +45,32 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
             LinearLayoutManager(context)
         groupAdapter.setItemListener(this)
 
+        var tvListModel = TVList.groupModel.getTVListModel(TVList.groupModel.position.value!!)
+        if (tvListModel == null) {
+            TVList.groupModel.setPosition(0)
+        }
+
+        tvListModel = TVList.groupModel.getTVListModel(TVList.groupModel.position.value!!)
+
         listAdapter = ListAdapter(
             context!!,
             binding.list,
-            TVList.groupModel.getTVListModel(TVList.groupModel.position.value!!)!!,
+            tvListModel!!,
         )
         binding.list.adapter = listAdapter
         binding.list.layoutManager =
             LinearLayoutManager(context)
         listAdapter.focusable(false)
         listAdapter.setItemListener(this)
+
+        TVList.groupModel.tvGroupModel.observe(viewLifecycleOwner) { _ ->
+
+            // not first time
+            if (TVList.groupModel.tvGroupModel.value != null) {
+                groupAdapter.update(TVList.groupModel)
+            }
+        }
+
         return binding.root
     }
 

@@ -79,7 +79,9 @@ class MainActivity : FragmentActivity() {
             }
         }
 
-        TVList.setPosition(SP.position)
+        if (!TVList.setPosition(SP.position)) {
+            TVList.setPosition(0)
+        }
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
