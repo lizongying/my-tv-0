@@ -1,15 +1,14 @@
 package com.lizongying.mytv0
 
 import android.content.Context
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.FOCUS_BEFORE_DESCENDANTS
 import android.view.ViewGroup.FOCUS_BLOCK_DESCENDANTS
-import android.view.animation.ScaleAnimation
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.lizongying.mytv0.databinding.ListItemBinding
@@ -112,7 +111,10 @@ class ListAdapter(
 
         viewHolder.bindText(tvModel.tv.title)
 
-        viewHolder.bindImage(tvModel.tv.logo)
+        // maybe null
+        if (!tvModel.tv.logo.isNullOrBlank()) {
+            viewHolder.bindImage(tvModel.tv.logo)
+        }
     }
 
     override fun getItemCount() = tvListModel.size()

@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import com.lizongying.mytv0.SP
 
 class TVGroupModel : ViewModel() {
-    private val _tvGroupModel = MutableLiveData<MutableList<TVListModel>>()
-    val tvGroupModel: LiveData<MutableList<TVListModel>>
+    private val _tvGroupModel = MutableLiveData<List<TVListModel>>()
+    val tvGroupModel: LiveData<List<TVListModel>>
         get() = _tvGroupModel
 
     private val _position = MutableLiveData<Int>()
@@ -18,8 +18,8 @@ class TVGroupModel : ViewModel() {
         _position.value = position
     }
 
-    fun setTVListModelList(tvTVListModelList: MutableList<TVListModel>) {
-        _tvGroupModel.value = tvTVListModelList
+    fun setTVListModelList(tvListModelList: List<TVListModel>) {
+        _tvGroupModel.value = tvListModelList
     }
 
     fun addTVListModel(tvListModel: TVListModel) {
@@ -27,10 +27,22 @@ class TVGroupModel : ViewModel() {
             _tvGroupModel.value = mutableListOf(tvListModel)
             return
         }
-        _tvGroupModel.value?.add(tvListModel)
+
+        val newList = _tvGroupModel.value!!.toMutableList()
+        newList.add(tvListModel)
+        _tvGroupModel.value = newList
+    }
+
+    fun clear() {
+        _tvGroupModel.value = mutableListOf(getTVListModel(0)!!, getTVListModel(1)!!)
+        setPosition(0)
+        getTVListModel(1)?.clear()
     }
 
     fun getTVListModel(idx: Int): TVListModel? {
+        if (idx >= size()) {
+            return null
+        }
         return _tvGroupModel.value?.get(idx)
     }
 

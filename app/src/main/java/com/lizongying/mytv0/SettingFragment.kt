@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.lizongying.mytv0.databinding.SettingBinding
 import com.lizongying.mytv0.models.TVList
@@ -54,6 +55,7 @@ class SettingFragment: Fragment() {
         binding.checkVersion.setOnClickListener(OnClickListenerCheckVersion(updateManager))
 
         binding.confirmButton.setOnClickListener {
+
             val uriEditText = binding.myEditText
             var uri = uriEditText.text.toString()
 

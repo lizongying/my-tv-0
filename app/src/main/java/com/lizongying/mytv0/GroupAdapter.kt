@@ -16,7 +16,7 @@ import com.lizongying.mytv0.models.TVListModel
 class GroupAdapter(
     private val context: Context,
     private val recyclerView: RecyclerView,
-    private var tvgroupModel: TVGroupModel,
+    private var tvGroupModel: TVGroupModel,
 ) :
     RecyclerView.Adapter<GroupAdapter.ViewHolder>() {
 
@@ -51,7 +51,7 @@ class GroupAdapter(
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        val tvListModel = tvgroupModel.getTVListModel(position)!!
+        val tvListModel = tvGroupModel.getTVListModel(position)!!
         val view = viewHolder.itemView
         view.tag = position
 
@@ -67,8 +67,8 @@ class GroupAdapter(
                 viewHolder.focus(true)
                 focused = view
                 if (visiable) {
-                    if (position != tvgroupModel.position.value) {
-                        tvgroupModel.setPosition(position)
+                    if (position != tvGroupModel.position.value) {
+                        tvGroupModel.setPosition(position)
                     }
                 } else {
                     visiable = true
@@ -84,7 +84,7 @@ class GroupAdapter(
             listener?.onItemClicked(tvListModel)
         }
 
-        view.setOnKeyListener { v, keyCode, event: KeyEvent? ->
+        view.setOnKeyListener { _, keyCode, event: KeyEvent? ->
             if (event?.action == KeyEvent.ACTION_DOWN) {
                 if (keyCode == KeyEvent.KEYCODE_DPAD_UP && position == 0) {
                     recyclerView.smoothScrollToPosition(getItemCount() - 1)
@@ -102,7 +102,7 @@ class GroupAdapter(
         viewHolder.bind(tvListModel.getName())
     }
 
-    override fun getItemCount() = tvgroupModel.size()
+    override fun getItemCount() = tvGroupModel.size()
 
     class ViewHolder(private val context: Context, private val binding: GroupItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -141,6 +141,11 @@ class GroupAdapter(
 
     fun setItemListener(listener: ItemListener) {
         this.listener = listener
+    }
+
+    fun update(tvGroupModel: TVGroupModel) {
+        this.tvGroupModel = tvGroupModel
+        notifyDataSetChanged()
     }
 
     companion object {

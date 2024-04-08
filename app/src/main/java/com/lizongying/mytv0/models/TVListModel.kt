@@ -9,8 +9,8 @@ class TVListModel(private val name: String) : ViewModel() {
         return name
     }
 
-    private val _tvListModel = MutableLiveData<MutableList<TVModel>>()
-    val tvListModel: LiveData<MutableList<TVModel>>
+    private val _tvListModel = MutableLiveData<List<TVModel>>()
+    val tvListModel: LiveData<List<TVModel>>
         get() = _tvListModel
 
     private val _position = MutableLiveData<Int>()
@@ -30,7 +30,7 @@ class TVListModel(private val name: String) : ViewModel() {
     }
 
     fun setTVListModel(tvListModel: List<TVModel>) {
-        _tvListModel.value = tvListModel.toMutableList()
+        _tvListModel.value = tvListModel
     }
 
     fun addTVModel(tvModel: TVModel) {
@@ -38,7 +38,15 @@ class TVListModel(private val name: String) : ViewModel() {
             _tvListModel.value = mutableListOf(tvModel)
             return
         }
-        _tvListModel.value?.add(tvModel)
+
+        val newList = _tvListModel.value!!.toMutableList()
+        newList.add(tvModel)
+        _tvListModel.value = newList
+    }
+
+    fun clear() {
+        _tvListModel.value = mutableListOf()
+        setPosition(0)
     }
 
     fun getTVModel(idx: Int): TVModel? {
