@@ -2,17 +2,15 @@ package com.lizongying.mytv0
 
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.lizongying.mytv0.databinding.SettingBinding
 import com.lizongying.mytv0.models.TVList
 
 
-class SettingFragment: Fragment() {
+class SettingFragment : Fragment() {
 
     private var _binding: SettingBinding? = null
     private val binding get() = _binding!!
@@ -52,10 +50,12 @@ class SettingFragment: Fragment() {
         }
 
         val updateManager = UpdateManager(context, this, context.appVersionCode)
-        binding.checkVersion.setOnClickListener(OnClickListenerCheckVersion(updateManager))
+        binding.checkVersion.setOnClickListener {
+            OnClickListenerCheckVersion(updateManager)
+            (activity as MainActivity).settingActive()
+        }
 
         binding.confirmButton.setOnClickListener {
-
             val uriEditText = binding.myEditText
             var uri = uriEditText.text.toString()
 
@@ -65,18 +65,18 @@ class SettingFragment: Fragment() {
             } else {
                 uriEditText.error = "无效的地址"
             }
+            (activity as MainActivity).settingActive()
         }
 
         binding.appreciate.setOnClickListener {
             val imageModalFragment = AppreciateModalFragment()
 
-            // Pass the drawable ID as an argument
             val args = Bundle()
             args.putInt(AppreciateModalFragment.KEY, R.drawable.appreciate)
             imageModalFragment.arguments = args
 
             imageModalFragment.show(requireFragmentManager(), AppreciateModalFragment.TAG)
-            Log.i(TAG, "appreciate setOnClickListener")
+            (activity as MainActivity).settingActive()
         }
 
         return binding.root

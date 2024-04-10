@@ -145,7 +145,9 @@ class GroupAdapter(
 
     fun update(tvGroupModel: TVGroupModel) {
         this.tvGroupModel = tvGroupModel
-        notifyDataSetChanged()
+        recyclerView.post {
+            notifyDataSetChanged()
+        }
     }
 
     companion object {

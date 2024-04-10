@@ -40,8 +40,6 @@ object TVList {
             context.resources.openRawResource(R.raw.channels).bufferedReader()
                 .use { it.readText() }
         }
-        Log.i("", "channel $str")
-
         groupModel.addTVListModel(TVListModel("我的收藏"))
 
         groupModel.addTVListModel(TVListModel("全部频道"))
@@ -107,6 +105,7 @@ object TVList {
         listModel = list.map { tv ->
             TVModel(tv)
         }
+        setPosition(0)
 
         groupModel.clear()
 

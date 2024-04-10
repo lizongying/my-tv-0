@@ -22,12 +22,10 @@ import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.datasource.TransferListener
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.mediacodec.MediaCodecSelector
 import androidx.media3.exoplayer.mediacodec.MediaCodecUtil
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.lizongying.mytv0.databinding.PlayerBinding
-import com.lizongying.mytv0.models.TVList
 import com.lizongying.mytv0.models.TVModel
 
 
@@ -65,6 +63,7 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
                     val renderersFactory = context?.let { DefaultRenderersFactory(it) }
                     val playerMediaCodecSelector = PlayerMediaCodecSelector()
                     renderersFactory?.setMediaCodecSelector(playerMediaCodecSelector)
+                    renderersFactory?.setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
 
                     player = context?.let {
                         ExoPlayer.Builder(it)
@@ -93,29 +92,14 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
                             tvModel?.setReady()
                         }
                     })
+
+                    (activity as MainActivity).ready()
                     Log.i(TAG, "player ready")
-                    ready()
                 }
             })
         }
 
         return _binding!!.root
-    }
-
-    fun ready() {
-        TVList.listModel.forEach { tvModel ->
-            tvModel.ready.observe(this) { _ ->
-
-                // not first time
-                if (tvModel.ready.value != null
-                    && tvModel.tv.id == TVList.position.value
-                    && tvModel.videoUrl.value != null
-//                    && tvModel.videoUrl.value != videoUrl
-                ) {
-                    play(tvModel)
-                }
-            }
-        }
     }
 
     @OptIn(UnstableApi::class)
@@ -162,13 +146,12 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
                 }
             })
 
-            val hlsMediaSource = HlsMediaSource.Factory(httpDataSource).createMediaSource(
-                MediaItem.fromUri(videoUrl)
-            )
+//            val hlsMediaSource = HlsMediaSource.Factory(httpDataSource).createMediaSource(
+//                MediaItem.fromUri(videoUrl)
+//            )
+//            setMediaSource(hlsMediaSource)
 
-            setMediaSource(hlsMediaSource)
-
-//            setMediaItem(MediaItem.fromUri(videoUrl))
+            setMediaItem(MediaItem.fromUri(videoUrl))
             prepare()
         }
         exoPlayer?.run {
@@ -259,8 +242,8 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
                 }
             }
         })
+        (activity as MainActivity).ready()
         Log.i(TAG, "exoPlayer ready")
-        ready()
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {

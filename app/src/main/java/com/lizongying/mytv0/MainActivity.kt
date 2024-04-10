@@ -1,7 +1,9 @@
 package com.lizongying.mytv0
 
+import android.content.Context
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -15,10 +17,12 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import com.lizongying.mytv0.models.TVList
+import kotlin.math.abs
 
 
 class MainActivity : FragmentActivity() {
 
+    private var ok = 0
     private var playerFragment = PlayerFragment()
     private var infoFragment = InfoFragment()
     private var channelFragment = ChannelFragment()
@@ -53,8 +57,23 @@ class MainActivity : FragmentActivity() {
                 .commitNow()
         }
 
-        gestureDetector = GestureDetector(this, GestureListener())
+        gestureDetector = GestureDetector(this, GestureListener(this))
 
+        watch()
+
+        if (!TVList.setPosition(SP.position)) {
+            TVList.setPosition(0)
+        }
+    }
+
+    fun ready() {
+        ok++
+        if (ok == 1) {
+            watch()
+        }
+    }
+
+    fun watch() {
         TVList.listModel.forEach { tvModel ->
             tvModel.errInfo.observe(this) { _ ->
                 if (tvModel.errInfo.value != null
@@ -70,6 +89,7 @@ class MainActivity : FragmentActivity() {
                 if (tvModel.ready.value != null
                     && tvModel.tv.id == TVList.position.value
                 ) {
+                    playerFragment.play(tvModel)
                     Log.i(TAG, "info ${tvModel.tv.title}")
                     infoFragment.show(tvModel)
                     if (SP.channelNum) {
@@ -77,10 +97,6 @@ class MainActivity : FragmentActivity() {
                     }
                 }
             }
-        }
-
-        if (!TVList.setPosition(SP.position)) {
-            TVList.setPosition(0)
         }
     }
 
@@ -91,9 +107,13 @@ class MainActivity : FragmentActivity() {
         return super.onTouchEvent(event)
     }
 
-    private inner class GestureListener : GestureDetector.SimpleOnGestureListener() {
+    private inner class GestureListener(private val context: Context) :
+        GestureDetector.SimpleOnGestureListener() {
+
+        private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
         override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+            Log.i(TAG, "onSingleTapConfirmed showMenu")
             showMenu()
             return true
         }
@@ -109,18 +129,78 @@ class MainActivity : FragmentActivity() {
             velocityX: Float,
             velocityY: Float
         ): Boolean {
-            if (velocityY > 0) {
-                if (menuFragment.isHidden && settingFragment.isHidden) {
-                    prev()
+            if ((e1?.x ?: 0f) > windowManager.defaultDisplay.width / 3
+                && (e1?.x ?: 0f) < windowManager.defaultDisplay.width * 2 / 3
+            ) {
+                if (velocityY > 0) {
+                    if (menuFragment.isHidden && settingFragment.isHidden) {
+                        prev()
+                    }
+                }
+                if (velocityY < 0) {
+                    if (menuFragment.isHidden && settingFragment.isHidden) {
+                        next()
+                    }
                 }
             }
-            if (velocityY < 0) {
-                if (menuFragment.isHidden && settingFragment.isHidden) {
-                    next()
-                }
-            }
+
             return super.onFling(e1, e2, velocityX, velocityY)
         }
+
+        override fun onScroll(
+            e1: MotionEvent?,
+            e2: MotionEvent,
+            distanceX: Float,
+            distanceY: Float
+        ): Boolean {
+            // 计算手势滑动的方向和距离
+            val deltaY = e1?.y?.let { e2.y.minus(it) } ?: 0f
+            val deltaX = e1?.x?.let { e2.x.minus(it) } ?: 0f
+
+            // 如果是垂直滑动
+            if (abs(deltaY) > abs(deltaX)) {
+                if ((e1?.x ?: 0f) > windowManager.defaultDisplay.width * 2 / 3) {
+                    adjustVolume(deltaY) // 调整音量
+                }
+            }
+
+            return super.onScroll(e1, e2, distanceX, distanceY)
+        }
+
+        private fun adjustVolume(deltaY: Float) {
+            val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+            val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+            val deltaVolume = deltaY / 1000 * maxVolume / windowManager.defaultDisplay.height
+
+            var newVolume = currentVolume + deltaVolume
+            if (newVolume < 0) {
+                newVolume = 0F
+            } else if (newVolume > maxVolume) {
+                newVolume = maxVolume.toFloat()
+            }
+
+            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, newVolume.toInt(), 0)
+
+            // 可以添加一个toast来显示当前音量
+            Toast.makeText(context, "Volume: $newVolume / $maxVolume", Toast.LENGTH_SHORT).show()
+        }
+
+//        private fun changeBrightness(deltaBrightness: Float) {
+//            brightness += deltaBrightness
+//            if (brightness < 0) {
+//                brightness = 0f
+//            } else if (brightness > 1) {
+//                brightness = 1f
+//            }
+//
+//            val layoutParams = windowManager.attributes
+//            layoutParams.screenBrightness = brightness
+//            windowManager.attributes = layoutParams
+//
+//            // 可以添加一个toast来显示当前亮度
+//            Toast.makeText(context, "Brightness: $brightness", Toast.LENGTH_SHORT).show()
+//        }
+
     }
 
     fun play(position: Int) {

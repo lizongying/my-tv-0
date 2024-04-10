@@ -1,7 +1,6 @@
 package com.lizongying.mytv0
 
 import android.content.Context
-import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -111,10 +110,7 @@ class ListAdapter(
 
         viewHolder.bindText(tvModel.tv.title)
 
-        // maybe null
-        if (!tvModel.tv.logo.isNullOrBlank()) {
-            viewHolder.bindImage(tvModel.tv.logo)
-        }
+        viewHolder.bindImage(tvModel.tv.logo)
     }
 
     override fun getItemCount() = tvListModel.size()
@@ -125,11 +121,15 @@ class ListAdapter(
             binding.textView.text = text
         }
 
-        fun bindImage(url: String) {
-            Glide.with(context)
-                .load(url)
-                .centerInside()
-                .into(binding.imageView)
+        fun bindImage(url: String?) {
+            if (url.isNullOrBlank()) {
+                binding.imageView.setImageDrawable(null)
+            } else {
+                Glide.with(context)
+                    .load(url)
+                    .centerInside()
+                    .into(binding.imageView)
+            }
         }
 
         fun focus(hasFocus: Boolean) {
