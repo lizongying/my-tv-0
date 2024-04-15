@@ -21,6 +21,8 @@ object SP {
 
     private const val KEY_POSITION_SUB = "position_sub"
 
+    private const val KEY_REPEAT_INFO = "repeat_info"
+
     private lateinit var sp: SharedPreferences
 
     /**
@@ -56,4 +58,8 @@ object SP {
     var positionSub: Int
         get() = sp.getInt(KEY_POSITION_SUB, 0)
         set(value) = sp.edit().putInt(KEY_POSITION_SUB, value).apply()
+
+    var repeatInfo: Boolean
+        get() = sp.getBoolean(KEY_REPEAT_INFO, true)
+        set(value) = sp.edit().putBoolean(KEY_REPEAT_INFO, value).apply()
 }

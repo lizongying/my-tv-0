@@ -49,6 +49,13 @@ class SettingFragment : Fragment() {
             (activity as MainActivity).settingActive()
         }
 
+        val switchRepeatInfo = _binding?.switchRepeatInfo
+        switchRepeatInfo?.isChecked = SP.repeatInfo
+        switchRepeatInfo?.setOnCheckedChangeListener { _, isChecked ->
+            SP.repeatInfo = isChecked
+            (activity as MainActivity).settingActive()
+        }
+
         val updateManager = UpdateManager(context, this, context.appVersionCode)
         binding.checkVersion.setOnClickListener {
             OnClickListenerCheckVersion(updateManager)

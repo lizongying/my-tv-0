@@ -14,6 +14,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import androidx.media3.common.Player.REPEAT_MODE_ALL
 import androidx.media3.common.VideoSize
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSource
@@ -24,6 +25,7 @@ import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.mediacodec.MediaCodecSelector
 import androidx.media3.exoplayer.mediacodec.MediaCodecUtil
+import com.google.android.exoplayer2.Player.DISCONTINUITY_REASON_PERIOD_TRANSITION
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.lizongying.mytv0.databinding.PlayerBinding
 import com.lizongying.mytv0.models.TVModel
@@ -40,6 +42,13 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
     private val aspectRatio = 16f / 9f
 
     private lateinit var surfaceView: SurfaceView
+
+    private lateinit var mainActivity: MainActivity
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        mainActivity = activity as MainActivity
+        super.onActivityCreated(savedInstanceState)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -71,6 +80,7 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
                             .build()
                     }
                     playerView.player = player
+                    player?.repeatMode = REPEAT_MODE_ALL
                     player?.playWhenReady = true
                     player?.addListener(object : Player.Listener {
                         override fun onVideoSizeChanged(videoSize: VideoSize) {
@@ -85,6 +95,28 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
                                     (playerView.measuredHeight.times(aspectRatio)).toInt()
                                 playerView.layoutParams = layoutParams
                             }
+                        }
+
+                        override fun onIsPlayingChanged(isPlaying: Boolean) {
+                            Log.i(TAG, "isPlaying $isPlaying")
+                            super.onIsPlayingChanged(isPlaying)
+                        }
+
+                        override fun onPlaybackStateChanged(playbackState: Int) {
+                            Log.i(TAG, "playbackState $playbackState")
+                            super.onPlaybackStateChanged(playbackState)
+                        }
+
+
+                        override fun onPositionDiscontinuity(
+                            oldPosition: Player.PositionInfo,
+                            newPosition: Player.PositionInfo,
+                            reason: Int
+                        ) {
+                            if (reason == DISCONTINUITY_REASON_PERIOD_TRANSITION) {
+                                mainActivity.onPlayEnd()
+                            }
+                            super.onPositionDiscontinuity(oldPosition, newPosition, reason)
                         }
 
                         override fun onPlayerError(error: PlaybackException) {

@@ -74,6 +74,8 @@ dependencies {
     // For HLS playback support with ExoPlayer
     implementation("androidx.media3:media3-exoplayer-hls:$media3Version")
 
+    implementation("androidx.media3:media3-exoplayer-rtsp:$media3Version")
+
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.leanback:leanback:1.0.0")
     implementation("com.github.bumptech.glide:glide:4.11.0")
@@ -94,4 +96,6 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0-RC")
 
     implementation(files("libs/lib-decoder-ffmpeg-release.aar"))
+
+    implementation("io.github.lizongying:gua64:1.4.3")
 }

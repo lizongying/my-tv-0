@@ -17,7 +17,6 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import com.lizongying.mytv0.models.TVList
-import kotlin.math.abs
 
 
 class MainActivity : FragmentActivity() {
@@ -147,25 +146,23 @@ class MainActivity : FragmentActivity() {
             return super.onFling(e1, e2, velocityX, velocityY)
         }
 
-        override fun onScroll(
-            e1: MotionEvent?,
-            e2: MotionEvent,
-            distanceX: Float,
-            distanceY: Float
-        ): Boolean {
-            // 计算手势滑动的方向和距离
-            val deltaY = e1?.y?.let { e2.y.minus(it) } ?: 0f
-            val deltaX = e1?.x?.let { e2.x.minus(it) } ?: 0f
-
-            // 如果是垂直滑动
-            if (abs(deltaY) > abs(deltaX)) {
-                if ((e1?.x ?: 0f) > windowManager.defaultDisplay.width * 2 / 3) {
-                    adjustVolume(deltaY) // 调整音量
-                }
-            }
-
-            return super.onScroll(e1, e2, distanceX, distanceY)
-        }
+//        override fun onScroll(
+//            e1: MotionEvent?,
+//            e2: MotionEvent,
+//            distanceX: Float,
+//            distanceY: Float
+//        ): Boolean {
+//            val deltaY = e1?.y?.let { e2.y.minus(it) } ?: 0f
+//            val deltaX = e1?.x?.let { e2.x.minus(it) } ?: 0f
+//
+//            if (abs(deltaY) > abs(deltaX)) {
+//                if ((e1?.x ?: 0f) > windowManager.defaultDisplay.width * 2 / 3) {
+//                    adjustVolume(deltaY)
+//                }
+//            }
+//
+//            return super.onScroll(e1, e2, distanceX, distanceY)
+//        }
 
         private fun adjustVolume(deltaY: Float) {
             val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
@@ -200,7 +197,16 @@ class MainActivity : FragmentActivity() {
 //            // 可以添加一个toast来显示当前亮度
 //            Toast.makeText(context, "Brightness: $brightness", Toast.LENGTH_SHORT).show()
 //        }
+    }
 
+    fun onPlayEnd() {
+        val tvModel = TVList.getTVModelCurrent()
+        if (SP.repeatInfo) {
+            infoFragment.show(tvModel)
+            if (SP.channelNum) {
+                channelFragment.show(tvModel)
+            }
+        }
     }
 
     fun play(position: Int) {

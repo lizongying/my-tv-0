@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import com.google.gson.JsonSyntaxException
 import com.lizongying.mytv0.R
 import com.lizongying.mytv0.showToast
+import io.github.lizongying.Gua
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -98,8 +99,98 @@ object TVList {
     }
 
     private fun str2List(str: String) {
-        val type = object : com.google.gson.reflect.TypeToken<List<TV>>() {}.type
-        list = com.google.gson.Gson().fromJson(str, type)
+        var string = str
+        val g = Gua()
+        if (g.verify(str)) {
+            string = g.decode(str)
+        }
+        if (string.isBlank()) {
+            return
+        }
+        Log.i("string", string)
+        Log.i("string first", "${string[0]}")
+        when (string[0]) {
+            '[' -> {
+                Log.i("", "1111111")
+                val type = object : com.google.gson.reflect.TypeToken<List<TV>>() {}.type
+                list = com.google.gson.Gson().fromJson(string, type)
+            }
+
+            '#' -> {
+                Log.i("", "2222222")
+                val lines = string.lines()
+
+                Log.i("lines", "$lines")
+                val nameRegex = Regex("""tvg-name="([^"]+)"""")
+                val logRegex = Regex("""tvg-logo="([^"]+)"""")
+                val groupRegex = Regex("""group-title="([^"]+)"""")
+
+                val l = mutableListOf<TV>()
+                for ((index, line) in lines.withIndex()) {
+                    val trimmedLine = line.trim()
+                    if (trimmedLine.startsWith("#EXTINF")) {
+                        val info = trimmedLine.split(",")
+                        Log.i("info", "$info")
+
+                        val title = info.last()
+                        val name = nameRegex.find(info.first())?.groupValues?.get(1)
+                        val group = groupRegex.find(info.first())?.groupValues?.get(1)
+                        val logo = logRegex.find(info.first())?.groupValues?.get(1)
+                        val uris =
+                            if (index + 1 < lines.size) listOf(lines[index + 1]) else emptyList()
+                        Log.i("info", "$title $name $group $logo $uris")
+                        val tv = TV(
+                            0,
+                            name!!,
+                            title,
+                            "",
+                            logo!!,
+                            "",
+                            uris,
+                            mapOf(),
+                            group!!,
+                            listOf(),
+                        )
+
+                        l.add(tv)
+                    }
+                }
+                list = l
+            }
+
+            else -> {
+                Log.i("", "333333")
+                val lines = string.lines()
+                var group = ""
+                val l = mutableListOf<TV>()
+                for (line in lines) {
+                    val trimmedLine = line.trim()
+                    if (trimmedLine.isNotEmpty()) {
+                        if (trimmedLine.contains("#genre#")) {
+                            group = trimmedLine.split(',', limit = 2)[0].trim()
+                        } else {
+                            val arr = trimmedLine.split(',').map { it.trim() }
+                            val tv = TV(
+                                0,
+                                "",
+                                arr.first(),
+                                "",
+                                "",
+                                "",
+                                arr.drop(1),
+                                mapOf(),
+                                group,
+                                listOf(),
+                            )
+
+                            l.add(tv)
+                        }
+                    }
+                }
+                list = l
+            }
+        }
+
         Log.i("TVList", "$list")
 
         listModel = list.map { tv ->
@@ -128,6 +219,10 @@ object TVList {
             }
             groupModel.addTVListModel(tvListModel)
         }
+    }
+
+    fun getTVModelCurrent(): TVModel {
+        return getTVModel(position.value!!)
     }
 
     fun getTVModel(idx: Int): TVModel {

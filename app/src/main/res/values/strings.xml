@@ -15,4 +15,5 @@
     <string name="appreciate">赞赏</string>
     <string name="channels">配置地址</string>
     <string name="confirm">确认</string>
+    <string name="title_repeat_info">循环播放时显示信息</string>
 </resources>
