@@ -76,7 +76,17 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
             }
         }
 
+        binding.menu.setOnClickListener {
+            hideSelf()
+        }
+
         return binding.root
+    }
+
+    private fun hideSelf() {
+        requireActivity().supportFragmentManager.beginTransaction()
+            .hide(this)
+            .commit()
     }
 
     override fun onItemFocusChange(tvListModel: TVListModel, hasFocus: Boolean) {

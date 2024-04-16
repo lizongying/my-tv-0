@@ -86,6 +86,10 @@ class SettingFragment : Fragment() {
             (activity as MainActivity).settingActive()
         }
 
+        binding.setting.setOnClickListener {
+            hideSelf()
+        }
+
         return binding.root
     }
 
@@ -98,6 +102,12 @@ class SettingFragment : Fragment() {
 
     fun setVersionName(versionName: String) {
         binding.versionName.text = versionName
+    }
+
+    private fun hideSelf() {
+        requireActivity().supportFragmentManager.beginTransaction()
+            .hide(this)
+            .commit()
     }
 
     override fun onDestroyView() {

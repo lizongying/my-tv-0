@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/setting"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="end"
+    android:gravity="end"
+    android:background="@android:color/transparent"
+    android:clickable="true"
+    android:focusable="false"
     >
+
     <LinearLayout
         android:layout_width="300dp"
         android:layout_height="match_parent"
