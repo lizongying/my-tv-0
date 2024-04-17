@@ -21,7 +21,6 @@ class TimeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = TimeBinding.inflate(inflater, container, false)
-        _binding!!.root.visibility = View.GONE
         return binding.root
     }
 

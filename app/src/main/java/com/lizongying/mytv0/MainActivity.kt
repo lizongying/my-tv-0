@@ -66,9 +66,7 @@ class MainActivity : FragmentActivity() {
             TVList.setPosition(0)
         }
 
-        if (SP.time) {
-            timeFragment.show()
-        }
+        showTime()
     }
 
     fun ready() {
@@ -273,23 +271,6 @@ class MainActivity : FragmentActivity() {
         }
     }
 
-    private fun getPackageInfo(): PackageInfo {
-        val flag = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-            PackageManager.GET_SIGNATURES
-        } else {
-            PackageManager.GET_SIGNING_CERTIFICATES
-        }
-
-        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            packageManager.getPackageInfo(packageName, flag)
-        } else {
-            packageManager.getPackageInfo(
-                packageName,
-                PackageManager.PackageInfoFlags.of(PackageManager.GET_SIGNING_CERTIFICATES.toLong())
-            )
-        }
-    }
-
     private fun showChannel(channel: String) {
         if (!menuFragment.isHidden) {
             return
@@ -299,9 +280,10 @@ class MainActivity : FragmentActivity() {
             return
         }
 
-        if (SP.channelNum) {
-            channelFragment.show(channel)
-        }
+//        if (SP.channelNum) {
+//            channelFragment.show(channel)
+//        }
+        channelFragment.show(channel)
     }
 
 

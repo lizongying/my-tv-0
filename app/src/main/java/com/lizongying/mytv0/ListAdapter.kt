@@ -1,6 +1,11 @@
 package com.lizongying.mytv0
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.drawable.BitmapDrawable
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -110,7 +115,7 @@ class ListAdapter(
 
         viewHolder.bindText(tvModel.tv.title)
 
-        viewHolder.bindImage(tvModel.tv.logo)
+        viewHolder.bindImage(tvModel.tv.logo, tvModel.tv.id)
     }
 
     override fun getItemCount() = tvListModel.size()
@@ -121,13 +126,32 @@ class ListAdapter(
             binding.textView.text = text
         }
 
-        fun bindImage(url: String?) {
+        fun bindImage(url: String?, id: Int) {
             if (url.isNullOrBlank()) {
-                binding.imageView.setImageDrawable(null)
+                val width = Utils.dpToPx(40)
+                val height = Utils.dpToPx(40)
+                val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+                val canvas = Canvas(bitmap)
+
+                val paint = Paint().apply {
+                    color = Color.WHITE
+                    textSize = 32f
+                    textAlign = Paint.Align.CENTER
+                }
+                val text = "${id + 1}"
+                val x = width / 2f
+                val y = height / 2f - (paint.descent() + paint.ascent()) / 2
+                canvas.drawText(text, x, y, paint)
+                Glide.with(context)
+                    .load(BitmapDrawable(context.resources, bitmap))
+                    .centerInside()
+                    .into(binding.imageView)
+//                binding.imageView.setImageDrawable(null)
             } else {
                 Glide.with(context)
                     .load(url)
                     .centerInside()
+//                    .error(BitmapDrawable(context.resources, bitmap))
                     .into(binding.imageView)
             }
         }

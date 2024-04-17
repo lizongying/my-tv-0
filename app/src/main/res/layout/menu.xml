@@ -19,7 +19,7 @@
         </androidx.recyclerview.widget.RecyclerView>
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/list"
-            android:layout_width="300dp"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
             >
         </androidx.recyclerview.widget.RecyclerView>
