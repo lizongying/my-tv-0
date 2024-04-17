@@ -67,8 +67,7 @@ class ChannelFragment : Fragment() {
 
     private val playRunnable = Runnable {
         (activity as MainActivity).play(channel - 1)
-        binding.channelContent.text = ""
-        view?.visibility = View.GONE
+        handler.postDelayed(hideRunnable, delay)
     }
 
     override fun onDestroyView() {

@@ -25,6 +25,7 @@ class MainActivity : FragmentActivity() {
     private var playerFragment = PlayerFragment()
     private var infoFragment = InfoFragment()
     private var channelFragment = ChannelFragment()
+    private var timeFragment = TimeFragment()
     private var menuFragment = MenuFragment()
     private var settingFragment = SettingFragment()
 
@@ -47,6 +48,7 @@ class MainActivity : FragmentActivity() {
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                 .add(R.id.main_browse_fragment, playerFragment)
+                .add(R.id.main_browse_fragment, timeFragment)
                 .add(R.id.main_browse_fragment, infoFragment)
                 .add(R.id.main_browse_fragment, channelFragment)
                 .add(R.id.main_browse_fragment, menuFragment)
@@ -62,6 +64,10 @@ class MainActivity : FragmentActivity() {
 
         if (!TVList.setPosition(SP.position)) {
             TVList.setPosition(0)
+        }
+
+        if (SP.time) {
+            timeFragment.show()
         }
     }
 
@@ -254,6 +260,16 @@ class MainActivity : FragmentActivity() {
     private val hideSetting = Runnable {
         if (!settingFragment.isHidden) {
             supportFragmentManager.beginTransaction().hide(settingFragment).commitNow()
+            showTime()
+        }
+    }
+
+    fun showTime(){
+        Log.i(TAG, "showTime ${SP.time}")
+        if (SP.time) {
+            timeFragment.show()
+        } else {
+            timeFragment.hide()
         }
     }
 
@@ -374,12 +390,14 @@ class MainActivity : FragmentActivity() {
         supportFragmentManager.beginTransaction()
             .hide(menuFragment)
             .commit()
+        Log.i(TAG, "SP.time ${SP.time}")
     }
 
     fun hideSettingFragment() {
         supportFragmentManager.beginTransaction()
             .hide(settingFragment)
             .commit()
+        showTime()
     }
 
     fun onKey(keyCode: Int): Boolean {

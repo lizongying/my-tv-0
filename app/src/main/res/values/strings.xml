@@ -16,4 +16,5 @@
     <string name="channels">配置地址</string>
     <string name="confirm">确认</string>
     <string name="title_repeat_info">循环播放时显示信息</string>
+    <string name="title_time">显示时间</string>
 </resources>

@@ -42,6 +42,13 @@ class SettingFragment : Fragment() {
             (activity as MainActivity).settingActive()
         }
 
+        val switchTime = _binding?.switchTime
+        switchTime?.isChecked = SP.time
+        switchTime?.setOnCheckedChangeListener { _, isChecked ->
+            SP.time = isChecked
+            (activity as MainActivity).settingActive()
+        }
+
         val switchBootStartup = _binding?.switchBootStartup
         switchBootStartup?.isChecked = SP.bootStartup
         switchBootStartup?.setOnCheckedChangeListener { _, isChecked ->
@@ -108,6 +115,7 @@ class SettingFragment : Fragment() {
         requireActivity().supportFragmentManager.beginTransaction()
             .hide(this)
             .commit()
+        (activity as MainActivity).showTime()
     }
 
     override fun onDestroyView() {
