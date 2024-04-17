@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
 import com.lizongying.mytv0.databinding.AppreciateBinding
@@ -18,6 +19,14 @@ class AppreciateModalFragment : DialogFragment() {
 
     private val handler = Handler(Looper.myLooper()!!)
     private val delayHideAppreciateModal = 10000L
+
+    override fun onStart() {
+        super.onStart()
+        dialog?.window?.apply {
+            addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+            decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
