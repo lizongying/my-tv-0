@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.JsonSyntaxException
 import com.lizongying.mytv0.R
+import com.lizongying.mytv0.SP
 import com.lizongying.mytv0.showToast
 import io.github.lizongying.Gua
 import kotlinx.coroutines.CoroutineScope
@@ -29,28 +30,35 @@ object TVList {
         get() = _position
 
     fun init(context: Context) {
-        _position.value = 0
         appDirectory = context.filesDir
-        serverUrl = context.resources.getString(R.string.server_url)
-        val file = File(appDirectory, FILE_NAME)
-        val str = if (file.exists()) {
-            Log.i(TAG, "local file")
-            file.readText()
-        } else {
-            Log.i(TAG, "read resource")
-            context.resources.openRawResource(R.raw.channels).bufferedReader()
-                .use { it.readText() }
-        }
+        _position.value = 0
+
         groupModel.addTVListModel(TVListModel("我的收藏"))
 
         groupModel.addTVListModel(TVListModel("全部频道"))
 
-        try {
-            str2List(str)
-        } catch (e: Exception) {
-            Log.e("", "error $e")
-            file.deleteOnExit()
-            Toast.makeText(context, "读取频道失败，请在菜单中进行设置", Toast.LENGTH_LONG).show()
+        if (SP.configAutoLoad) {
+            SP.config?.let {
+                update(it)
+            }
+        } else {
+            val file = File(appDirectory, FILE_NAME)
+            val str = if (file.exists()) {
+                Log.i(TAG, "local file")
+                file.readText()
+            } else {
+                Log.i(TAG, "read resource")
+                context.resources.openRawResource(R.raw.channels).bufferedReader()
+                    .use { it.readText() }
+            }
+
+            try {
+                str2List(str)
+            } catch (e: Exception) {
+                Log.e("", "error $e")
+                file.deleteOnExit()
+                Toast.makeText(context, "读取频道失败，请在菜单中进行设置", Toast.LENGTH_LONG).show()
+            }
         }
     }
 
@@ -68,7 +76,6 @@ object TVList {
                         file.createNewFile()
                     }
                     val str = response.body()!!.string()
-                    Log.i("", "request str $str")
 
                     file.writeText(str)
                     withContext(Dispatchers.Main) {
@@ -107,20 +114,14 @@ object TVList {
         if (string.isBlank()) {
             return
         }
-        Log.i("string", string)
-        Log.i("string first", "${string[0]}")
         when (string[0]) {
             '[' -> {
-                Log.i("", "1111111")
                 val type = object : com.google.gson.reflect.TypeToken<List<TV>>() {}.type
                 list = com.google.gson.Gson().fromJson(string, type)
             }
 
             '#' -> {
-                Log.i("", "2222222")
                 val lines = string.lines()
-
-                Log.i("lines", "$lines")
                 val nameRegex = Regex("""tvg-name="([^"]+)"""")
                 val logRegex = Regex("""tvg-logo="([^"]+)"""")
                 val groupRegex = Regex("""group-title="([^"]+)"""")
@@ -159,7 +160,6 @@ object TVList {
             }
 
             else -> {
-                Log.i("", "333333")
                 val lines = string.lines()
                 var group = ""
                 val l = mutableListOf<TV>()

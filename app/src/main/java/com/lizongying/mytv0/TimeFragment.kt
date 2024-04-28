@@ -5,6 +5,8 @@ import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.marginEnd
+import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import com.lizongying.mytv0.Utils.getDateFormat
 import com.lizongying.mytv0.databinding.TimeBinding
@@ -21,6 +23,22 @@ class TimeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = TimeBinding.inflate(inflater, container, false)
+
+        val application = requireActivity().applicationContext as MyTvApplication
+
+        binding.time.layoutParams.width = application.px2Px(binding.time.layoutParams.width)
+        binding.time.layoutParams.height = application.px2Px(binding.time.layoutParams.height)
+
+        val layoutParams = binding.time.layoutParams as ViewGroup.MarginLayoutParams
+        layoutParams.topMargin = application.px2Px(binding.time.marginTop)
+        layoutParams.marginEnd = application.px2Px(binding.time.marginEnd)
+        binding.time.layoutParams = layoutParams
+
+        binding.content.textSize = application.px2PxFont(binding.content.textSize)
+
+        binding.main.layoutParams.width = application.shouldWidthPx()
+        binding.main.layoutParams.height = application.shouldHeightPx()
+
         return binding.root
     }
 
@@ -39,7 +57,10 @@ class TimeFragment : Fragment() {
 
     private val showRunnable: Runnable = Runnable {
         run {
-            binding.channelContent.text = getDateFormat("HH:mm")
+            if (_binding == null) {
+                return@Runnable
+            }
+            binding.content.text = getDateFormat("HH:mm")
             handler.postDelayed(showRunnable, delay)
         }
     }

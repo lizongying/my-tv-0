@@ -25,6 +25,10 @@ object SP {
 
     private const val KEY_REPEAT_INFO = "repeat_info"
 
+    private const val KEY_CONFIG = "config"
+
+    private const val KEY_CONFIG_AUTO_LOAD = "config_auto_load"
+
     private lateinit var sp: SharedPreferences
 
     /**
@@ -68,4 +72,12 @@ object SP {
     var repeatInfo: Boolean
         get() = sp.getBoolean(KEY_REPEAT_INFO, true)
         set(value) = sp.edit().putBoolean(KEY_REPEAT_INFO, value).apply()
+
+    var config: String?
+        get() = sp.getString(KEY_CONFIG, "")
+        set(value) = sp.edit().putString(KEY_CONFIG, value).apply()
+
+    var configAutoLoad: Boolean
+        get() = sp.getBoolean(KEY_CONFIG_AUTO_LOAD, false)
+        set(value) = sp.edit().putBoolean(KEY_CONFIG_AUTO_LOAD, value).apply()
 }

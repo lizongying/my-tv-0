@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
-        android:name=".MyApplication"
+        android:name=".MyTvApplication"
         android:allowBackup="true"
         android:banner="@drawable/banner0"
         android:icon="@drawable/logo0"

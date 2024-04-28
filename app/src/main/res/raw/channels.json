@@ -1,15 +1,6 @@
 [
   {
     "group": "地方频道",
-    "logo": "https://resources.yangshipin.cn/assets/oms/image/202306/9bd372ca292a82ce3aa08772b07efc4af1f85c21d1f268ea33440c49e9a0a488.png?imageMogr2/format/webp",
-    "name": "",
-    "title": "东方卫视",
-    "uris": [
-      "http://39.134.18.195/dbiptv.sn.chinamobile.com/PLTV/88888890/224/3221226217/index.m3u8"
-    ]
-  },
-  {
-    "group": "地方频道",
     "logo": "https://resources.yangshipin.cn/assets/oms/image/202306/4120e89d3079d08aa17d382f69a2308ec70839b278367763c34a34666c75cb88.png?imageMogr2/format/webp",
     "name": "",
     "title": "湖南卫视",
@@ -40,30 +31,12 @@
   },
   {
     "group": "地方频道",
-    "logo": "https://resources.yangshipin.cn/assets/oms/image/202306/380ad685c0c1d5b2c902246b8d2df6d3f9b45e2837abcfe493075bbded597a31.png?imageMogr2/format/webp",
-    "name": "",
-    "title": "江苏卫视",
-    "uris": [
-      "http://39.134.24.166/dbiptv.sn.chinamobile.com/PLTV/88888890/224/3221226200/index.m3u8"
-    ]
-  },
-  {
-    "group": "地方频道",
     "logo": "https://resources.yangshipin.cn/assets/oms/image/202306/3c760d0d00463855890e8a1864ea4a6b6dd66b90c29b4ac714a4b17c16519871.png?imageMogr2/format/webp",
     "name": "",
     "title": "江西卫视",
     "uris": [
       "http://ottrrs.hl.chinamobile.com/PLTV/88888888/224/3221226344/index.m3u8",
       "http://dbiptv.sn.chinamobile.com/PLTV/88888890/224/3221225764/index.m3u8"
-    ]
-  },
-  {
-    "group": "地方频道",
-    "logo": "https://resources.yangshipin.cn/assets/oms/image/202306/22d403f07a7cf5410b3ad3ddb65a11aa229a32475fac213f5344c9f0ec330ca1.png?imageMogr2/format/webp",
-    "name": "",
-    "title": "山东卫视",
-    "uris": [
-      "http://39.134.18.194:80/dbiptv.sn.chinamobile.com/PLTV/88888890/224/3221225771/index.m3u8"
     ]
   },
   {

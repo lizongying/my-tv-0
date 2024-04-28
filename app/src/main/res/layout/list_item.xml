@@ -1,44 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/list_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="1dp"
-    android:background="#FF263238"
-    android:orientation="horizontal">
+    android:background="#FF263238">
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_margin="5dp"
-        android:padding="5dp"/>
-    <LinearLayout
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginEnd="0dp"
+        android:padding="5dp" />
+
+    <TextView
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:layout_marginTop="5dp"
-            android:layout_marginStart="0dp"
-            android:layout_marginBottom="2dp"
-            android:gravity="start"
-            android:textColor="#FFEEEEEE"
-            android:textSize="18sp" />
-        <TextView
-            android:id="@+id/description"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:layout_marginTop="0dp"
-            android:layout_marginStart="0dp"
-            android:layout_marginBottom="5dp"
-            android:gravity="start"
-            android:text=""
-            android:textColor="#B3EEEEEE"
-            android:textSize="14sp" />
-    </LinearLayout>
+        app:layout_constraintStart_toEndOf="@id/imageView"
+        app:layout_constraintTop_toTopOf="parent"
+        android:textColor="#FFEEEEEE"
+        android:textSize="18sp" />
 
-</LinearLayout>
+    <ImageView
+        android:id="@+id/heart_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_heart_empty_light"
+        android:contentDescription="Heart Icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:padding="5dp"
+        android:layout_marginEnd="10dp" />
+
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/imageView"
+        app:layout_constraintTop_toBottomOf="@id/textView"
+        android:text=""
+        android:textColor="#B3EEEEEE"
+        android:textSize="14sp" />
+</androidx.constraintlayout.widget.ConstraintLayout>

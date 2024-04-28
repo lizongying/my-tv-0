@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="server_url">http://localhost:8000/0</string>
+    <string name="server_url">https://github.com/lizongying/my-tv-0</string>
 </resources>

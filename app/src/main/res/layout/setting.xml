@@ -10,15 +10,17 @@
     >
 
     <LinearLayout
+        android:id="@+id/content"
         android:layout_width="300dp"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:paddingTop="20dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:background="#FF263238"
+        android:background="@color/blur"
         >
         <TextView
+            android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/app_name"
@@ -29,19 +31,25 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text=""
+            android:textSize="14sp"
             />
         <LinearLayout
-            android:layout_width="300dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             >
             <Button
                 android:id="@+id/check_version"
                 android:layout_width="100dp"
-                android:layout_height="40dp"
+                android:layout_height="45dp"
                 android:layout_marginEnd="10dp"
                 android:textSize="14sp"
                 android:text="@string/check_version"
+                />
+            <ProgressBar
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 />
             <TextView
                 android:id="@+id/version_name"
@@ -49,11 +57,6 @@
                 android:textSize="14sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
-            <ProgressBar
-                android:visibility="gone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -62,13 +65,13 @@
             <Button
                 android:id="@+id/confirm_button"
                 android:layout_width="100dp"
-                android:layout_height="40dp"
+                android:layout_height="45dp"
                 android:layout_marginEnd="10dp"
                 android:textSize="14sp"
                 android:text="@string/confirm" />
             <EditText
                 android:id="@+id/my_edit_text"
-                android:layout_width="200dp"
+                android:layout_width="190dp"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
                 android:autofillHints=""
@@ -79,26 +82,37 @@
         <Button
             android:id="@+id/appreciate"
             android:layout_width="100dp"
-            android:layout_height="40dp"
-            android:layout_marginEnd="10dp"
+            android:layout_height="45dp"
+            android:layout_marginTop="0dp"
             android:text="@string/appreciate"
+            android:textSize="14sp"
+            />
+        <Button
+            android:id="@+id/exit"
+            android:layout_width="100dp"
+            android:layout_height="45dp"
+            android:layout_marginTop="0dp"
+            android:text="@string/exit"
             android:textSize="14sp"
             />
         <Switch
             android:id="@+id/switch_channel_reversal"
             android:text="@string/title_channel_reversal"
+            android:textSize="14sp"
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         <Switch
             android:id="@+id/switch_channel_num"
             android:text="@string/title_channel_num"
+            android:textSize="14sp"
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         <Switch
             android:id="@+id/switch_time"
             android:text="@string/title_time"
+            android:textSize="14sp"
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -106,11 +120,20 @@
             android:id="@+id/switch_boot_startup"
             android:text="@string/title_boot_startup"
             android:layout_marginTop="5dp"
+            android:textSize="14sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         <Switch
             android:id="@+id/switch_repeat_info"
             android:text="@string/title_repeat_info"
+            android:textSize="14sp"
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <Switch
+            android:id="@+id/switch_config_auto_load"
+            android:text="@string/title_config_auto_load"
+            android:textSize="14sp"
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

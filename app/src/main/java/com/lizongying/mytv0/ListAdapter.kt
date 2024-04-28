@@ -138,7 +138,7 @@ class ListAdapter(
                     textSize = 32f
                     textAlign = Paint.Align.CENTER
                 }
-                val text = "${id + 1}"
+                val text = String.format("%3d", id + 1)
                 val x = width / 2f
                 val y = height / 2f - (paint.descent() + paint.ascent()) / 2
                 canvas.drawText(text, x, y, paint)

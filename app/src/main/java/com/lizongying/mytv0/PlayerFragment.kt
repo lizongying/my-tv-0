@@ -98,12 +98,18 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
                         }
 
                         override fun onIsPlayingChanged(isPlaying: Boolean) {
-                            Log.i(TAG, "isPlaying $isPlaying")
                             super.onIsPlayingChanged(isPlaying)
+                            if (isPlaying) {
+                                Log.i(TAG, "播放中")
+                                tvModel?.setErrInfo("")
+                            } else {
+                                Log.i(TAG, "播放停止")
+//                                tvModel?.setErrInfo("播放停止")
+                            }
                         }
 
                         override fun onPlaybackStateChanged(playbackState: Int) {
-                            Log.i(TAG, "playbackState $playbackState")
+                            Log.d(TAG, "playbackState $playbackState")
                             super.onPlaybackStateChanged(playbackState)
                         }
 
@@ -121,11 +127,13 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
 
                         override fun onPlayerError(error: PlaybackException) {
                             super.onPlayerError(error)
+                            Log.i(TAG, "播放错误")
+                            tvModel?.setErrInfo("播放错误")
                             tvModel?.setReady()
                         }
                     })
 
-                    (activity as MainActivity).ready()
+                    (activity as MainActivity).ready(TAG)
                     Log.i(TAG, "player ready")
                 }
             })
@@ -254,7 +262,17 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
         exoPlayer?.addListener(object : com.google.android.exoplayer2.Player.EventListener {
             override fun onPlayerError(error: com.google.android.exoplayer2.ExoPlaybackException) {
                 super.onPlayerError(error)
+                tvModel?.setErrInfo("播放错误")
                 tvModel?.setReady()
+            }
+
+            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                super.onIsPlayingChanged(isPlaying)
+                if (isPlaying) {
+                    tvModel?.setErrInfo("")
+                } else {
+                    tvModel?.setErrInfo("播放停止")
+                }
             }
         })
         exoPlayer?.addVideoListener(object : com.google.android.exoplayer2.video.VideoListener {
@@ -274,7 +292,7 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
                 }
             }
         })
-        (activity as MainActivity).ready()
+        (activity as MainActivity).ready(TAG)
         Log.i(TAG, "exoPlayer ready")
     }
 

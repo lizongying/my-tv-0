@@ -1,10 +1,7 @@
 package com.lizongying.mytv0
 
 import android.content.Context
-import android.content.pm.PackageInfo
-import android.content.pm.PackageManager
 import android.media.AudioManager
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -23,6 +20,8 @@ class MainActivity : FragmentActivity() {
 
     private var ok = 0
     private var playerFragment = PlayerFragment()
+    private val errorFragment = ErrorFragment()
+    private val loadingFragment = LoadingFragment()
     private var infoFragment = InfoFragment()
     private var channelFragment = ChannelFragment()
     private var timeFragment = TimeFragment()
@@ -48,6 +47,8 @@ class MainActivity : FragmentActivity() {
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                 .add(R.id.main_browse_fragment, playerFragment)
+                .add(R.id.main_browse_fragment, errorFragment)
+                .add(R.id.main_browse_fragment, loadingFragment)
                 .add(R.id.main_browse_fragment, timeFragment)
                 .add(R.id.main_browse_fragment, infoFragment)
                 .add(R.id.main_browse_fragment, channelFragment)
@@ -55,12 +56,12 @@ class MainActivity : FragmentActivity() {
                 .add(R.id.main_browse_fragment, settingFragment)
                 .hide(menuFragment)
                 .hide(settingFragment)
+                .hide(errorFragment)
+                .hide(loadingFragment)
                 .commitNow()
         }
 
         gestureDetector = GestureDetector(this, GestureListener(this))
-
-        watch()
 
         if (!TVList.setPosition(SP.position)) {
             TVList.setPosition(0)
@@ -69,31 +70,51 @@ class MainActivity : FragmentActivity() {
         showTime()
     }
 
-    fun ready() {
+    fun ready(tag: String) {
+        Log.i(TAG, "ready $tag")
         ok++
-        if (ok == 1) {
-            watch()
+        if (ok == 3) {
+            Log.i(TAG, "watch")
+            TVList.groupModel.tvGroupModel.observe(this) { _ ->
+                if (TVList.groupModel.tvGroupModel.value != null) {
+                    watch()
+                    menuFragment.update()
+                }
+            }
         }
     }
 
-    fun watch() {
+    private fun watch() {
         TVList.listModel.forEach { tvModel ->
             tvModel.errInfo.observe(this) { _ ->
                 if (tvModel.errInfo.value != null
                     && tvModel.tv.id == TVList.position.value
                 ) {
-                    Toast.makeText(this, tvModel.errInfo.value, Toast.LENGTH_LONG)
-                        .show()
+                    Log.i(TAG, "errInfo ${tvModel.tv.title} ${tvModel.errInfo.value}")
+                    if (tvModel.errInfo.value == "") {
+                        Log.i(TAG, "hideErrorFragment ${tvModel.errInfo.value.toString()}")
+                        hideErrorFragment()
+                        hideLoadingFragment()
+                        showPlayerFragment()
+                    } else {
+                        Log.i(TAG, "showErrorFragment ${tvModel.errInfo.value.toString()}")
+                        hidePlayerFragment()
+                        hideLoadingFragment()
+                        showErrorFragment(tvModel.errInfo.value.toString())
+                    }
                 }
             }
+
             tvModel.ready.observe(this) { _ ->
 
                 // not first time && channel is not changed
                 if (tvModel.ready.value != null
                     && tvModel.tv.id == TVList.position.value
                 ) {
+                    Log.i(TAG, "loading ${tvModel.tv.title}")
+                    hideErrorFragment()
+                    showLoadingFragment()
                     playerFragment.play(tvModel)
-                    Log.i(TAG, "info ${tvModel.tv.title}")
                     infoFragment.show(tvModel)
                     if (SP.channelNum) {
                         channelFragment.show(tvModel)
@@ -262,8 +283,7 @@ class MainActivity : FragmentActivity() {
         }
     }
 
-    fun showTime(){
-        Log.i(TAG, "showTime ${SP.time}")
+    fun showTime() {
         if (SP.time) {
             timeFragment.show()
         } else {
@@ -375,11 +395,73 @@ class MainActivity : FragmentActivity() {
         Log.i(TAG, "SP.time ${SP.time}")
     }
 
-    fun hideSettingFragment() {
+    private fun hideSettingFragment() {
         supportFragmentManager.beginTransaction()
             .hide(settingFragment)
             .commit()
         showTime()
+    }
+
+    private fun showErrorFragment(msg: String) {
+        errorFragment.show(msg)
+        if (errorFragment.isVisible) {
+            return
+        }
+
+        supportFragmentManager.beginTransaction()
+            .show(errorFragment)
+            .commitNow()
+    }
+
+    private fun hideErrorFragment() {
+        errorFragment.show("hide")
+        if (errorFragment.isHidden) {
+            return
+        }
+
+        supportFragmentManager.beginTransaction()
+            .hide(errorFragment)
+            .commitNow()
+    }
+
+    private fun showLoadingFragment() {
+        if (loadingFragment.isVisible) {
+            return
+        }
+
+        supportFragmentManager.beginTransaction()
+            .show(loadingFragment)
+            .commitNow()
+    }
+
+    private fun hideLoadingFragment() {
+        if (!loadingFragment.isVisible) {
+            return
+        }
+
+        supportFragmentManager.beginTransaction()
+            .hide(loadingFragment)
+            .commitNow()
+    }
+
+    private fun showPlayerFragment() {
+        if (playerFragment.isVisible) {
+            return
+        }
+
+        supportFragmentManager.beginTransaction()
+            .show(playerFragment)
+            .commit()
+    }
+
+    private fun hidePlayerFragment() {
+        if (!playerFragment.isVisible) {
+            return
+        }
+
+        supportFragmentManager.beginTransaction()
+            .hide(playerFragment)
+            .commit()
     }
 
     fun onKey(keyCode: Int): Boolean {

@@ -63,24 +63,25 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
         listAdapter.focusable(false)
         listAdapter.setItemListener(this)
 
-        TVList.groupModel.tvGroupModel.observe(viewLifecycleOwner) { _ ->
-            (activity as MainActivity).watch()
-
-            // not first time
-            if (TVList.groupModel.tvGroupModel.value != null) {
-                groupAdapter.update(TVList.groupModel)
-                tvListModel = TVList.groupModel.getTVListModel(TVList.groupModel.position.value!!)
-                if (tvListModel != null) {
-                    (binding.list.adapter as ListAdapter).update(tvListModel!!)
-                }
-            }
-        }
-
         binding.menu.setOnClickListener {
             hideSelf()
         }
 
         return binding.root
+    }
+
+    fun update() {
+        groupAdapter.update(TVList.groupModel)
+
+        var tvListModel = TVList.groupModel.getTVListModel(TVList.groupModel.position.value!!)
+        if (tvListModel == null) {
+            TVList.groupModel.setPosition(0)
+        }
+        tvListModel = TVList.groupModel.getTVListModel(TVList.groupModel.position.value!!)
+
+        if (tvListModel != null) {
+            (binding.list.adapter as ListAdapter).update(tvListModel)
+        }
     }
 
     private fun hideSelf() {
@@ -105,7 +106,8 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
         }
     }
 
-    override fun onItemClicked(tvModel: TVModel) { TVList.setPosition(tvModel.tv.id)
+    override fun onItemClicked(tvModel: TVModel) {
+        TVList.setPosition(tvModel.tv.id)
         (activity as MainActivity).hideMenuFragment()
     }
 
