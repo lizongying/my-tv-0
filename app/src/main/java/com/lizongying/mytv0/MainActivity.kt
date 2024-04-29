@@ -599,9 +599,6 @@ class MainActivity : FragmentActivity() {
 
     override fun onStop() {
         super.onStop()
-        SP.positionGroup = TVList.groupModel.position.value!!
-        SP.position = TVList.position.value!!
-        Log.i(TAG, "position ${TVList.position.value!!} saved")
     }
 
     companion object {

@@ -37,7 +37,7 @@ object TVList {
 
         groupModel.addTVListModel(TVListModel("全部频道"))
 
-        if (SP.configAutoLoad) {
+        if (SP.configAutoLoad && !SP.config.isNullOrEmpty()) {
             SP.config?.let {
                 update(it)
             }
@@ -142,14 +142,14 @@ object TVList {
                         Log.i("info", "$title $name $group $logo $uris")
                         val tv = TV(
                             0,
-                            name!!,
+                            name ?: "",
                             title,
                             "",
-                            logo!!,
+                            logo ?: "",
                             "",
                             uris,
                             mapOf(),
-                            group!!,
+                            group ?: "",
                             listOf(),
                         )
 
@@ -240,6 +240,11 @@ object TVList {
 
         // set a new position or retry when position same
         listModel[position].setReady()
+
+        SP.positionGroup = groupModel.position.value!!
+        SP.position = position
+        Log.i(TAG, "saved $position")
+
         return true
     }
 
