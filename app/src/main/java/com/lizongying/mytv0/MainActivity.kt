@@ -2,6 +2,7 @@ package com.lizongying.mytv0
 
 import android.content.Context
 import android.media.AudioManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -40,9 +41,25 @@ class MainActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            val lp = window.attributes
+            lp.layoutInDisplayCutoutMode =
+                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+            window.setAttributes(lp)
+        }
+
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+
+        window.decorView.apply {
+            systemUiVisibility =
+                View.SYSTEM_UI_FLAG_FULLSCREEN or
+                        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        }
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
@@ -64,10 +81,6 @@ class MainActivity : FragmentActivity() {
 
         gestureDetector = GestureDetector(this, GestureListener(this))
 
-        if (!TVList.setPosition(SP.position)) {
-            TVList.setPosition(0)
-        }
-
         showTime()
     }
 
@@ -81,6 +94,11 @@ class MainActivity : FragmentActivity() {
                     watch()
                     menuFragment.update()
                 }
+            }
+
+            if (!TVList.setPosition(SP.position)) {
+                Log.i(TAG, "setPosition 0")
+                TVList.setPosition(0)
             }
         }
     }
@@ -616,15 +634,6 @@ class MainActivity : FragmentActivity() {
         }
 
         return super.onKeyDown(keyCode, event)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        showTime()
-    }
-
-    override fun onStop() {
-        super.onStop()
     }
 
     companion object {

@@ -30,34 +30,33 @@ object TVList {
         get() = _position
 
     fun init(context: Context) {
-        appDirectory = context.filesDir
         _position.value = 0
 
         groupModel.addTVListModel(TVListModel("我的收藏"))
-
         groupModel.addTVListModel(TVListModel("全部频道"))
+
+        appDirectory = context.filesDir
+        val file = File(appDirectory, FILE_NAME)
+        val str = if (file.exists()) {
+            Log.i(TAG, "local file")
+            file.readText()
+        } else {
+            Log.i(TAG, "read resource")
+            context.resources.openRawResource(R.raw.channels).bufferedReader()
+                .use { it.readText() }
+        }
+
+        try {
+            str2List(str)
+        } catch (e: Exception) {
+            Log.e("", "error $e")
+            file.deleteOnExit()
+            Toast.makeText(context, "读取频道失败，请在菜单中进行设置", Toast.LENGTH_LONG).show()
+        }
 
         if (SP.configAutoLoad && !SP.config.isNullOrEmpty()) {
             SP.config?.let {
                 update(it)
-            }
-        } else {
-            val file = File(appDirectory, FILE_NAME)
-            val str = if (file.exists()) {
-                Log.i(TAG, "local file")
-                file.readText()
-            } else {
-                Log.i(TAG, "read resource")
-                context.resources.openRawResource(R.raw.channels).bufferedReader()
-                    .use { it.readText() }
-            }
-
-            try {
-                str2List(str)
-            } catch (e: Exception) {
-                Log.e("", "error $e")
-                file.deleteOnExit()
-                Toast.makeText(context, "读取频道失败，请在菜单中进行设置", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -196,7 +195,6 @@ object TVList {
         listModel = list.map { tv ->
             TVModel(tv)
         }
-        setPosition(0)
 
         groupModel.clear()
 
@@ -230,6 +228,7 @@ object TVList {
     }
 
     fun setPosition(position: Int): Boolean {
+        Log.i(TAG, "size $position ${size()} ${listModel.size}")
         if (position >= size()) {
             return false
         }

@@ -83,7 +83,7 @@ class SettingFragment : Fragment() {
         uriEditText.text = SP.config?.let { Editable.Factory.getInstance().newEditable(it) }
             ?: Editable.Factory.getInstance().newEditable("")
         binding.confirmButton.setOnClickListener {
-            var uri = uriEditText.text.toString()
+            var uri = uriEditText.text.toString().trim()
             uri = Utils.formatUrl(uri)
             if (Uri.parse(uri).isAbsolute) {
                 TVList.update(uri)

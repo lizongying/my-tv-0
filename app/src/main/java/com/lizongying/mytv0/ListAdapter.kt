@@ -13,6 +13,8 @@ import android.view.ViewGroup
 import android.view.ViewGroup.FOCUS_BEFORE_DESCENDANTS
 import android.view.ViewGroup.FOCUS_BLOCK_DESCENDANTS
 import androidx.core.content.ContextCompat
+import androidx.core.view.marginStart
+import androidx.core.view.setPadding
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.lizongying.mytv0.databinding.ListItemBinding
@@ -33,9 +35,31 @@ class ListAdapter(
 
     var visiable = false
 
+    val application = context.applicationContext as MyTvApplication
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(context)
         val binding = ListItemBinding.inflate(inflater, parent, false)
+
+        binding.icon.layoutParams.width = application.px2Px(binding.icon.layoutParams.width)
+        binding.icon.layoutParams.height = application.px2Px(binding.icon.layoutParams.height)
+        binding.icon.setPadding(application.px2Px(binding.icon.paddingTop))
+
+        val layoutParams = binding.title.layoutParams as ViewGroup.MarginLayoutParams
+        layoutParams.marginStart = application.px2Px(binding.title.marginStart)
+        binding.title.layoutParams = layoutParams
+
+        binding.heart.layoutParams.width = application.px2Px(binding.heart.layoutParams.width)
+        binding.heart.layoutParams.height = application.px2Px(binding.heart.layoutParams.height)
+
+        binding.title.textSize = application.px2PxFont(binding.title.textSize)
+
+        val layoutParamsHeart = binding.heart.layoutParams as ViewGroup.MarginLayoutParams
+        layoutParamsHeart.marginStart = application.px2Px(binding.heart.marginStart)
+        binding.heart.layoutParams = layoutParamsHeart
+
+        binding.description.textSize = application.px2PxFont(binding.description.textSize)
+
         return ViewHolder(context, binding)
     }
 
@@ -113,7 +137,7 @@ class ListAdapter(
             false
         }
 
-        viewHolder.bindText(tvModel.tv.title)
+        viewHolder.bindTitle(tvModel.tv.title)
 
         viewHolder.bindImage(tvModel.tv.logo, tvModel.tv.id)
     }
@@ -122,8 +146,8 @@ class ListAdapter(
 
     class ViewHolder(private val context: Context, private val binding: ListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bindText(text: String) {
-            binding.textView.text = text
+        fun bindTitle(text: String) {
+            binding.title.text = text
         }
 
         fun bindImage(url: String?, id: Int) {
@@ -145,25 +169,25 @@ class ListAdapter(
                 Glide.with(context)
                     .load(BitmapDrawable(context.resources, bitmap))
                     .centerInside()
-                    .into(binding.imageView)
+                    .into(binding.icon)
 //                binding.imageView.setImageDrawable(null)
             } else {
                 Glide.with(context)
                     .load(url)
                     .centerInside()
 //                    .error(BitmapDrawable(context.resources, bitmap))
-                    .into(binding.imageView)
+                    .into(binding.icon)
             }
         }
 
         fun focus(hasFocus: Boolean) {
             if (hasFocus) {
-                binding.textView.setTextColor(ContextCompat.getColor(context, R.color.white))
+                binding.title.setTextColor(ContextCompat.getColor(context, R.color.white))
                 binding.description.setTextColor(ContextCompat.getColor(context, R.color.white))
 //                binding.root.alpha = 1.0F
                 binding.root.setBackgroundResource(R.color.focus)
             } else {
-                binding.textView.setTextColor(ContextCompat.getColor(context, R.color.title_blur))
+                binding.title.setTextColor(ContextCompat.getColor(context, R.color.title_blur))
                 binding.description.setTextColor(
                     ContextCompat.getColor(
                         context,

@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.view.marginBottom
+import androidx.core.view.marginStart
 import androidx.recyclerview.widget.RecyclerView
 import com.lizongying.mytv0.databinding.GroupItemBinding
 import com.lizongying.mytv0.models.TVGroupModel
@@ -27,9 +29,19 @@ class GroupAdapter(
 
     var visiable = false
 
+    val application = context.applicationContext as MyTvApplication
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(context)
         val binding = GroupItemBinding.inflate(inflater, parent, false)
+
+        val layoutParams = binding.title.layoutParams as ViewGroup.MarginLayoutParams
+        layoutParams.marginStart = application.px2Px(binding.title.marginStart)
+        layoutParams.bottomMargin = application.px2Px(binding.title.marginBottom)
+        binding.title.layoutParams = layoutParams
+
+        binding.title.textSize = application.px2PxFont(binding.title.textSize)
+
         binding.root.isFocusable = true
         binding.root.isFocusableInTouchMode = true
         return ViewHolder(context, binding)
@@ -99,22 +111,22 @@ class GroupAdapter(
             false
         }
 
-        viewHolder.bind(tvListModel.getName())
+        viewHolder.bindTitle(tvListModel.getName())
     }
 
     override fun getItemCount() = tvGroupModel.size()
 
     class ViewHolder(private val context: Context, private val binding: GroupItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(text: String) {
-            binding.textView.text = text
+        fun bindTitle(text: String) {
+            binding.title.text = text
         }
 
         fun focus(hasFocus: Boolean) {
             if (hasFocus) {
-                binding.textView.setTextColor(ContextCompat.getColor(context, R.color.white))
+                binding.title.setTextColor(ContextCompat.getColor(context, R.color.white))
             } else {
-                binding.textView.setTextColor(
+                binding.title.setTextColor(
                     ContextCompat.getColor(
                         context,
                         R.color.description_blur

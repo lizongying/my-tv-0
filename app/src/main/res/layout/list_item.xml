@@ -8,28 +8,27 @@
     android:background="#FF263238">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/icon"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_margin="5dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginEnd="0dp"
         android:padding="5dp" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@id/imageView"
+        app:layout_constraintStart_toEndOf="@id/icon"
         app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="10dp"
         android:textColor="#FFEEEEEE"
         android:textSize="18sp" />
 
     <ImageView
-        android:id="@+id/heart_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/heart"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:src="@drawable/ic_heart_empty_light"
         android:contentDescription="Heart Icon"
         app:layout_constraintEnd_toEndOf="parent"
@@ -41,8 +40,8 @@
         android:id="@+id/description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@id/imageView"
-        app:layout_constraintTop_toBottomOf="@id/textView"
+        app:layout_constraintStart_toEndOf="@id/icon"
+        app:layout_constraintTop_toBottomOf="@id/title"
         android:text=""
         android:textColor="#B3EEEEEE"
         android:textSize="14sp" />
