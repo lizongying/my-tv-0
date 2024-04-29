@@ -58,6 +58,7 @@ class MainActivity : FragmentActivity() {
                 .hide(settingFragment)
                 .hide(errorFragment)
                 .hide(loadingFragment)
+                .hide(timeFragment)
                 .commitNow()
         }
 
@@ -285,9 +286,9 @@ class MainActivity : FragmentActivity() {
 
     fun showTime() {
         if (SP.time) {
-            timeFragment.show()
+            showTimeFragment()
         } else {
-            timeFragment.hide()
+            hideTimeFragment()
         }
     }
 
@@ -404,7 +405,7 @@ class MainActivity : FragmentActivity() {
 
     private fun showErrorFragment(msg: String) {
         errorFragment.show(msg)
-        if (errorFragment.isVisible) {
+        if (!errorFragment.isHidden) {
             return
         }
 
@@ -425,7 +426,7 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun showLoadingFragment() {
-        if (loadingFragment.isVisible) {
+        if (!loadingFragment.isHidden) {
             return
         }
 
@@ -435,7 +436,7 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun hideLoadingFragment() {
-        if (!loadingFragment.isVisible) {
+        if (loadingFragment.isHidden) {
             return
         }
 
@@ -444,8 +445,28 @@ class MainActivity : FragmentActivity() {
             .commitNow()
     }
 
+    private fun showTimeFragment() {
+        if (!timeFragment.isHidden) {
+            return
+        }
+
+        supportFragmentManager.beginTransaction()
+            .show(timeFragment)
+            .commitNow()
+    }
+
+    private fun hideTimeFragment() {
+        if (timeFragment.isHidden) {
+            return
+        }
+
+        supportFragmentManager.beginTransaction()
+            .hide(timeFragment)
+            .commitNow()
+    }
+
     private fun showPlayerFragment() {
-        if (playerFragment.isVisible) {
+        if (!playerFragment.isHidden) {
             return
         }
 
@@ -455,7 +476,7 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun hidePlayerFragment() {
-        if (!playerFragment.isVisible) {
+        if (playerFragment.isHidden) {
             return
         }
 
@@ -595,6 +616,11 @@ class MainActivity : FragmentActivity() {
         }
 
         return super.onKeyDown(keyCode, event)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        showTime()
     }
 
     override fun onStop() {

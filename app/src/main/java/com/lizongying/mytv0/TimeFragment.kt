@@ -42,17 +42,14 @@ class TimeFragment : Fragment() {
         return binding.root
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (view?.visibility == View.VISIBLE) {
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (!hidden) {
             handler.removeCallbacks(showRunnable)
             handler.postDelayed(showRunnable, 0)
+        } else {
+            handler.removeCallbacks(showRunnable)
         }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        handler.removeCallbacks(showRunnable)
     }
 
     private val showRunnable: Runnable = Runnable {
@@ -63,17 +60,6 @@ class TimeFragment : Fragment() {
             binding.content.text = getDateFormat("HH:mm")
             handler.postDelayed(showRunnable, delay)
         }
-    }
-
-    fun show() {
-        view?.visibility = View.VISIBLE
-        handler.removeCallbacks(showRunnable)
-        handler.postDelayed(showRunnable, 0)
-    }
-
-    fun hide() {
-        view?.visibility = View.GONE
-        handler.removeCallbacks(showRunnable)
     }
 
     override fun onDestroyView() {
