@@ -79,17 +79,37 @@ class SettingFragment : Fragment() {
             (activity as MainActivity).settingActive()
         }
 
-        val uriEditText = binding.myEditText
-        uriEditText.text = SP.config?.let { Editable.Factory.getInstance().newEditable(it) }
+        val config = binding.config
+        config.text = SP.config?.let { Editable.Factory.getInstance().newEditable(it) }
             ?: Editable.Factory.getInstance().newEditable("")
-        binding.confirmButton.setOnClickListener {
-            var uri = uriEditText.text.toString().trim()
+        binding.confirmConfig.setOnClickListener {
+            var uri = config.text.toString().trim()
             uri = Utils.formatUrl(uri)
             if (Uri.parse(uri).isAbsolute) {
                 TVList.update(uri)
                 SP.config = uri
             } else {
-                uriEditText.error = "无效的地址"
+                config.error = "无效的地址"
+            }
+            (activity as MainActivity).settingActive()
+        }
+
+        val defaultChannel = binding.defaultChannel
+        defaultChannel.text =
+            SP.channel.let { Editable.Factory.getInstance().newEditable(it.toString()) }
+                ?: Editable.Factory.getInstance().newEditable("")
+        binding.confirmDefaultChannel.setOnClickListener {
+            val c = defaultChannel.text.toString().trim()
+            var channel = 0
+            try {
+                channel = c.toInt()
+            } catch (e: NumberFormatException) {
+                println(e)
+            }
+            if (channel > 0 && channel <= TVList.listModel.size) {
+                SP.channel = channel
+            } else {
+                defaultChannel.error = "无效的频道"
             }
             (activity as MainActivity).settingActive()
         }
@@ -130,6 +150,11 @@ class SettingFragment : Fragment() {
         layoutParamsVersion.topMargin = application.px2Px(binding.version.marginTop)
         binding.version.layoutParams = layoutParamsVersion
 
+        binding.server.textSize = application.px2PxFont(binding.server.textSize)
+        val layoutParamsServer = binding.server.layoutParams as ViewGroup.MarginLayoutParams
+        layoutParamsServer.topMargin = application.px2Px(binding.server.marginTop)
+        binding.server.layoutParams = layoutParamsServer
+
         binding.checkVersion.layoutParams.width =
             application.px2Px(binding.checkVersion.layoutParams.width)
         binding.checkVersion.layoutParams.height =
@@ -142,21 +167,35 @@ class SettingFragment : Fragment() {
 
         binding.versionName.textSize = application.px2PxFont(binding.versionName.textSize)
 
+        binding.confirmConfig.layoutParams.width =
+            application.px2Px(binding.confirmConfig.layoutParams.width)
+        binding.confirmConfig.layoutParams.height =
+            application.px2Px(binding.confirmConfig.layoutParams.height)
+        binding.confirmConfig.textSize = application.px2PxFont(binding.confirmConfig.textSize)
+        val layoutParamsConfirmConfig =
+            binding.confirmConfig.layoutParams as ViewGroup.MarginLayoutParams
+        layoutParamsConfirmConfig.marginEnd = application.px2Px(binding.confirmConfig.marginEnd)
+        binding.confirmConfig.layoutParams = layoutParamsConfirmConfig
 
-        binding.confirmButton.layoutParams.width =
-            application.px2Px(binding.confirmButton.layoutParams.width)
-        binding.confirmButton.layoutParams.height =
-            application.px2Px(binding.confirmButton.layoutParams.height)
-        binding.confirmButton.textSize = application.px2PxFont(binding.confirmButton.textSize)
-        val layoutParamsConfirmButton =
-            binding.confirmButton.layoutParams as ViewGroup.MarginLayoutParams
-        layoutParamsConfirmButton.marginEnd = application.px2Px(binding.confirmButton.marginEnd)
-        binding.confirmButton.layoutParams = layoutParamsConfirmButton
+        binding.config.layoutParams.width =
+            application.px2Px(binding.config.layoutParams.width)
+        binding.config.textSize = application.px2PxFont(binding.config.textSize)
 
-        binding.myEditText.layoutParams.width =
-            application.px2Px(binding.myEditText.layoutParams.width)
-        binding.myEditText.textSize = application.px2PxFont(binding.myEditText.textSize)
+        binding.confirmDefaultChannel.layoutParams.width =
+            application.px2Px(binding.confirmDefaultChannel.layoutParams.width)
+        binding.confirmDefaultChannel.layoutParams.height =
+            application.px2Px(binding.confirmDefaultChannel.layoutParams.height)
+        binding.confirmDefaultChannel.textSize =
+            application.px2PxFont(binding.confirmDefaultChannel.textSize)
+        val layoutParamsConfirmDefaultChannel =
+            binding.confirmDefaultChannel.layoutParams as ViewGroup.MarginLayoutParams
+        layoutParamsConfirmDefaultChannel.marginEnd =
+            application.px2Px(binding.confirmDefaultChannel.marginEnd)
+        binding.confirmDefaultChannel.layoutParams = layoutParamsConfirmDefaultChannel
 
+        binding.defaultChannel.layoutParams.width =
+            application.px2Px(binding.defaultChannel.layoutParams.width)
+        binding.defaultChannel.textSize = application.px2PxFont(binding.defaultChannel.textSize)
 
         binding.appreciate.layoutParams.width =
             application.px2Px(binding.appreciate.layoutParams.width)
@@ -233,6 +272,10 @@ class SettingFragment : Fragment() {
         override fun onClick(view: View?) {
             updateManager.checkAndUpdate()
         }
+    }
+
+    fun setServer(server: String) {
+        binding.server.text = "本机配置 http://$server"
     }
 
     fun setVersionName(versionName: String) {

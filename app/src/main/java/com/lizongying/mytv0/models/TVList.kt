@@ -104,7 +104,7 @@ object TVList {
         update()
     }
 
-    private fun str2List(str: String) {
+    fun str2List(str: String) {
         var string = str
         val g = Gua()
         if (g.verify(str)) {

@@ -98,4 +98,6 @@ dependencies {
     implementation(files("libs/lib-decoder-ffmpeg-release.aar"))
 
     implementation("io.github.lizongying:gua64:1.4.3")
+
+    implementation("org.nanohttpd:nanohttpd:2.3.1")
 }

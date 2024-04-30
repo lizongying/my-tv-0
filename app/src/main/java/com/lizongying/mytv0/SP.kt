@@ -29,6 +29,8 @@ object SP {
 
     private const val KEY_CONFIG_AUTO_LOAD = "config_auto_load"
 
+    private const val KEY_CHANNEL = "channel"
+
     private lateinit var sp: SharedPreferences
 
     /**
@@ -80,4 +82,8 @@ object SP {
     var configAutoLoad: Boolean
         get() = sp.getBoolean(KEY_CONFIG_AUTO_LOAD, false)
         set(value) = sp.edit().putBoolean(KEY_CONFIG_AUTO_LOAD, value).apply()
+
+    var channel: Int
+        get() = sp.getInt(KEY_CHANNEL, 0)
+        set(value) = sp.edit().putInt(KEY_CHANNEL, value).apply()
 }

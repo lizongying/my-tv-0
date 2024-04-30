@@ -37,6 +37,14 @@
             android:text=""
             android:textSize="14sp"
             />
+        <TextView
+            android:id="@+id/server"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text=""
+            android:textSize="14sp"
+            />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -67,19 +75,40 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <Button
-                android:id="@+id/confirm_button"
+                android:id="@+id/confirm_config"
                 android:layout_width="100dp"
                 android:layout_height="45dp"
                 android:layout_marginEnd="5dp"
                 android:textSize="14sp"
                 android:text="@string/confirm" />
             <EditText
-                android:id="@+id/my_edit_text"
+                android:id="@+id/config"
                 android:layout_width="245dp"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
                 android:autofillHints=""
                 android:hint="@string/channels"
+                android:scrollbars="vertical"
+                android:inputType="textMultiLine" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <Button
+                android:id="@+id/confirm_default_channel"
+                android:layout_width="100dp"
+                android:layout_height="45dp"
+                android:layout_marginEnd="5dp"
+                android:textSize="14sp"
+                android:text="@string/confirm" />
+            <EditText
+                android:id="@+id/default_channel"
+                android:layout_width="245dp"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:autofillHints=""
+                android:hint="@string/default_channel"
                 android:scrollbars="vertical"
                 android:inputType="textMultiLine" />
         </LinearLayout>
