@@ -11,17 +11,20 @@ import kotlin.coroutines.suspendCoroutine
 class ReleaseRequest {
     private var releaseService = ApiClient().releaseService
 
-    suspend fun getRelease(): Release? {
+    suspend fun getRelease(): ReleaseResponse? {
         return withContext(Dispatchers.IO) {
             fetchRelease()
         }
     }
 
-    private suspend fun fetchRelease(): Release? {
+    private suspend fun fetchRelease(): ReleaseResponse? {
         return suspendCoroutine { continuation ->
             releaseService.getRelease()
-                .enqueue(object : Callback<Release> {
-                    override fun onResponse(call: Call<Release>, response: Response<Release>) {
+                .enqueue(object : Callback<ReleaseResponse> {
+                    override fun onResponse(
+                        call: Call<ReleaseResponse>,
+                        response: Response<ReleaseResponse>
+                    ) {
                         if (response.isSuccessful) {
                             continuation.resume(response.body())
                         } else {
@@ -29,7 +32,7 @@ class ReleaseRequest {
                         }
                     }
 
-                    override fun onFailure(call: Call<Release>, t: Throwable) {
+                    override fun onFailure(call: Call<ReleaseResponse>, t: Throwable) {
                         continuation.resume(null)
                     }
                 })

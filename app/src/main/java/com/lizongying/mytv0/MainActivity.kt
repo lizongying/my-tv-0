@@ -37,7 +37,7 @@ class MainActivity : FragmentActivity() {
 
     private lateinit var gestureDetector: GestureDetector
 
-    var server: SimpleServer? = null
+    private var server: SimpleServer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,19 +91,30 @@ class MainActivity : FragmentActivity() {
         ok++
         if (ok == 3) {
             Log.i(TAG, "watch")
-            TVList.groupModel.tvGroupModel.observe(this) { _ ->
+            TVList.groupModel.change.observe(this) { _ ->
+                Log.i(TAG, "groupModel changed")
                 if (TVList.groupModel.tvGroupModel.value != null) {
                     watch()
+                    Log.i(TAG, "menuFragment update")
                     menuFragment.update()
                 }
             }
 
-            if (SP.channel > 0 && SP.channel < TVList.listModel.size) {
-                TVList.setPosition(SP.channel - 1)
+            if (SP.channel > 0) {
+                if (SP.channel < TVList.listModel.size) {
+                    TVList.setPosition(SP.channel - 1)
+                    "播放默认频道".showToast(Toast.LENGTH_LONG)
+                } else {
+                    SP.channel = 0
+                    TVList.setPosition(0)
+                    "默认频道超出频道列表范围，已自动设置为0".showToast(Toast.LENGTH_LONG)
+                }
             } else {
                 if (!TVList.setPosition(SP.position)) {
-                    Log.i(TAG, "setPosition 0")
                     TVList.setPosition(0)
+                    "上次频道超出频道列表范围，已自动设置为0".showToast(Toast.LENGTH_LONG)
+                } else {
+                    "播放上次频道".showToast(Toast.LENGTH_LONG)
                 }
             }
             val port = PortUtil.findFreePort()

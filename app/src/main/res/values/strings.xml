@@ -17,7 +17,8 @@
     <string name="confirm">确认</string>
     <string name="title_repeat_info">循环播放时显示信息</string>
     <string name="title_time">显示时间</string>
-    <string name="title_config_auto_load">开机时自动导入配置</string>
+    <string name="title_config_auto_load">启动后自动更新视频源</string>
     <string name="exit">退出</string>
     <string name="default_channel">默认频道号</string>
+    <string name="permission">权限</string>
 </resources>

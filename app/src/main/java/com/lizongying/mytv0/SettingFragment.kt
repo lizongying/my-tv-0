@@ -1,11 +1,17 @@
 package com.lizongying.mytv0
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.marginEnd
 import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
@@ -73,8 +79,9 @@ class SettingFragment : Fragment() {
             (activity as MainActivity).settingActive()
         }
 
-        val updateManager = UpdateManager(context, this, context.appVersionCode)
+        val updateManager = UpdateManager(context, context.appVersionCode)
         binding.checkVersion.setOnClickListener {
+            Log.i(TAG, "checkVersion")
             OnClickListenerCheckVersion(updateManager)
             (activity as MainActivity).settingActive()
         }
@@ -83,11 +90,16 @@ class SettingFragment : Fragment() {
         config.text = SP.config?.let { Editable.Factory.getInstance().newEditable(it) }
             ?: Editable.Factory.getInstance().newEditable("")
         binding.confirmConfig.setOnClickListener {
-            var uri = config.text.toString().trim()
-            uri = Utils.formatUrl(uri)
-            if (Uri.parse(uri).isAbsolute) {
-                TVList.update(uri)
-                SP.config = uri
+            val url = config.text.toString().trim()
+            var uri = Uri.parse(url)
+            if (uri.scheme == "") {
+                uri = uri.buildUpon().scheme("http").build()
+            }
+            Log.i(TAG, "Uri $uri")
+            if (uri.isAbsolute) {
+                Log.i(TAG, "Uri ok")
+                TVList.parseUri(uri)
+                SP.config = uri.toString()
             } else {
                 config.error = "无效的地址"
             }
@@ -112,6 +124,10 @@ class SettingFragment : Fragment() {
                 defaultChannel.error = "无效的频道"
             }
             (activity as MainActivity).settingActive()
+        }
+
+        binding.permission.setOnClickListener {
+            checkPermission()
         }
 
         binding.appreciate.setOnClickListener {
@@ -196,6 +212,17 @@ class SettingFragment : Fragment() {
         binding.defaultChannel.layoutParams.width =
             application.px2Px(binding.defaultChannel.layoutParams.width)
         binding.defaultChannel.textSize = application.px2PxFont(binding.defaultChannel.textSize)
+
+        binding.permission.layoutParams.width =
+            application.px2Px(binding.permission.layoutParams.width)
+        binding.permission.layoutParams.height =
+            application.px2Px(binding.permission.layoutParams.height)
+        binding.permission.textSize = application.px2PxFont(binding.permission.textSize)
+        val layoutParamsPermission =
+            binding.permission.layoutParams as ViewGroup.MarginLayoutParams
+        layoutParamsPermission.topMargin =
+            application.px2Px(binding.permission.marginTop)
+        binding.permission.layoutParams = layoutParamsPermission
 
         binding.appreciate.layoutParams.width =
             application.px2Px(binding.appreciate.layoutParams.width)
@@ -289,6 +316,54 @@ class SettingFragment : Fragment() {
         (activity as MainActivity).showTime()
     }
 
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (!hidden) {
+            val config = binding.config
+            config.text = SP.config?.let { Editable.Factory.getInstance().newEditable(it) }
+                ?: Editable.Factory.getInstance().newEditable("")
+        }
+    }
+
+    private fun checkPermission(): Boolean {
+        val permission = Manifest.permission.READ_EXTERNAL_STORAGE
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                permission
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(permission),
+                REQUEST_CODE_PERMISSION_READ_EXTERNAL_STORAGE
+            )
+            TVList.PERMISSION_READ_EXTERNAL_STORAGE = false
+            "文件访问权限授权失败".showToast(Toast.LENGTH_LONG)
+            return false
+        } else {
+            TVList.PERMISSION_READ_EXTERNAL_STORAGE = true
+            "文件访问权限授权成功".showToast(Toast.LENGTH_LONG)
+            return true
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CODE_PERMISSION_READ_EXTERNAL_STORAGE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                TVList.PERMISSION_READ_EXTERNAL_STORAGE = true
+                "文件访问权限授权成功".showToast(Toast.LENGTH_LONG)
+            } else {
+                TVList.PERMISSION_READ_EXTERNAL_STORAGE = false
+                "文件访问权限授权失败".showToast(Toast.LENGTH_LONG)
+            }
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -296,6 +371,7 @@ class SettingFragment : Fragment() {
 
     companion object {
         const val TAG = "SettingFragment"
+        const val REQUEST_CODE_PERMISSION_READ_EXTERNAL_STORAGE = 1
     }
 }
 

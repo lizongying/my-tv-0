@@ -2,13 +2,19 @@ package com.lizongying.mytv0
 
 
 import android.content.Context
+import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import com.google.gson.Gson
 import com.lizongying.mytv0.models.TVList
 import fi.iki.elonen.NanoHTTPD
+import java.io.BufferedReader
+import java.io.File
 import java.io.IOException
+import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
+
 
 class SimpleServer(private val context: Context, port: Int) : NanoHTTPD(port) {
     private val handler = Handler(Looper.getMainLooper())
@@ -28,6 +34,7 @@ class SimpleServer(private val context: Context, port: Int) : NanoHTTPD(port) {
         return when (session.uri) {
             "/api/hello" -> handleHelloRequest(session)
             "/api/channels" -> handleChannelsRequest(session)
+            "/api/uri" -> handleUriRequest(session)
             else -> handleStaticContent(session)
         }
     }
@@ -39,18 +46,17 @@ class SimpleServer(private val context: Context, port: Int) : NanoHTTPD(port) {
 
     private fun handleChannelsRequest(session: IHTTPSession): Response {
         try {
-            val inputStream = session.inputStream
-            val buf = ByteArray(1024)
-            var read: Int
-            val sb = StringBuilder()
-            while (inputStream.available() > 0) {
-                read = inputStream.read(buf, 0, Math.min(buf.size, inputStream.available()))
-                sb.append(String(buf, 0, read))
-            }
-            val requestBody = sb.toString()
-            Log.i(TAG, requestBody)
-            handler.post {
-                TVList.str2List(requestBody)
+            val map = HashMap<String, String>()
+            session.parseBody(map)
+            map["postData"]?.let {
+                handler.post {
+                    if (TVList.str2List(it)) {
+                        File(context.filesDir, TVList.FILE_NAME).writeText(it)
+                        "频道导入成功".showToast()
+                    } else {
+                        "频道导入错误".showToast()
+                    }
+                }
             }
         } catch (e: IOException) {
             return newFixedLengthResponse(
@@ -59,7 +65,47 @@ class SimpleServer(private val context: Context, port: Int) : NanoHTTPD(port) {
                 "SERVER INTERNAL ERROR: IOException: " + e.message
             )
         }
-        val response = "Success!"
+        val response = "频道读取中"
+        return newFixedLengthResponse(Response.Status.OK, "text/plain", response)
+    }
+
+    private fun readBody(session: IHTTPSession): String {
+        val buffer = StringBuilder()
+        val inputStreamReader = InputStreamReader(session.inputStream)
+        val bufferedReader = BufferedReader(inputStreamReader)
+        bufferedReader.use {
+            var line = it.readLine()
+            while (line != null) {
+                buffer.append(line)
+                line = it.readLine()
+            }
+        }
+        return buffer.toString()
+    }
+
+    data class UriResponse(
+        var uri: String = "",
+    )
+
+    private fun handleUriRequest(session: IHTTPSession): Response {
+        try {
+            val map = HashMap<String, String>()
+            session.parseBody(map)
+            map["postData"]?.let {
+                val uri = Uri.parse(Gson().fromJson(it, UriResponse::class.java).uri)
+                Log.i(TAG, "uri $uri")
+                handler.post {
+                    TVList.parseUri(uri)
+                }
+            }
+        } catch (e: IOException) {
+            return newFixedLengthResponse(
+                Response.Status.INTERNAL_ERROR,
+                MIME_PLAINTEXT,
+                "SERVER INTERNAL ERROR: IOException: " + e.message
+            )
+        }
+        val response = "频道读取中"
         return newFixedLengthResponse(Response.Status.OK, "text/plain", response)
     }
 

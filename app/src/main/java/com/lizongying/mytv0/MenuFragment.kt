@@ -159,13 +159,13 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
 //                    groupAdapter.focusable(false)
 //                    listAdapter.focusable(true)
 //                }
-                Log.i(TAG, "list on show toPosition ${listAdapter.tvListModel.position.value!!}")
+                Log.i(TAG, "list on show toPosition ${listAdapter.tvListModel.position.value!!}/${listAdapter.tvListModel.size()}")
                 listAdapter.toPosition(listAdapter.tvListModel.position.value!!)
             }
             if (binding.group.isVisible) {
 //                groupAdapter.focusable(true)
 //                listAdapter.focusable(false)
-                Log.i(TAG, "group on show toPosition ${TVList.groupModel.position.value!!}")
+                Log.i(TAG, "group on show toPosition ${TVList.groupModel.position.value!!}/${TVList.groupModel.size()}")
                 groupAdapter.toPosition(TVList.groupModel.position.value!!)
             }
         } else {

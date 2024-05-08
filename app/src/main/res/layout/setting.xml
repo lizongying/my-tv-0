@@ -113,6 +113,14 @@
                 android:inputType="textMultiLine" />
         </LinearLayout>
         <Button
+            android:id="@+id/permission"
+            android:layout_width="100dp"
+            android:layout_height="45dp"
+            android:layout_marginTop="0dp"
+            android:text="@string/permission"
+            android:textSize="14sp"
+            />
+        <Button
             android:id="@+id/appreciate"
             android:layout_width="100dp"
             android:layout_height="45dp"

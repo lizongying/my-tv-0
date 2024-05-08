@@ -2,23 +2,55 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta
+                name="viewport"
+                content="width=device-width, initial-scale=1.0">
         <title>我的电视·〇</title>
         <style>
+            body {
+                height: 100vh;
+                margin: 0;
+                padding: 1rem;
+            }
+
+            body h2 {
+                margin-top: .5rem;
+            }
+            hr {
+               margin-top: .5rem;
+               margin-bottom: .5rem;
+            }
+            .container h4 {
+                margin-top: .5rem;
+            }
             .message {
-                padding-bottom: 10px;
                 border: 1px solid #ccc;
-                min-height: 50px;
-                line-height: 1.5em;
+                line-height: 1.5rem;
+            }
+            .inline-box {
+                width: 20rem;
+                display: inline-block;
+            }
+            .uri {
+                width: 16rem;
             }
         </style>
     </head>
     <body>
         <h1>我的电视·〇</h1>
-        <hr/>
-        <input type="file" id="input" multiple/>
-        <hr/>
-        <h2>输入支持json, txt, m3u:</h2>
+        <hr />
+        <div class="inline-box">视频源地址，确认后保存：</div>
+        <div class="inline-box">
+            <input type="text" id="uri" style="width: 16rem;"/>
+            <input type="button" id="ok" value="确认"/>
+        </div>
+        <hr />
+        <div class="inline-box">选择视频源文件后会自动上传保存：</div>
+        <div class="inline-box">
+            <input type="file" id="input" multiple />
+        </div>
+        <hr />
+        <h2>格式支持json, txt, m3u:</h2>
         <div class="container">
             <h4>json</h4>
             <div class="message">
@@ -32,18 +64,21 @@
             "视频地址"
         ]
     }
-]</pre>
+]
+                </pre>
             </div>
             <h4>txt</h4>
             <div class="message">
                 <pre>组名,#genre#
-标题,视频地址</pre>
+标题,视频地址
+                </pre>
             </div>
             <h4>m3u</h4>
             <div class="message">
                 <pre>#EXTM3U x-tvg-url=""
 #EXTINF:-1 tvg-name="标准标题" tvg-logo="图标" group-title="组名",标题
-视频地址</pre>
+视频地址
+                </pre>
             </div>
         </div>
     </body>
@@ -70,6 +105,23 @@
 
         const sendFile = async (body) => {
             const response = await fetch('/api/channels', {
+                method: 'POST',
+                body: body
+            });
+            const json = await response.text();
+            console.log(json);
+        }
+
+        document.getElementById('ok').onclick = () => {
+            const uri = document.getElementById('uri').value.trim();
+            if (uri.length > 0) {
+                save(JSON.stringify({
+                    uri: uri
+                }))
+            }
+        }
+        const save = async (body) => {
+            const response = await fetch('/api/uri', {
                 method: 'POST',
                 body: body
             });

@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toEndOf="@id/icon"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="5dp"
         android:textColor="#FFEEEEEE"
         android:textSize="18sp" />
 

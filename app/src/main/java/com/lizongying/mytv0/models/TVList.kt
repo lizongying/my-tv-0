@@ -1,8 +1,10 @@
 package com.lizongying.mytv0.models
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import androidx.core.net.toFile
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.JsonSyntaxException
@@ -18,12 +20,14 @@ import java.io.File
 
 object TVList {
     private const val TAG = "TVList"
-    private const val FILE_NAME = "channels.json"
+    const val FILE_NAME = "channels.txt"
     private lateinit var appDirectory: File
     private lateinit var serverUrl: String
     private lateinit var list: List<TV>
     var listModel: List<TVModel> = listOf()
     val groupModel = TVGroupModel()
+
+    var PERMISSION_READ_EXTERNAL_STORAGE = false
 
     private val _position = MutableLiveData<Int>()
     val position: LiveData<Int>
@@ -38,7 +42,7 @@ object TVList {
         appDirectory = context.filesDir
         val file = File(appDirectory, FILE_NAME)
         val str = if (file.exists()) {
-            Log.i(TAG, "local file")
+            Log.i(TAG, "read $file")
             file.readText()
         } else {
             Log.i(TAG, "read resource")
@@ -64,7 +68,7 @@ object TVList {
     private fun update() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                Log.i("", "do request $serverUrl")
+                Log.i(TAG, "request $serverUrl")
                 val client = okhttp3.OkHttpClient()
                 val request = okhttp3.Request.Builder().url(serverUrl).build()
                 val response = client.newCall(request).execute()
@@ -75,12 +79,15 @@ object TVList {
                         file.createNewFile()
                     }
                     val str = response.body()!!.string()
-
-                    file.writeText(str)
                     withContext(Dispatchers.Main) {
-                        str2List(str)
+                        if (str2List(str)) {
+                            file.writeText(str)
+                            SP.config = serverUrl
+                            "频道导入成功".showToast()
+                        } else {
+                            "频道导入错误".showToast()
+                        }
                     }
-                    "频道读取成功".showToast()
                 } else {
                     Log.e("", "request status ${response.code()}")
                     "频道状态错误".showToast()
@@ -98,25 +105,65 @@ object TVList {
         }
     }
 
-    fun update(serverUrl: String) {
+    private fun update(serverUrl: String) {
         this.serverUrl = serverUrl
-        Log.i("", "update $serverUrl")
         update()
     }
 
-    fun str2List(str: String) {
+    fun parseUri(uri: Uri) {
+        if (uri.scheme == "file") {
+            if (!PERMISSION_READ_EXTERNAL_STORAGE) {
+                "需要文件访问权限".showToast(Toast.LENGTH_LONG)
+                return
+            }
+
+            val file = uri.toFile()
+            Log.i(TAG, "file $file")
+            val str = if (file.exists()) {
+                Log.i(TAG, "read $file")
+                file.readText()
+            } else {
+                "文件不存在".showToast(Toast.LENGTH_LONG)
+                return
+            }
+
+            try {
+                if (str2List(str)) {
+                    SP.config = uri.toString()
+                    "频道导入成功".showToast(Toast.LENGTH_LONG)
+                } else {
+                    "频道导入失败".showToast(Toast.LENGTH_LONG)
+                }
+            } catch (e: Exception) {
+                Log.e("", "error $e")
+                file.deleteOnExit()
+                "读取频道失败".showToast(Toast.LENGTH_LONG)
+            }
+        } else {
+            update(uri.toString())
+        }
+    }
+
+    fun str2List(str: String): Boolean {
         var string = str
         val g = Gua()
         if (g.verify(str)) {
             string = g.decode(str)
         }
         if (string.isBlank()) {
-            return
+            return false
         }
         when (string[0]) {
             '[' -> {
-                val type = object : com.google.gson.reflect.TypeToken<List<TV>>() {}.type
-                list = com.google.gson.Gson().fromJson(string, type)
+                try {
+                    val type = object : com.google.gson.reflect.TypeToken<List<TV>>() {}.type
+                    list = com.google.gson.Gson().fromJson(string, type)
+                    Log.i(TAG, "导入频道 ${list.size}")
+                } catch (e: Exception) {
+                    Log.i(TAG, "parse error $string")
+                    Log.i(TAG, e.message, e)
+                    return false
+                }
             }
 
             '#' -> {
@@ -130,15 +177,13 @@ object TVList {
                     val trimmedLine = line.trim()
                     if (trimmedLine.startsWith("#EXTINF")) {
                         val info = trimmedLine.split(",")
-                        Log.i("info", "$info")
-
-                        val title = info.last()
-                        val name = nameRegex.find(info.first())?.groupValues?.get(1)
-                        val group = groupRegex.find(info.first())?.groupValues?.get(1)
-                        val logo = logRegex.find(info.first())?.groupValues?.get(1)
+                        val title = info.last().trim()
+                        val name = nameRegex.find(info.first())?.groupValues?.get(1)?.trim()
+                        val group = groupRegex.find(info.first())?.groupValues?.get(1)?.trim()
+                        val logo = logRegex.find(info.first())?.groupValues?.get(1)?.trim()
                         val uris =
-                            if (index + 1 < lines.size) listOf(lines[index + 1]) else emptyList()
-                        Log.i("info", "$title $name $group $logo $uris")
+                            if (index + 1 < lines.size) listOf(lines[index + 1].trim()) else emptyList()
+                        Log.i("info", "1$title 2$name 3$group 4$logo 5$uris")
                         val tv = TV(
                             0,
                             name ?: "",
@@ -156,6 +201,7 @@ object TVList {
                     }
                 }
                 list = l
+                Log.i(TAG, "导入频道 ${list.size}")
             }
 
             else -> {
@@ -169,14 +215,17 @@ object TVList {
                             group = trimmedLine.split(',', limit = 2)[0].trim()
                         } else {
                             val arr = trimmedLine.split(',').map { it.trim() }
+                            val title = arr.first().trim()
+                            val uris = arr.drop(1)
+                            Log.i("info", "$title $group $uris")
                             val tv = TV(
                                 0,
                                 "",
-                                arr.first(),
+                                title,
                                 "",
                                 "",
                                 "",
-                                arr.drop(1),
+                                uris,
                                 mapOf(),
                                 group,
                                 listOf(),
@@ -187,10 +236,9 @@ object TVList {
                     }
                 }
                 list = l
+                Log.i(TAG, "导入频道 ${list.size}")
             }
         }
-
-        Log.i("TVList", "$list")
 
         listModel = list.map { tv ->
             TVModel(tv)
@@ -217,6 +265,11 @@ object TVList {
             }
             groupModel.addTVListModel(tvListModel)
         }
+
+        Log.i(TAG, "groupModel ${groupModel.size()}")
+        groupModel.setChange()
+
+        return true
     }
 
     fun getTVModelCurrent(): TVModel {
@@ -228,7 +281,7 @@ object TVList {
     }
 
     fun setPosition(position: Int): Boolean {
-        Log.i(TAG, "size $position ${size()} ${listModel.size}")
+        Log.i(TAG, "setPosition $position/${size()}")
         if (position >= size()) {
             return false
         }
@@ -242,8 +295,6 @@ object TVList {
 
         SP.positionGroup = groupModel.position.value!!
         SP.position = position
-        Log.i(TAG, "saved $position")
-
         return true
     }
 

@@ -53,21 +53,15 @@ class MyTvApplication : Application() {
         density = Resources.getSystem().displayMetrics.density
         scale = displayMetrics.scaledDensity
 
-
-        Log.i(TAG, "width $width height $height")
-
         if ((width.toDouble() / height) < (16.0 / 9.0)) {
             ratio = width * 2 / 1920.0 / density
             shouldWidth = width
             shouldHeight = (width * 9.0 / 16.0).toInt()
         } else {
             ratio = height * 2 / 1080.0 / density
-            Log.i(TAG, "ratio $ratio ｜ $density")
             shouldHeight = height
             shouldWidth = (height * 16.0 / 9.0).toInt()
         }
-
-        Log.i(TAG, "shouldWidth $shouldWidth shouldHeight $shouldHeight")
     }
 
     fun getDisplayMetrics(): DisplayMetrics {
