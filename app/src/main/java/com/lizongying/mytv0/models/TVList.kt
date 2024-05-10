@@ -27,8 +27,6 @@ object TVList {
     var listModel: List<TVModel> = listOf()
     val groupModel = TVGroupModel()
 
-    var PERMISSION_READ_EXTERNAL_STORAGE = false
-
     private val _position = MutableLiveData<Int>()
     val position: LiveData<Int>
         get() = _position
@@ -112,11 +110,6 @@ object TVList {
 
     fun parseUri(uri: Uri) {
         if (uri.scheme == "file") {
-            if (!PERMISSION_READ_EXTERNAL_STORAGE) {
-                "需要文件访问权限".showToast(Toast.LENGTH_LONG)
-                return
-            }
-
             val file = uri.toFile()
             Log.i(TAG, "file $file")
             val str = if (file.exists()) {

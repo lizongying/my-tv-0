@@ -7,7 +7,13 @@ import androidx.lifecycle.ViewModel
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DefaultHttpDataSource
+import androidx.media3.exoplayer.dash.DashMediaSource
 import androidx.media3.exoplayer.hls.HlsMediaSource
+import androidx.media3.exoplayer.rtsp.RtspMediaSource
+import androidx.media3.exoplayer.source.MediaSource
+
+//import com.google.android.exoplayer2.source.MediaSource
+//import com.google.android.exoplayer2.source.MediaSourceFactory
 
 class TVModel(var tv: TV) : ViewModel() {
     private val _position = MutableLiveData<Int>()
@@ -74,14 +80,37 @@ class TVModel(var tv: TV) : ViewModel() {
     }
 
     @OptIn(UnstableApi::class)
-    fun buildSource(): HlsMediaSource {
+    fun buildSource(): MediaSource? {
+        val url = getVideoUrl() ?: return null
+        var userAgent = ""
         val httpDataSource = DefaultHttpDataSource.Factory()
-        tv.headers?.let { httpDataSource.setDefaultRequestProperties(it) }
-
-        return HlsMediaSource.Factory(httpDataSource).createMediaSource(
-            MediaItem.fromUri(_videoUrl.value!!)
-        )
+        tv.headers?.let {
+            httpDataSource.setDefaultRequestProperties(it)
+            it.forEach { (key, value) ->
+                if (key.equals("user-agent", ignoreCase = true)) {
+                    userAgent = value
+                    return@forEach
+                }
+            }
+        }
+        val mediaItem = MediaItem.fromUri(getVideoUrl()!!)
+        return if (url.lowercase().endsWith(".m3u8")) {
+            HlsMediaSource.Factory(httpDataSource).createMediaSource(mediaItem)
+        } else if (url.lowercase().endsWith(".mpd")) {
+            DashMediaSource.Factory(httpDataSource).createMediaSource(mediaItem)
+        } else if (url.lowercase().endsWith("rtsp:")) {
+            if (userAgent.isEmpty()) {
+                RtspMediaSource.Factory().createMediaSource(mediaItem)
+            } else {
+                RtspMediaSource.Factory().setUserAgent(userAgent).createMediaSource(mediaItem)
+            }
+        } else {
+            null
+        }
     }
+
+//    fun buildSource2(): com.google.android.exoplayer2.source.MediaSource {
+//    }
 
     companion object {
         private const val TAG = "TVModel"

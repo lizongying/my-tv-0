@@ -42,7 +42,10 @@
         "title": "标题",
         "uris": [
           "视频地址"
-        ]
+        ],
+        "headers": {
+          "user-agent": ""
+        }
       }
     ]
     ```

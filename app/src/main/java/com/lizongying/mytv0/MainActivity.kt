@@ -13,6 +13,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.lizongying.mytv0.models.TVList
 
@@ -135,15 +136,14 @@ class MainActivity : FragmentActivity() {
                     && tvModel.tv.id == TVList.position.value
                 ) {
                     Log.i(TAG, "errInfo ${tvModel.tv.title} ${tvModel.errInfo.value}")
+                    hideFragment(loadingFragment)
                     if (tvModel.errInfo.value == "") {
                         Log.i(TAG, "hideErrorFragment ${tvModel.errInfo.value.toString()}")
                         hideErrorFragment()
-                        hideLoadingFragment()
-                        showPlayerFragment()
+                        showFragment(playerFragment)
                     } else {
                         Log.i(TAG, "showErrorFragment ${tvModel.errInfo.value.toString()}")
-                        hidePlayerFragment()
-                        hideLoadingFragment()
+                        hideFragment(playerFragment)
                         showErrorFragment(tvModel.errInfo.value.toString())
                     }
                 }
@@ -157,7 +157,7 @@ class MainActivity : FragmentActivity() {
                 ) {
                     Log.i(TAG, "loading ${tvModel.tv.title}")
                     hideErrorFragment()
-                    showLoadingFragment()
+                    showFragment(loadingFragment)
                     playerFragment.play(tvModel)
                     infoFragment.show(tvModel)
                     if (SP.channelNum) {
@@ -181,8 +181,7 @@ class MainActivity : FragmentActivity() {
         private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
         override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
-            Log.i(TAG, "onSingleTapConfirmed showMenu")
-            showMenu()
+            showFragment(menuFragment)
             return true
         }
 
@@ -302,6 +301,26 @@ class MainActivity : FragmentActivity() {
         TVList.setPosition(position)
     }
 
+    private fun showFragment(fragment: Fragment) {
+        if (!fragment.isHidden) {
+            return
+        }
+
+        supportFragmentManager.beginTransaction()
+            .show(fragment)
+            .commitNow()
+    }
+
+    private fun hideFragment(fragment: Fragment) {
+        if (fragment.isHidden) {
+            return
+        }
+
+        supportFragmentManager.beginTransaction()
+            .hide(fragment)
+            .commitNow()
+    }
+
     fun menuActive() {
         handler.removeCallbacks(hideMenu)
         handler.postDelayed(hideMenu, delayHideMenu)
@@ -329,9 +348,9 @@ class MainActivity : FragmentActivity() {
 
     fun showTime() {
         if (SP.time) {
-            showTimeFragment()
+            showFragment(timeFragment)
         } else {
-            hideTimeFragment()
+            hideFragment(timeFragment)
         }
     }
 
@@ -395,32 +414,6 @@ class MainActivity : FragmentActivity() {
         }, 2000)
     }
 
-    fun switchMainFragment() {
-        val transaction = supportFragmentManager.beginTransaction()
-
-        if (menuFragment.isHidden) {
-//            menuFragment.setPosition()
-            transaction.show(menuFragment)
-            menuActive()
-        } else {
-            transaction.hide(menuFragment)
-        }
-
-        transaction.commit()
-    }
-
-
-    private fun showMenu() {
-        if (!settingFragment.isHidden) {
-            return
-        }
-
-        supportFragmentManager.beginTransaction()
-            .show(menuFragment)
-            .commit()
-        menuActive()
-    }
-
     private fun showSetting() {
         if (!menuFragment.isHidden) {
             return
@@ -466,66 +459,6 @@ class MainActivity : FragmentActivity() {
         supportFragmentManager.beginTransaction()
             .hide(errorFragment)
             .commitNow()
-    }
-
-    private fun showLoadingFragment() {
-        if (!loadingFragment.isHidden) {
-            return
-        }
-
-        supportFragmentManager.beginTransaction()
-            .show(loadingFragment)
-            .commitNow()
-    }
-
-    private fun hideLoadingFragment() {
-        if (loadingFragment.isHidden) {
-            return
-        }
-
-        supportFragmentManager.beginTransaction()
-            .hide(loadingFragment)
-            .commitNow()
-    }
-
-    private fun showTimeFragment() {
-        if (!timeFragment.isHidden) {
-            return
-        }
-
-        supportFragmentManager.beginTransaction()
-            .show(timeFragment)
-            .commitNow()
-    }
-
-    private fun hideTimeFragment() {
-        if (timeFragment.isHidden) {
-            return
-        }
-
-        supportFragmentManager.beginTransaction()
-            .hide(timeFragment)
-            .commitNow()
-    }
-
-    private fun showPlayerFragment() {
-        if (!playerFragment.isHidden) {
-            return
-        }
-
-        supportFragmentManager.beginTransaction()
-            .show(playerFragment)
-            .commit()
-    }
-
-    private fun hidePlayerFragment() {
-        if (playerFragment.isHidden) {
-            return
-        }
-
-        supportFragmentManager.beginTransaction()
-            .hide(playerFragment)
-            .commit()
     }
 
     fun onKey(keyCode: Int): Boolean {
@@ -617,11 +550,11 @@ class MainActivity : FragmentActivity() {
             }
 
             KeyEvent.KEYCODE_ENTER -> {
-                switchMainFragment()
+                showFragment(menuFragment)
             }
 
             KeyEvent.KEYCODE_DPAD_CENTER -> {
-                switchMainFragment()
+                showFragment(menuFragment)
             }
 
             KeyEvent.KEYCODE_DPAD_UP -> {
@@ -641,8 +574,7 @@ class MainActivity : FragmentActivity() {
             }
 
             KeyEvent.KEYCODE_DPAD_LEFT -> {
-                showMenu()
-//                return true
+                showFragment(menuFragment)
             }
 
             KeyEvent.KEYCODE_DPAD_RIGHT -> {

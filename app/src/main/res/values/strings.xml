@@ -10,15 +10,16 @@
 
     <string name="title_channel_reversal">换台反转</string>
     <string name="title_channel_num">换台时显示频道号</string>
-    <string name="check_version">更新</string>
+    <string name="check_version">更新应用</string>
     <string name="title_boot_startup">开机自启</string>
-    <string name="appreciate">赞赏</string>
+    <string name="appreciate">赞赏作者</string>
     <string name="channels">配置地址</string>
-    <string name="confirm">确认</string>
-    <string name="title_repeat_info">循环播放时显示信息</string>
+    <string name="channel">默认频道</string>
+    <string name="title_repeat_info">循环播放时显示视频信息</string>
     <string name="title_time">显示时间</string>
-    <string name="title_config_auto_load">启动后自动更新视频源</string>
-    <string name="exit">退出</string>
+    <string name="title_config_auto_load">应用启动后自动更新视频源</string>
+    <string name="exit">退出应用</string>
     <string name="default_channel">默认频道号</string>
-    <string name="permission">权限</string>
+    <string name="clear">恢复默认</string>
+    <string name="server">网络配置</string>
 </resources>

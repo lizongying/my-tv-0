@@ -1,6 +1,5 @@
 package com.lizongying.mytv0
 
-import android.app.Activity
 import android.app.DownloadManager
 import android.app.DownloadManager.Request
 import android.content.BroadcastReceiver
@@ -14,10 +13,6 @@ import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.content.PermissionChecker
-import androidx.core.content.PermissionChecker.checkSelfPermission
 import androidx.fragment.app.FragmentActivity
 import com.lizongying.mytv0.requests.ApiClient
 import com.lizongying.mytv0.requests.ReleaseRequest
@@ -40,10 +35,7 @@ class UpdateManager(
     private var downloadReceiver: DownloadReceiver? = null
 
     fun checkAndUpdate() {
-        if (!haveStoragePermission()) {
-            "没有权限".showToast(Toast.LENGTH_LONG)
-            return
-        }
+        Log.i(TAG, "checkAndUpdate")
         CoroutineScope(Dispatchers.Main).launch {
             var text = "版本获取失败"
             var update = false
@@ -51,7 +43,7 @@ class UpdateManager(
                 release = releaseRequest.getRelease()
                 Log.i(TAG, "versionCode $versionCode ${release?.version_code}")
                 if (release?.version_code != null) {
-                    if (release?.version_code!! > versionCode) {
+                    if (release?.version_code!! >= versionCode) {
                         text = "最新版本：${release?.version_name}"
                         update = true
                     } else {
@@ -70,38 +62,9 @@ class UpdateManager(
         dialog.show((context as FragmentActivity).supportFragmentManager, TAG)
     }
 
-    private fun haveStoragePermission(): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                === PermissionChecker.PERMISSION_GRANTED
-            ) {
-                Log.e("Permission error", "You have permission")
-                return true
-            } else {
-                Log.e("Permission error", "You have asked for permission")
-                ActivityCompat.requestPermissions(
-                    context as Activity, arrayOf(
-                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    ), 1
-                )
-                return false
-            }
-        } else { //you don't need to worry about these stuff below api level 23
-            Log.e("Permission error", "You already have the permission")
-            return true
-        }
-    }
-
     private fun startDownload(release: ReleaseResponse) {
-        val packageInstaller = context.packageManager
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (!packageInstaller.canRequestPackageInstalls()) {
-            }
-        }
-
         val apkName = "my-tv-0"
         val apkFileName = "$apkName-${release.version_name}.apk"
-        Log.i(TAG, "apkFileName $apkFileName")
         val downloadManager =
             context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
         val request =

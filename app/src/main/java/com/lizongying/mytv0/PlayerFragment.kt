@@ -186,12 +186,13 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
                 }
             })
 
-//            val hlsMediaSource = HlsMediaSource.Factory(httpDataSource).createMediaSource(
-//                MediaItem.fromUri(videoUrl)
-//            )
-//            setMediaSource(hlsMediaSource)
+            val dataSource = tvModel.buildSource()
+            if (dataSource != null) {
+                setMediaSource(dataSource)
+            } else {
+                setMediaItem(MediaItem.fromUri(videoUrl))
+            }
 
-            setMediaItem(MediaItem.fromUri(videoUrl))
             prepare()
         }
         exoPlayer?.run {

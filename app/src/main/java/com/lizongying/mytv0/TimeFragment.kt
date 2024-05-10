@@ -35,6 +35,7 @@ class TimeFragment : Fragment() {
         binding.time.layoutParams = layoutParams
 
         binding.content.textSize = application.px2PxFont(binding.content.textSize)
+        binding.channel.textSize = application.px2PxFont(binding.channel.textSize)
 
         binding.main.layoutParams.width = application.shouldWidthPx()
         binding.main.layoutParams.height = application.shouldHeightPx()

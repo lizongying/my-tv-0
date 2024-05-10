@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.lizongying.mytv0"
-        minSdk = 23
+        minSdk = 21
         targetSdk = 34
         versionCode = getVersionCode()
         versionName = getVersionName()
@@ -71,9 +71,8 @@ dependencies {
     // For media playback using ExoPlayer
     implementation("androidx.media3:media3-exoplayer:$media3Version")
 
-    // For HLS playback support with ExoPlayer
     implementation("androidx.media3:media3-exoplayer-hls:$media3Version")
-
+    implementation("androidx.media3:media3-exoplayer-dash:$media3Version")
     implementation("androidx.media3:media3-exoplayer-rtsp:$media3Version")
 
     implementation("androidx.core:core-ktx:1.12.0")
@@ -100,4 +99,6 @@ dependencies {
     implementation("io.github.lizongying:gua64:1.4.3")
 
     implementation("org.nanohttpd:nanohttpd:2.3.1")
+
+    implementation("com.google.zxing:core:3.5.3")
 }

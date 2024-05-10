@@ -1,9 +1,9 @@
 package com.lizongying.mytv0
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +12,8 @@ import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
 import com.lizongying.mytv0.databinding.AppreciateBinding
 
-class AppreciateModalFragment : DialogFragment() {
+
+class ModalFragment : DialogFragment() {
 
     private var _binding: AppreciateBinding? = null
     private val binding get() = _binding!!
@@ -39,15 +40,18 @@ class AppreciateModalFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.i(TAG, "onViewCreated")
 
-        // Get the drawable ID from the arguments
-        val drawableId = arguments?.getInt(KEY)
+        val bitmap: Bitmap? = arguments?.getParcelable(KEY_BITMAP)
 
-        // Load the drawable into the ImageView
-        Glide.with(requireContext())
-            .load(drawableId)
-            .into(binding.modalImage)
+        if (bitmap != null) {
+            Glide.with(requireContext())
+                .load(bitmap)
+                .into(binding.modalImage)
+        } else {
+            Glide.with(requireContext())
+                .load(arguments?.getInt(KEY_DRAWABLE_ID))
+                .into(binding.modalImage)
+        }
 
         handler.postDelayed(hideAppreciateModal, delayHideAppreciateModal)
     }
@@ -65,7 +69,8 @@ class AppreciateModalFragment : DialogFragment() {
     }
 
     companion object {
-        const val KEY = "drawable_id"
-        const val TAG = "AppreciateModalFragment"
+        const val KEY_DRAWABLE_ID = "drawable_id"
+        const val KEY_BITMAP = "bitmap"
+        const val TAG = "ModalFragment"
     }
 }

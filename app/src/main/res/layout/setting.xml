@@ -37,14 +37,26 @@
             android:text=""
             android:textSize="14sp"
             />
-        <TextView
-            android:id="@+id/server"
-            android:layout_width="wrap_content"
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text=""
-            android:textSize="14sp"
-            />
+            android:orientation="horizontal">
+            <Button
+                android:id="@+id/qrcode"
+                android:layout_width="100dp"
+                android:layout_height="45dp"
+                android:layout_marginEnd="5dp"
+                android:textSize="14sp"
+                android:text="@string/server" />
+            <TextView
+                android:id="@+id/server"
+                android:layout_width="245dp"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="14sp"
+                />
+        </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -80,7 +92,7 @@
                 android:layout_height="45dp"
                 android:layout_marginEnd="5dp"
                 android:textSize="14sp"
-                android:text="@string/confirm" />
+                android:text="@string/channels" />
             <EditText
                 android:id="@+id/config"
                 android:layout_width="245dp"
@@ -96,28 +108,28 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <Button
-                android:id="@+id/confirm_default_channel"
+                android:id="@+id/confirm_channel"
                 android:layout_width="100dp"
                 android:layout_height="45dp"
                 android:layout_marginEnd="5dp"
                 android:textSize="14sp"
-                android:text="@string/confirm" />
+                android:text="@string/channel" />
             <EditText
-                android:id="@+id/default_channel"
+                android:id="@+id/channel"
                 android:layout_width="245dp"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
                 android:autofillHints=""
-                android:hint="@string/default_channel"
+                android:hint="@string/channel"
                 android:scrollbars="vertical"
                 android:inputType="textMultiLine" />
         </LinearLayout>
         <Button
-            android:id="@+id/permission"
+            android:id="@+id/clear"
             android:layout_width="100dp"
             android:layout_height="45dp"
             android:layout_marginTop="0dp"
-            android:text="@string/permission"
+            android:text="@string/clear"
             android:textSize="14sp"
             />
         <Button
