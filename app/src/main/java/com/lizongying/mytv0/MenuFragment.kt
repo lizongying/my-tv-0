@@ -84,6 +84,16 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
         }
     }
 
+    fun updateList(position: Int) {
+        val tvListModel = TVList.groupModel.getTVListModel(position)
+        Log.i(TAG, "updateList tvListModel $position ${tvListModel?.size()}")
+        if (tvListModel != null) {
+            (binding.list.adapter as ListAdapter).update(tvListModel)
+            TVList.groupModel.setPosition(position)
+            SP.positionGroup = position
+        }
+    }
+
     private fun hideSelf() {
         requireActivity().supportFragmentManager.beginTransaction()
             .hide(this)
@@ -97,7 +107,7 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
         }
     }
 
-    override fun onItemClicked(tvListModel: TVListModel) {
+    override fun onItemClicked(position: Int) {
     }
 
     override fun onItemFocusChange(tvModel: TVModel, hasFocus: Boolean) {
@@ -121,7 +131,18 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
                 binding.group.visibility = GONE
                 groupAdapter.focusable(false)
                 listAdapter.focusable(true)
-                listAdapter.toPosition(listAdapter.tvListModel.position.value!!)
+                listAdapter.toPosition(TVList.getTVModel().listIndex)
+
+
+                if (TVList.getTVModel().groupIndex == TVList.groupModel.position.value!!) {
+                    Log.i(
+                        TAG,
+                        "list on show toPosition ${TVList.getTVModel().tv.title} ${TVList.getTVModel().listIndex}/${listAdapter.tvListModel.size()}"
+                    )
+                    listAdapter.toPosition(TVList.getTVModel().listIndex)
+                } else {
+                    listAdapter.toPosition(0)
+                }
                 return true
             }
 
@@ -159,11 +180,21 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
 //                    groupAdapter.focusable(false)
 //                    listAdapter.focusable(true)
 //                }
+
                 Log.i(
                     TAG,
-                    "list on show toPosition ${listAdapter.tvListModel.position.value!!}/${listAdapter.tvListModel.size()}"
+                    "groupIndex ${TVList.getTVModel().groupIndex} ${TVList.groupModel.position.value!!}"
                 )
-                listAdapter.toPosition(listAdapter.tvListModel.position.value!!)
+
+                if (TVList.getTVModel().groupIndex == TVList.groupModel.position.value!!) {
+                    Log.i(
+                        TAG,
+                        "list on show toPosition ${TVList.getTVModel().tv.title} ${TVList.getTVModel().listIndex}/${listAdapter.tvListModel.size()}"
+                    )
+                    listAdapter.toPosition(TVList.getTVModel().listIndex)
+                } else {
+                    listAdapter.toPosition(0)
+                }
             }
             if (binding.group.isVisible) {
 //                groupAdapter.focusable(true)
@@ -181,6 +212,11 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
                 listAdapter.visiable = false
             }
         }
+    }
+
+    fun listAdapterToPosition(tvModel: TVModel) {
+//        listAdapter.toPosition(tvModel.index)
+//        Log.i(TAG, "listAdapterToPosition ${tvModel.tv.title} ${tvModel.index}/${listAdapter.tvListModel.size()} ${listAdapter.tvListModel.getTVModel(tvModel.index)?.tv?.title}")
     }
 
     override fun onResume() {

@@ -1,7 +1,6 @@
 package com.lizongying.mytv0
 
 import android.content.Context
-import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +8,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.marginBottom
 import androidx.core.view.marginStart
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.lizongying.mytv0.databinding.GroupItemBinding
 import com.lizongying.mytv0.models.TVGroupModel
@@ -93,17 +93,39 @@ class GroupAdapter(
         view.onFocusChangeListener = onFocusChangeListener
 
         view.setOnClickListener { _ ->
-            listener?.onItemClicked(tvListModel)
+            listener?.onItemClicked(position)
         }
 
         view.setOnKeyListener { _, keyCode, event: KeyEvent? ->
             if (event?.action == KeyEvent.ACTION_DOWN) {
                 if (keyCode == KeyEvent.KEYCODE_DPAD_UP && position == 0) {
-                    recyclerView.smoothScrollToPosition(getItemCount() - 1)
+                    val p = getItemCount() - 1
+
+                    (recyclerView.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(
+                        p,
+                        0
+                    )
+
+                    recyclerView.postDelayed({
+                        val v = recyclerView.findViewHolderForAdapterPosition(p)
+                        v?.itemView?.isSelected = true
+                        v?.itemView?.requestFocus()
+                    }, 0)
                 }
 
                 if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN && position == getItemCount() - 1) {
-                    recyclerView.smoothScrollToPosition(0)
+                    val p = 0
+
+                    (recyclerView.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(
+                        p,
+                        0
+                    )
+
+                    recyclerView.postDelayed({
+                        val v = recyclerView.findViewHolderForAdapterPosition(p)
+                        v?.itemView?.isSelected = true
+                        v?.itemView?.requestFocus()
+                    }, 0)
                 }
 
                 return@setOnKeyListener listener?.onKey(keyCode) ?: false
@@ -138,16 +160,22 @@ class GroupAdapter(
 
     fun toPosition(position: Int) {
         recyclerView.post {
-            Log.i(TAG, "group smoothScrollToPosition $position")
-            recyclerView.scrollToPosition(position)
-            recyclerView.getChildAt(position)?.isSelected
-            recyclerView.getChildAt(position)?.requestFocus()
+            (recyclerView.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(
+                position,
+                0
+            )
+
+            recyclerView.postDelayed({
+                val viewHolder = recyclerView.findViewHolderForAdapterPosition(position)
+                viewHolder?.itemView?.isSelected = true
+                viewHolder?.itemView?.requestFocus()
+            }, 0)
         }
     }
 
     interface ItemListener {
         fun onItemFocusChange(tvListModel: TVListModel, hasFocus: Boolean)
-        fun onItemClicked(tvListModel: TVListModel)
+        fun onItemClicked(position: Int)
         fun onKey(keyCode: Int): Boolean
     }
 

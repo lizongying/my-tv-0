@@ -100,10 +100,9 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
                         override fun onIsPlayingChanged(isPlaying: Boolean) {
                             super.onIsPlayingChanged(isPlaying)
                             if (isPlaying) {
-                                Log.i(TAG, "播放中")
                                 tvModel?.setErrInfo("")
                             } else {
-                                Log.i(TAG, "播放停止")
+                                Log.i(TAG, "${tvModel?.tv?.title} 播放停止")
 //                                tvModel?.setErrInfo("播放停止")
                             }
                         }

@@ -118,6 +118,9 @@ class MainActivity : FragmentActivity() {
                     "播放上次频道".showToast(Toast.LENGTH_LONG)
                 }
             }
+
+            // TODO group position
+
             val port = PortUtil.findFreePort()
             if (port != -1) {
                 server = SimpleServer(this, port)
@@ -135,14 +138,13 @@ class MainActivity : FragmentActivity() {
                 if (tvModel.errInfo.value != null
                     && tvModel.tv.id == TVList.position.value
                 ) {
-                    Log.i(TAG, "errInfo ${tvModel.tv.title} ${tvModel.errInfo.value}")
                     hideFragment(loadingFragment)
                     if (tvModel.errInfo.value == "") {
-                        Log.i(TAG, "hideErrorFragment ${tvModel.errInfo.value.toString()}")
+                        Log.i(TAG, "${tvModel.tv.title} 播放中")
                         hideErrorFragment()
                         showFragment(playerFragment)
                     } else {
-                        Log.i(TAG, "showErrorFragment ${tvModel.errInfo.value.toString()}")
+                        Log.i(TAG, "${tvModel.tv.title} ${tvModel.errInfo.value.toString()}")
                         hideFragment(playerFragment)
                         showErrorFragment(tvModel.errInfo.value.toString())
                     }
@@ -268,7 +270,7 @@ class MainActivity : FragmentActivity() {
     }
 
     fun onPlayEnd() {
-        val tvModel = TVList.getTVModelCurrent()
+        val tvModel = TVList.getTVModel()
         if (SP.repeatInfo) {
             infoFragment.show(tvModel)
             if (SP.channelNum) {
@@ -278,27 +280,45 @@ class MainActivity : FragmentActivity() {
     }
 
     fun play(position: Int) {
+        val prevGroup = TVList.getTVModel().groupIndex
         if (position > -1 && position < TVList.size()) {
             TVList.setPosition(position)
+            val currentGroup = TVList.getTVModel().groupIndex
+            if (currentGroup != prevGroup) {
+                Log.i(TAG, "group change")
+                menuFragment.updateList(currentGroup)
+            }
         } else {
             Toast.makeText(this, "频道不存在", Toast.LENGTH_LONG).show()
         }
     }
 
     fun prev() {
+        val prevGroup = TVList.getTVModel().groupIndex
         var position = TVList.position.value?.dec() ?: 0
         if (position == -1) {
             position = TVList.size() - 1
         }
         TVList.setPosition(position)
+        val currentGroup = TVList.getTVModel().groupIndex
+        if (currentGroup != prevGroup) {
+            Log.i(TAG, "group change")
+            menuFragment.updateList(currentGroup)
+        }
     }
 
     fun next() {
+        val prevGroup = TVList.getTVModel().groupIndex
         var position = TVList.position.value?.inc() ?: 0
         if (position == TVList.size()) {
             position = 0
         }
         TVList.setPosition(position)
+        val currentGroup = TVList.getTVModel().groupIndex
+        if (currentGroup != prevGroup) {
+            Log.i(TAG, "group change")
+            menuFragment.updateList(currentGroup)
+        }
     }
 
     private fun showFragment(fragment: Fragment) {

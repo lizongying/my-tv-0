@@ -24,6 +24,9 @@ class TVModel(var tv: TV) : ViewModel() {
     var retryMaxTimes = 8
     var programUpdateTime = 0L
 
+    var groupIndex = 0
+    var listIndex = 0
+
     private val _errInfo = MutableLiveData<String>()
     val errInfo: LiveData<String>
         get() = _errInfo

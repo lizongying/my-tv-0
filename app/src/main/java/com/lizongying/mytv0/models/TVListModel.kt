@@ -49,6 +49,10 @@ class TVListModel(private val name: String) : ViewModel() {
         setPosition(0)
     }
 
+    fun getTVModel(): TVModel? {
+        return _tvListModel.value?.get(position.value as Int)
+    }
+
     fun getTVModel(idx: Int): TVModel? {
         return _tvListModel.value?.get(idx)
     }

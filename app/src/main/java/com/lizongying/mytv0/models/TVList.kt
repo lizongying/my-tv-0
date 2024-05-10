@@ -233,14 +233,7 @@ object TVList {
             }
         }
 
-        listModel = list.map { tv ->
-            TVModel(tv)
-        }
-
         groupModel.clear()
-
-        // 全部频道
-        groupModel.getTVListModel(1)?.setTVListModel(listModel)
 
         val map: MutableMap<String, MutableList<TVModel>> = mutableMapOf()
         for ((id, v) in list.withIndex()) {
@@ -251,13 +244,24 @@ object TVList {
             map[v.group]?.add(TVModel(v))
         }
 
+        var listModelNew: MutableList<TVModel> = mutableListOf()
+        var groupIndex = 2
         for ((k, v) in map) {
             val tvListModel = TVListModel(k)
-            for (v1 in v) {
+            for ((listIndex, v1) in v.withIndex()) {
+                v1.groupIndex = groupIndex
+                v1.listIndex = listIndex
                 tvListModel.addTVModel(v1)
+                listModelNew.add(v1)
             }
             groupModel.addTVListModel(tvListModel)
+            groupIndex++
         }
+
+        listModel = listModelNew
+
+        // 全部频道
+        groupModel.getTVListModel(1)?.setTVListModel(listModel)
 
         Log.i(TAG, "groupModel ${groupModel.size()}")
         groupModel.setChange()
@@ -265,11 +269,11 @@ object TVList {
         return true
     }
 
-    fun getTVModelCurrent(): TVModel {
+    fun getTVModel(): TVModel {
         return getTVModel(position.value!!)
     }
 
-    fun getTVModel(idx: Int): TVModel {
+    private fun getTVModel(idx: Int): TVModel {
         return listModel[idx]
     }
 
@@ -283,10 +287,14 @@ object TVList {
             _position.value = position
         }
 
-        // set a new position or retry when position same
-        listModel[position].setReady()
+        val tvModel = getTVModel(position)
 
-        SP.positionGroup = groupModel.position.value!!
+        // set a new position or retry when position same
+        tvModel.setReady()
+
+        groupModel.setPosition(tvModel.groupIndex)
+
+        SP.positionGroup = tvModel.groupIndex
         SP.position = position
         return true
     }

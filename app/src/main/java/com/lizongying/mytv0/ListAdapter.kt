@@ -15,6 +15,7 @@ import android.view.ViewGroup.FOCUS_BLOCK_DESCENDANTS
 import androidx.core.content.ContextCompat
 import androidx.core.view.marginStart
 import androidx.core.view.setPadding
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.lizongying.mytv0.databinding.ListItemBinding
@@ -125,11 +126,33 @@ class ListAdapter(
         view.setOnKeyListener { _, keyCode, event: KeyEvent? ->
             if (event?.action == KeyEvent.ACTION_DOWN) {
                 if (keyCode == KeyEvent.KEYCODE_DPAD_UP && position == 0) {
-                    recyclerView.smoothScrollToPosition(getItemCount() - 1)
+                    val p = getItemCount() - 1
+
+                    (recyclerView.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(
+                        p,
+                        0
+                    )
+
+                    recyclerView.postDelayed({
+                        val v = recyclerView.findViewHolderForAdapterPosition(p)
+                        v?.itemView?.isSelected = true
+                        v?.itemView?.requestFocus()
+                    }, 0)
                 }
 
                 if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN && position == getItemCount() - 1) {
-                    recyclerView.smoothScrollToPosition(0)
+                    val p = 0
+
+                    (recyclerView.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(
+                        p,
+                        0
+                    )
+
+                    recyclerView.postDelayed({
+                        val v = recyclerView.findViewHolderForAdapterPosition(p)
+                        v?.itemView?.isSelected = true
+                        v?.itemView?.requestFocus()
+                    }, 0)
                 }
 
                 return@setOnKeyListener listener?.onKey(this, keyCode) ?: false
@@ -202,9 +225,16 @@ class ListAdapter(
 
     fun toPosition(position: Int) {
         recyclerView.post {
-            recyclerView.scrollToPosition(position)
-            recyclerView.getChildAt(position)?.isSelected
-            recyclerView.getChildAt(position)?.requestFocus()
+            (recyclerView.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(
+                position,
+                0
+            )
+
+            recyclerView.postDelayed({
+                val viewHolder = recyclerView.findViewHolderForAdapterPosition(position)
+                viewHolder?.itemView?.isSelected = true
+                viewHolder?.itemView?.requestFocus()
+            }, 0)
         }
     }
 
