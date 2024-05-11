@@ -26,6 +26,9 @@ object PortUtil {
             while (inetAddresses.hasMoreElements()) {
                 val inetAddress = inetAddresses.nextElement()
                 if (inetAddress is Inet4Address) {
+                    if (inetAddress.hostAddress == "127.0.0.1") {
+                        continue
+                    }
                     return inetAddress.hostAddress
                 }
             }
