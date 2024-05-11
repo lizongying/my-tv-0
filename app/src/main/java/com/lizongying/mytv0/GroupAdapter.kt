@@ -25,7 +25,7 @@ class GroupAdapter(
     private var listener: ItemListener? = null
     private var focused: View? = null
     private var defaultFocused = false
-    var defaultFocus: Int = -1
+    private var defaultFocus: Int = -1
 
     var visiable = false
 

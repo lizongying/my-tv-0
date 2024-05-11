@@ -85,12 +85,12 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
     }
 
     fun updateList(position: Int) {
-        val tvListModel = TVList.groupModel.getTVListModel(position)
+        TVList.groupModel.setPosition(position)
+        SP.positionGroup = position
+        val tvListModel = TVList.groupModel.getTVListModel()
         Log.i(TAG, "updateList tvListModel $position ${tvListModel?.size()}")
         if (tvListModel != null) {
             (binding.list.adapter as ListAdapter).update(tvListModel)
-            TVList.groupModel.setPosition(position)
-            SP.positionGroup = position
         }
     }
 
@@ -165,6 +165,15 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
                 groupAdapter.toPosition(TVList.groupModel.position.value!!)
                 return true
             }
+//            KeyEvent.KEYCODE_DPAD_RIGHT -> {
+//                binding.group.visibility = VISIBLE
+//                groupAdapter.focusable(true)
+//                listAdapter.focusable(false)
+//                listAdapter.clear()
+//                Log.i(TAG, "group toPosition on left")
+//                groupAdapter.toPosition(TVList.groupModel.position.value!!)
+//                return true
+//            }
         }
         return false
     }
@@ -181,12 +190,17 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
 //                    listAdapter.focusable(true)
 //                }
 
+                val groupIndex = TVList.getTVModel().groupIndex
                 Log.i(
                     TAG,
-                    "groupIndex ${TVList.getTVModel().groupIndex} ${TVList.groupModel.position.value!!}"
+                    "groupIndex $groupIndex ${TVList.groupModel.position.value!!}"
                 )
 
-                if (TVList.getTVModel().groupIndex == TVList.groupModel.position.value!!) {
+                if (groupIndex == TVList.groupModel.position.value!!) {
+                    if (listAdapter.tvListModel.getIndex() != TVList.getTVModel().groupIndex) {
+                        updateList(groupIndex)
+                    }
+
                     Log.i(
                         TAG,
                         "list on show toPosition ${TVList.getTVModel().tv.title} ${TVList.getTVModel().listIndex}/${listAdapter.tvListModel.size()}"
@@ -212,11 +226,6 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
                 listAdapter.visiable = false
             }
         }
-    }
-
-    fun listAdapterToPosition(tvModel: TVModel) {
-//        listAdapter.toPosition(tvModel.index)
-//        Log.i(TAG, "listAdapterToPosition ${tvModel.tv.title} ${tvModel.index}/${listAdapter.tvListModel.size()} ${listAdapter.tvListModel.getTVModel(tvModel.index)?.tv?.title}")
     }
 
     override fun onResume() {

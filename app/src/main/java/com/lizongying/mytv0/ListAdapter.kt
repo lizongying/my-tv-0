@@ -32,7 +32,7 @@ class ListAdapter(
     private var listener: ItemListener? = null
     private var focused: View? = null
     private var defaultFocused = false
-    var defaultFocus: Int = -1
+    private var defaultFocus: Int = -1
 
     var visiable = false
 
@@ -94,6 +94,8 @@ class ListAdapter(
         view.isFocusableInTouchMode = true
 //        view.alpha = 0.8F
 
+        viewHolder.like(tvModel.like.value as Boolean)
+
         if (!defaultFocused && position == defaultFocus) {
             view.requestFocus()
             defaultFocused = true
@@ -153,6 +155,11 @@ class ListAdapter(
                         v?.itemView?.isSelected = true
                         v?.itemView?.requestFocus()
                     }, 0)
+                }
+
+                if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+                    tvModel.setLike(!(tvModel.like.value as Boolean))
+                    viewHolder.like(tvModel.like.value as Boolean)
                 }
 
                 return@setOnKeyListener listener?.onKey(this, keyCode) ?: false
@@ -219,6 +226,24 @@ class ListAdapter(
                 )
 //                binding.root.alpha = 0.8F
                 binding.root.setBackgroundResource(R.color.blur)
+            }
+        }
+
+        fun like(liked: Boolean) {
+            if (liked) {
+                binding.heart.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        context,
+                        R.drawable.ic_heart
+                    )
+                )
+            } else {
+                binding.heart.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        context,
+                        R.drawable.ic_heart_empty
+                    )
+                )
             }
         }
     }

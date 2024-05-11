@@ -4,9 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class TVListModel(private val name: String) : ViewModel() {
+class TVListModel(private val name: String, private val index: Int) : ViewModel() {
     fun getName(): String {
         return name
+    }
+
+    fun getIndex(): Int {
+        return index
     }
 
     private val _tvListModel = MutableLiveData<List<TVModel>>()
@@ -44,13 +48,47 @@ class TVListModel(private val name: String) : ViewModel() {
         _tvListModel.value = newList
     }
 
+    fun removeTVModel(id: Int) {
+        if (_tvListModel.value == null) {
+            return
+        }
+        val newList = _tvListModel.value!!.toMutableList()
+        val iterator = newList.iterator()
+        while (iterator.hasNext()) {
+            if (iterator.next().tv.id == id) {
+                iterator.remove()
+            }
+        }
+        _tvListModel.value = newList
+    }
+
+    fun replaceTVModel(tvModel: TVModel) {
+        if (_tvListModel.value == null) {
+            _tvListModel.value = mutableListOf(tvModel)
+            return
+        }
+
+        val newList = _tvListModel.value!!.toMutableList()
+        var exists = false
+        val iterator = newList.iterator()
+        while (iterator.hasNext()) {
+            if (iterator.next().tv.id == tvModel.tv.id) {
+                exists = true
+            }
+        }
+        if (!exists) {
+            newList.add(tvModel)
+            _tvListModel.value = newList
+        }
+    }
+
     fun clear() {
         _tvListModel.value = mutableListOf()
         setPosition(0)
     }
 
     fun getTVModel(): TVModel? {
-        return _tvListModel.value?.get(position.value as Int)
+        return getTVModel(position.value as Int)
     }
 
     fun getTVModel(idx: Int): TVModel? {

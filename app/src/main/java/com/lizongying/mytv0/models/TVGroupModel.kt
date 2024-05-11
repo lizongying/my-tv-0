@@ -47,6 +47,10 @@ class TVGroupModel : ViewModel() {
         getTVListModel(1)?.clear()
     }
 
+    fun getTVListModel(): TVListModel? {
+        return getTVListModel(position.value as Int)
+    }
+
     fun getTVListModel(idx: Int): TVListModel? {
         if (idx >= size()) {
             return null

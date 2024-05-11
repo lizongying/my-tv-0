@@ -31,8 +31,8 @@ class MainActivity : FragmentActivity() {
     private var settingFragment = SettingFragment()
 
     private val handler = Handler(Looper.myLooper()!!)
-    private val delayHideMenu = 10000L
-    private val delayHideSetting = 60000L
+    private val delayHideMenu = 10 * 1000L
+    private val delayHideSetting = 3 * 60 * 1000L
 
     private var doubleBackToExitPressedOnce = false
 
@@ -165,6 +165,18 @@ class MainActivity : FragmentActivity() {
                     if (SP.channelNum) {
                         channelFragment.show(tvModel)
                     }
+                }
+            }
+
+            tvModel.like.observe(this) { _ ->
+                if (tvModel.like.value != null) {
+                    val liked = tvModel.like.value as Boolean
+                    if (liked) {
+                        TVList.groupModel.getTVListModel(0)?.replaceTVModel(tvModel)
+                    } else {
+                        TVList.groupModel.getTVListModel(0)?.removeTVModel(tvModel.tv.id)
+                    }
+                    SP.setLike(tvModel.tv.id, liked)
                 }
             }
         }
@@ -594,7 +606,9 @@ class MainActivity : FragmentActivity() {
             }
 
             KeyEvent.KEYCODE_DPAD_LEFT -> {
-                showFragment(menuFragment)
+                if (settingFragment.isHidden) {
+                    showFragment(menuFragment)
+                }
             }
 
             KeyEvent.KEYCODE_DPAD_RIGHT -> {

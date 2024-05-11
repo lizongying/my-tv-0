@@ -1,5 +1,6 @@
 package com.lizongying.mytv0.models
 
+import android.net.Uri
 import androidx.annotation.OptIn
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,6 +12,7 @@ import androidx.media3.exoplayer.dash.DashMediaSource
 import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.rtsp.RtspMediaSource
 import androidx.media3.exoplayer.source.MediaSource
+import com.lizongying.mytv0.SP
 
 //import com.google.android.exoplayer2.source.MediaSource
 //import com.google.android.exoplayer2.source.MediaSourceFactory
@@ -47,16 +49,24 @@ class TVModel(var tv: TV) : ViewModel() {
         _videoUrl.value = url
     }
 
-    fun getVideoUrl(): String? {
+    private fun getVideoUrl(): String? {
         if (_videoIndex.value == null || tv.uris.isEmpty()) {
             return null
         }
 
-        if (_videoIndex.value!! >= tv.uris.size) {
+        if (videoIndex.value!! >= tv.uris.size) {
             return null
         }
 
         return tv.uris[_videoIndex.value!!]
+    }
+
+    private val _like = MutableLiveData<Boolean>()
+    val like: LiveData<Boolean>
+        get() = _like
+
+    fun setLike(liked: Boolean) {
+        _like.value = liked
     }
 
     private val _ready = MutableLiveData<Boolean>()
@@ -68,12 +78,13 @@ class TVModel(var tv: TV) : ViewModel() {
     }
 
     private val _videoIndex = MutableLiveData<Int>()
-    val videoIndex: LiveData<Int>
+    private val videoIndex: LiveData<Int>
         get() = _videoIndex
 
     init {
         _position.value = 0
         _videoIndex.value = 0
+        _like.value = SP.getLike(tv.id)
         _videoUrl.value = getVideoUrl()
         _program.value = mutableListOf()
     }
@@ -85,6 +96,10 @@ class TVModel(var tv: TV) : ViewModel() {
     @OptIn(UnstableApi::class)
     fun buildSource(): MediaSource? {
         val url = getVideoUrl() ?: return null
+        val uri = Uri.parse(url) ?: return null
+        val path = uri.path ?: return null
+        val scheme = uri.scheme ?: return null
+
         var userAgent = ""
         val httpDataSource = DefaultHttpDataSource.Factory()
         tv.headers?.let {
@@ -96,12 +111,13 @@ class TVModel(var tv: TV) : ViewModel() {
                 }
             }
         }
-        val mediaItem = MediaItem.fromUri(getVideoUrl()!!)
-        return if (url.lowercase().endsWith(".m3u8")) {
+
+        val mediaItem = MediaItem.fromUri(uri.toString())
+        return if (path.lowercase().endsWith(".m3u8")) {
             HlsMediaSource.Factory(httpDataSource).createMediaSource(mediaItem)
-        } else if (url.lowercase().endsWith(".mpd")) {
+        } else if (path.lowercase().endsWith(".mpd")) {
             DashMediaSource.Factory(httpDataSource).createMediaSource(mediaItem)
-        } else if (url.lowercase().endsWith("rtsp:")) {
+        } else if (scheme.lowercase() == "rtsp") {
             if (userAgent.isEmpty()) {
                 RtspMediaSource.Factory().createMediaSource(mediaItem)
             } else {

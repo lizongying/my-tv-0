@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/list_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -24,6 +25,7 @@
         android:layout_marginStart="5dp"
         android:textColor="#FFEEEEEE"
         android:maxLines="1"
+        tools:text="CCTV1"
         android:ellipsize="end"
         android:textSize="16sp" />
 
@@ -31,12 +33,14 @@
         android:id="@+id/heart"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:src="@drawable/ic_heart_empty_light"
+        android:src="@drawable/ic_heart_empty"
         android:contentDescription="Heart Icon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:clickable="true"
+        android:focusable="false"
         android:padding="5dp"
-        android:layout_marginEnd="5dp" />
+        android:layout_marginEnd="5dp"/>
 
     <TextView
         android:id="@+id/description"

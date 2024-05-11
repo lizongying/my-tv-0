@@ -37,26 +37,6 @@
             android:text=""
             android:textSize="14sp"
             />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <Button
-                android:id="@+id/qrcode"
-                android:layout_width="100dp"
-                android:layout_height="45dp"
-                android:layout_marginEnd="5dp"
-                android:textSize="14sp"
-                android:text="@string/server" />
-            <TextView
-                android:id="@+id/server"
-                android:layout_width="245dp"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:textSize="14sp"
-                />
-        </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -81,6 +61,25 @@
                 android:textSize="14sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <Button
+                android:id="@+id/qrcode"
+                android:layout_width="100dp"
+                android:layout_height="45dp"
+                android:layout_marginEnd="5dp"
+                android:textSize="14sp"
+                android:text="@string/server" />
+            <TextView
+                android:id="@+id/server"
+                android:layout_width="245dp"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="14sp"
+                />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"

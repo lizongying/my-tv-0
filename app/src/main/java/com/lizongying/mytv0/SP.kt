@@ -31,6 +31,8 @@ object SP {
 
     private const val KEY_CHANNEL = "channel"
 
+    private const val KEY_LIKE = "like"
+
     private lateinit var sp: SharedPreferences
 
     /**
@@ -86,4 +88,20 @@ object SP {
     var channel: Int
         get() = sp.getInt(KEY_CHANNEL, 0)
         set(value) = sp.edit().putInt(KEY_CHANNEL, value).apply()
+
+    fun getLike(id: Int): Boolean {
+        val stringSet = sp.getStringSet(KEY_LIKE, emptySet())
+        return stringSet?.contains(id.toString()) ?: false
+    }
+
+    fun setLike(id: Int, liked: Boolean) {
+        val stringSet = sp.getStringSet(KEY_LIKE, emptySet())?.toMutableSet() ?: mutableSetOf()
+        if (liked) {
+            stringSet.add(id.toString())
+        } else {
+            stringSet.remove(id.toString())
+        }
+
+        sp.edit().putStringSet(KEY_LIKE, stringSet).apply()
+    }
 }
