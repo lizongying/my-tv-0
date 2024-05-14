@@ -115,4 +115,6 @@ dependencies {
     implementation("org.nanohttpd:nanohttpd:2.3.1")
 
     implementation("com.google.zxing:core:3.5.3")
+
+    implementation("androidx.leanback:leanback:1.0.0")
 }

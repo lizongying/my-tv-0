@@ -11,6 +11,7 @@
         android:logo="@drawable/logo0"
         android:networkSecurityConfig="@xml/network"
         android:supportsRtl="true"
+        android:theme="@style/Theme.MyTV0"
         android:usesCleartextTraffic="true">
         <activity
             android:name=".MainActivity"
