@@ -10,12 +10,12 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
-import com.lizongying.mytv0.databinding.AppreciateBinding
+import com.lizongying.mytv0.databinding.ModalBinding
 
 
 class ModalFragment : DialogFragment() {
 
-    private var _binding: AppreciateBinding? = null
+    private var _binding: ModalBinding? = null
     private val binding get() = _binding!!
 
     private val handler = Handler(Looper.myLooper()!!)
@@ -34,7 +34,7 @@ class ModalFragment : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = AppreciateBinding.inflate(inflater, container, false)
+        _binding = ModalBinding.inflate(inflater, container, false)
         return binding.root
     }
 

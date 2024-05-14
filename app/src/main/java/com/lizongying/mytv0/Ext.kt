@@ -9,6 +9,7 @@ import android.content.pm.Signature
 import android.content.pm.SigningInfo
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import java.security.MessageDigest
 
 private const val TAG = "Extensions"
@@ -81,4 +82,8 @@ private fun hashSignature(signature: Signature): String {
         Log.e(TAG, "Error hashing signature", e)
         ""
     }
+}
+
+fun String.showToast(duration: Int = Toast.LENGTH_SHORT) {
+    MyTVApplication.getInstance().toast(this, duration)
 }

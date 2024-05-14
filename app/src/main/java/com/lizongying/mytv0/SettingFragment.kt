@@ -149,6 +149,7 @@ class SettingFragment : Fragment() {
             SP.channel = 0
             defaultChannel.text = Editable.Factory.getInstance().newEditable("")
             context.deleteFile(TVList.FILE_NAME)
+            SP.deleteLike()
             SP.position = 0
             TVList.setPosition(0)
         }
@@ -172,7 +173,7 @@ class SettingFragment : Fragment() {
             requireActivity().finishAffinity()
         }
 
-        val application = requireActivity().applicationContext as MyTvApplication
+        val application = requireActivity().applicationContext as MyTVApplication
 
         binding.content.layoutParams.width =
             application.px2Px(binding.content.layoutParams.width)

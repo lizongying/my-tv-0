@@ -6,17 +6,19 @@ import android.content.res.Resources
 import android.os.Handler
 import android.os.Looper
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.multidex.MultiDex
+import androidx.multidex.MultiDexApplication
 
-class MyTvApplication : Application() {
+class MyTVApplication : MultiDexApplication() {
 
     companion object {
-        private const val TAG = "MyTvApplication"
-        private lateinit var instance: MyTvApplication
+        private const val TAG = "MyTVApplication"
+        private lateinit var instance: MyTVApplication
 
-        fun getInstance(): MyTvApplication {
+        @JvmStatic
+        fun getInstance(): MyTVApplication {
             return instance
         }
     }
@@ -97,8 +99,9 @@ class MyTvApplication : Application() {
     fun sp2Px(sp: Float): Float {
         return (sp * ratio * scale).toFloat()
     }
-}
 
-fun String.showToast(duration: Int = Toast.LENGTH_SHORT) {
-    MyTvApplication.getInstance().toast(this, duration)
+    override fun attachBaseContext(base: Context?) {
+        super.attachBaseContext(base)
+        MultiDex.install(this)
+    }
 }

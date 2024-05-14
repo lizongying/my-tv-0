@@ -36,7 +36,7 @@ class ListAdapter(
 
     var visiable = false
 
-    val application = context.applicationContext as MyTvApplication
+    val application = context.applicationContext as MyTVApplication
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(context)
@@ -95,6 +95,11 @@ class ListAdapter(
 //        view.alpha = 0.8F
 
         viewHolder.like(tvModel.like.value as Boolean)
+
+        viewHolder.binding.heart.setOnClickListener {
+            tvModel.setLike(!(tvModel.like.value as Boolean))
+            viewHolder.like(tvModel.like.value as Boolean)
+        }
 
         if (!defaultFocused && position == defaultFocus) {
             view.requestFocus()
@@ -174,7 +179,7 @@ class ListAdapter(
 
     override fun getItemCount() = tvListModel.size()
 
-    class ViewHolder(private val context: Context, private val binding: ListItemBinding) :
+    class ViewHolder(private val context: Context, val binding: ListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bindTitle(text: String) {
             binding.title.text = text

@@ -29,7 +29,7 @@ class GroupAdapter(
 
     var visiable = false
 
-    val application = context.applicationContext as MyTvApplication
+    val application = context.applicationContext as MyTVApplication
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(context)
