@@ -81,6 +81,7 @@ adb install my-tv-0.apk
 * 插件商城
 * UI
 * 视频解码
+* 支持回看
 
 ## 赞赏
 

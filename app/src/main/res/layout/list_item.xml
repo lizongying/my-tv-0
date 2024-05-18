@@ -22,6 +22,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toEndOf="@id/icon"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginStart="5dp"
         android:textColor="#FFEEEEEE"
         android:maxLines="1"
@@ -37,6 +38,7 @@
         android:contentDescription="Heart Icon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:clickable="true"
         android:focusable="false"
         android:padding="5dp"
@@ -48,6 +50,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toEndOf="@id/icon"
         app:layout_constraintTop_toBottomOf="@id/title"
+        android:visibility="gone"
         android:text=""
         android:textColor="#B3EEEEEE"
         android:textSize="14sp" />

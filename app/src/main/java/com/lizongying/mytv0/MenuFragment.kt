@@ -33,10 +33,11 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        val context = requireContext()
         _binding = MenuBinding.inflate(inflater, container, false)
 
         groupAdapter = GroupAdapter(
-            context!!,
+            context,
             binding.group,
             TVList.groupModel,
         )
@@ -53,7 +54,7 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
         tvListModel = TVList.groupModel.getTVListModel(TVList.groupModel.position.value!!)
 
         listAdapter = ListAdapter(
-            context!!,
+            context,
             binding.list,
             tvListModel!!,
         )
