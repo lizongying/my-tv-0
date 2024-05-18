@@ -23,6 +23,7 @@ import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.datasource.TransferListener
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.mediacodec.MediaCodecSelector
 import androidx.media3.exoplayer.mediacodec.MediaCodecUtil
 import com.google.android.exoplayer2.Player.DISCONTINUITY_REASON_PERIOD_TRANSITION
@@ -149,6 +150,8 @@ class PlayerFragment : Fragment(), SurfaceHolder.Callback {
         player?.run {
             IgnoreSSLCertificate.ignore()
             val httpDataSource = DefaultHttpDataSource.Factory()
+            httpDataSource.setKeepPostFor302Redirects(true)
+            httpDataSource.setAllowCrossProtocolRedirects(true)
             httpDataSource.setTransferListener(object : TransferListener {
                 override fun onTransferInitializing(
                     source: DataSource,

@@ -12,10 +12,9 @@ import androidx.media3.exoplayer.dash.DashMediaSource
 import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.rtsp.RtspMediaSource
 import androidx.media3.exoplayer.source.MediaSource
+import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import com.lizongying.mytv0.SP
-
-//import com.google.android.exoplayer2.source.MediaSource
-//import com.google.android.exoplayer2.source.MediaSourceFactory
+import java.util.Locale
 
 class TVModel(var tv: TV) : ViewModel() {
     private val _position = MutableLiveData<Int>()
@@ -102,6 +101,8 @@ class TVModel(var tv: TV) : ViewModel() {
 
         var userAgent = ""
         val httpDataSource = DefaultHttpDataSource.Factory()
+        httpDataSource.setKeepPostFor302Redirects(true)
+        httpDataSource.setAllowCrossProtocolRedirects(true)
         tv.headers?.let {
             httpDataSource.setDefaultRequestProperties(it)
             it.forEach { (key, value) ->
@@ -123,13 +124,26 @@ class TVModel(var tv: TV) : ViewModel() {
             } else {
                 RtspMediaSource.Factory().setUserAgent(userAgent).createMediaSource(mediaItem)
             }
+        } else if (isVideoFile(uri)) {
+            ProgressiveMediaSource.Factory(httpDataSource).createMediaSource(mediaItem)
         } else {
-            null
+            HlsMediaSource.Factory(httpDataSource).createMediaSource(mediaItem)
         }
     }
 
-//    fun buildSource2(): com.google.android.exoplayer2.source.MediaSource {
-//    }
+    private fun isVideoFile(uri: Uri): Boolean {
+        val path = uri.lastPathSegment ?: return false
+        return if (path.contains(".")) {
+            val fileExtension =
+                path.substring(path.lastIndexOf('.') + 1)
+                    .lowercase(
+                        Locale.getDefault()
+                    )
+            fileExtension == "mp4" || fileExtension == "avi" || fileExtension == "mov" || fileExtension == "wmv" || fileExtension == "mkv" || fileExtension == "flv" || fileExtension == "mpeg" || fileExtension == "webm"
+        } else {
+            false
+        }
+    }
 
     companion object {
         private const val TAG = "TVModel"
