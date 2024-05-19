@@ -37,6 +37,12 @@ jobs:
           # override default build-tools version (29.0.3) -- optional
           BUILD_TOOLS_VERSION: "34.0.0"
 
+      - name: Get History
+        id: get_history
+        run: |
+          output=$(./history.sh)
+          echo "::set-output name=history::$output"
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -47,6 +53,7 @@ jobs:
           release_name: Release ${{ github.ref }}
           draft: false
           prerelease: false
+          body: ${{ steps.get_history.outputs.history }}
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
