@@ -40,8 +40,10 @@ jobs:
       - name: Get History
         id: get_history
         run: |
+          chmod +x history.sh
           output=$(./history.sh)
-          echo "::set-output name=history::$output"
+          trimmed_output=$(echo "$output" | awk '{$1=$1};1')
+          echo "::set-output name=history::$trimmed_output"
 
       - name: Create Release
         id: create_release
