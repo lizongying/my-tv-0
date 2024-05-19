@@ -83,6 +83,13 @@ class SettingFragment : Fragment() {
             (activity as MainActivity).settingActive()
         }
 
+        val switchDefaultLike = _binding?.switchDefaultLike
+        switchDefaultLike?.isChecked = SP.defaultLike
+        switchDefaultLike?.setOnCheckedChangeListener { _, isChecked ->
+            SP.defaultLike = isChecked
+            (activity as MainActivity).settingActive()
+        }
+
         binding.qrcode.setOnClickListener {
             val imageModalFragment = ModalFragment()
             val size = Utils.dpToPx(200)
@@ -104,8 +111,10 @@ class SettingFragment : Fragment() {
         config.text = SP.config?.let { Editable.Factory.getInstance().newEditable(it) }
             ?: Editable.Factory.getInstance().newEditable("")
         binding.confirmConfig.setOnClickListener {
-            val url = config.text.toString().trim()
+            var url = config.text.toString().trim()
+            url = Utils.formatUrl(url)
             uri = Uri.parse(url)
+            Log.i(TAG, "uri.scheme ${uri.scheme}")
             if (uri.scheme == "") {
                 uri = uri.buildUpon().scheme("http").build()
             }
@@ -152,6 +161,7 @@ class SettingFragment : Fragment() {
             SP.deleteLike()
             SP.position = 0
             TVList.setPosition(0)
+            "已恢复默认".showToast(Toast.LENGTH_LONG)
         }
 
         binding.appreciate.setOnClickListener {
@@ -277,50 +287,33 @@ class SettingFragment : Fragment() {
             application.px2Px(binding.exit.marginTop)
         binding.exit.layoutParams = layoutParamsExit
 
-        binding.switchChannelReversal.textSize =
-            application.px2PxFont(binding.switchChannelReversal.textSize)
+        val textSize = application.px2PxFont(binding.switchChannelReversal.textSize)
+
         val layoutParamsChannelReversal =
             binding.switchChannelReversal.layoutParams as ViewGroup.MarginLayoutParams
         layoutParamsChannelReversal.topMargin =
             application.px2Px(binding.switchChannelReversal.marginTop)
+
+        binding.switchChannelReversal.textSize = textSize
         binding.switchChannelReversal.layoutParams = layoutParamsChannelReversal
 
-        binding.switchChannelNum.textSize = application.px2PxFont(binding.switchChannelNum.textSize)
-        val layoutParamsChannelNum =
-            binding.switchChannelNum.layoutParams as ViewGroup.MarginLayoutParams
-        layoutParamsChannelNum.topMargin = application.px2Px(binding.switchChannelNum.marginTop)
-        binding.switchChannelNum.layoutParams = layoutParamsChannelNum
+        binding.switchChannelNum.textSize = textSize
+        binding.switchChannelNum.layoutParams = layoutParamsChannelReversal
 
-        binding.switchTime.textSize = application.px2PxFont(binding.switchTime.textSize)
-        val layoutParamsTime = binding.switchTime.layoutParams as ViewGroup.MarginLayoutParams
-        layoutParamsTime.topMargin = application.px2Px(binding.switchTime.marginTop)
-        binding.switchTime.layoutParams = layoutParamsTime
+        binding.switchTime.textSize = textSize
+        binding.switchTime.layoutParams = layoutParamsChannelReversal
 
-        binding.switchBootStartup.textSize =
-            application.px2PxFont(binding.switchBootStartup.textSize)
+        binding.switchBootStartup.textSize = textSize
+        binding.switchBootStartup.layoutParams = layoutParamsChannelReversal
 
-        val layoutParamsBootStartup =
-            binding.switchBootStartup.layoutParams as ViewGroup.MarginLayoutParams
-        layoutParamsBootStartup.topMargin = application.px2Px(binding.switchBootStartup.marginTop)
-        binding.switchBootStartup.layoutParams = layoutParamsBootStartup
+        binding.switchRepeatInfo.textSize = textSize
+        binding.switchRepeatInfo.layoutParams = layoutParamsChannelReversal
 
+        binding.switchConfigAutoLoad.textSize = textSize
+        binding.switchConfigAutoLoad.layoutParams = layoutParamsChannelReversal
 
-        binding.switchRepeatInfo.textSize = application.px2PxFont(binding.switchRepeatInfo.textSize)
-
-        val layoutParamsRepeatInfo =
-            binding.switchRepeatInfo.layoutParams as ViewGroup.MarginLayoutParams
-        layoutParamsRepeatInfo.topMargin = application.px2Px(binding.switchRepeatInfo.marginTop)
-        binding.switchRepeatInfo.layoutParams = layoutParamsRepeatInfo
-
-
-        binding.switchConfigAutoLoad.textSize =
-            application.px2PxFont(binding.switchConfigAutoLoad.textSize)
-
-        val layoutParamsConfigAutoLoad =
-            binding.switchConfigAutoLoad.layoutParams as ViewGroup.MarginLayoutParams
-        layoutParamsConfigAutoLoad.topMargin =
-            application.px2Px(binding.switchConfigAutoLoad.marginTop)
-        binding.switchConfigAutoLoad.layoutParams = layoutParamsConfigAutoLoad
+        binding.switchDefaultLike.textSize = textSize
+        binding.switchDefaultLike.layoutParams = layoutParamsChannelReversal
 
         updateManager = UpdateManager(context, context.appVersionCode)
 

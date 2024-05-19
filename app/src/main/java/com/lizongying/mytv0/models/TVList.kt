@@ -236,23 +236,25 @@ object TVList {
         groupModel.clear()
 
         val map: MutableMap<String, MutableList<TVModel>> = mutableMapOf()
-        for ((id, v) in list.withIndex()) {
+        for (v in list) {
             if (v.group !in map) {
                 map[v.group] = mutableListOf()
             }
-            v.id = id
             map[v.group]?.add(TVModel(v))
         }
 
-        var listModelNew: MutableList<TVModel> = mutableListOf()
+        val listModelNew: MutableList<TVModel> = mutableListOf()
         var groupIndex = 2
+        var id = 0
         for ((k, v) in map) {
             val tvListModel = TVListModel(k, groupIndex)
             for ((listIndex, v1) in v.withIndex()) {
+                v1.tv.id = id
                 v1.groupIndex = groupIndex
                 v1.listIndex = listIndex
                 tvListModel.addTVModel(v1)
                 listModelNew.add(v1)
+                id++
             }
             groupModel.addTVListModel(tvListModel)
             groupIndex++
@@ -278,7 +280,7 @@ object TVList {
     }
 
     fun setPosition(position: Int): Boolean {
-        Log.i(TAG, "setPosition $position/${size()}")
+        Log.i(TAG, "setPosition $position/${size()} ${getTVModel(position).tv.title} ${getTVModel(position).like.value}")
         if (position >= size()) {
             return false
         }

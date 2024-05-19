@@ -1,6 +1,7 @@
 package com.lizongying.mytv0
 
 import android.content.Context
+import android.graphics.Color
 import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
@@ -13,6 +14,9 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.lizongying.mytv0.models.TVList
@@ -42,7 +46,30 @@ class MainActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
+//        requestWindowFeature(FEATURE_NO_TITLE)
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            WindowManager.LayoutParams.FLAG_FULLSCREEN
+        )
+
+        val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            windowInsetsController.let { controller ->
+                controller.isAppearanceLightNavigationBars = true
+                controller.isAppearanceLightStatusBars = true
+                controller.hide(WindowInsetsCompat.Type.statusBars())
+                controller.hide(WindowInsetsCompat.Type.navigationBars())
+                controller.systemBarsBehavior =
+                    WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            }
+        }
+
+        window.statusBarColor = Color.TRANSPARENT
+        window.navigationBarColor = Color.TRANSPARENT
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            window.navigationBarDividerColor = Color.TRANSPARENT
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             val lp = window.attributes
@@ -51,18 +78,17 @@ class MainActivity : FragmentActivity() {
             window.setAttributes(lp)
         }
 
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-
         window.decorView.apply {
             systemUiVisibility =
                 View.SYSTEM_UI_FLAG_FULLSCREEN or
                         View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
                         View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
                         View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+                        View.SYSTEM_UI_FLAG_IMMERSIVE
         }
+
+        setContentView(R.layout.activity_main)
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
@@ -100,6 +126,13 @@ class MainActivity : FragmentActivity() {
                     menuFragment.update()
                 }
             }
+
+//            if (SP.defaultLike) {
+//                TVList.groupModel.setPosition(0)
+//                val tvModel = TVList.listModel.find { it.like.value as Boolean }
+//                TVList.setPosition(tvModel?.tv?.id ?: 0)
+//                "播放收藏频道".showToast(Toast.LENGTH_LONG)
+//            }
 
             if (SP.channel > 0) {
                 if (SP.channel < TVList.listModel.size) {
@@ -461,7 +494,6 @@ class MainActivity : FragmentActivity() {
         supportFragmentManager.beginTransaction()
             .hide(menuFragment)
             .commit()
-        Log.i(TAG, "SP.time ${SP.time}")
     }
 
     private fun hideSettingFragment() {

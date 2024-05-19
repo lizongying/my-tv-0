@@ -79,7 +79,7 @@ object Utils {
 
     fun formatUrl(url: String): String {
         // Check if the URL already starts with "http://" or "https://"
-        if (url.startsWith("http://") || url.startsWith("https://")) {
+        if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("file://")) {
             return url
         }
 
