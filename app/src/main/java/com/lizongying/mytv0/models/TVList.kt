@@ -280,7 +280,6 @@ object TVList {
     }
 
     fun setPosition(position: Int): Boolean {
-        Log.i(TAG, "setPosition $position/${size()} ${getTVModel(position).tv.title} ${getTVModel(position).like.value}")
         if (position >= size()) {
             return false
         }

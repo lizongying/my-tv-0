@@ -88,6 +88,8 @@ class MainActivity : FragmentActivity() {
                         View.SYSTEM_UI_FLAG_IMMERSIVE
         }
 
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
         setContentView(R.layout.activity_main)
 
         if (savedInstanceState == null) {

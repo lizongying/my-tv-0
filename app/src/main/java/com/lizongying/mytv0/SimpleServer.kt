@@ -92,7 +92,8 @@ class SimpleServer(private val context: Context, port: Int) : NanoHTTPD(port) {
             val map = HashMap<String, String>()
             session.parseBody(map)
             map["postData"]?.let {
-                val uri = Uri.parse(Gson().fromJson(it, UriResponse::class.java).uri)
+                val url = Utils.formatUrl(Gson().fromJson(it, UriResponse::class.java).uri)
+                val uri = Uri.parse(url)
                 Log.i(TAG, "uri $uri")
                 handler.post {
                     TVList.parseUri(uri)
