@@ -15,4 +15,5 @@
     <string name="clear">恢复默认</string>
     <string name="server">网络配置</string>
     <string name="title_default_like">应用启动后进入我的收藏</string>
+    <string name="proxy">网络代理</string>
 </resources>

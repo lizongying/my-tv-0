@@ -239,6 +239,10 @@ class MainActivity : FragmentActivity() {
             return true
         }
 
+        override fun onLongPress(e: MotionEvent) {
+            Log.i(TAG, "onLongPress")
+        }
+
         override fun onFling(
             e1: MotionEvent?,
             e2: MotionEvent,

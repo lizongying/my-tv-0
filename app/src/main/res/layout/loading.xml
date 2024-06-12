@@ -3,7 +3,7 @@
     android:id="@+id/loading"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
+    android:background="@android:color/transparent"
     >
 
     <LinearLayout
@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:gravity="center" >
 
-        <ProgressBar
+        <androidx.core.widget.ContentLoadingProgressBar
             android:id="@+id/bar"
             android:layout_width="50dp"
             android:layout_height="50dp"

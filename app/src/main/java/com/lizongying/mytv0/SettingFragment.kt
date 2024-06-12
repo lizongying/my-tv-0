@@ -152,6 +152,27 @@ class SettingFragment : Fragment() {
             (activity as MainActivity).settingActive()
         }
 
+        val defaultProxy = binding.proxy
+        defaultProxy.text =
+            SP.proxy.let { Editable.Factory.getInstance().newEditable(it) }
+                ?: Editable.Factory.getInstance().newEditable("")
+        binding.confirmProxy.setOnClickListener {
+            val c = defaultProxy.text.toString().trim()
+            var proxy = ""
+            try {
+                proxy = Uri.parse(c).toString()
+            } catch (e: Exception) {
+                println(e)
+            }
+            if (proxy != "") {
+                SP.proxy = proxy
+                "代理配置成功".showToast(Toast.LENGTH_LONG)
+            } else {
+                defaultProxy.error = "无效的代理"
+            }
+            (activity as MainActivity).settingActive()
+        }
+
         binding.clear.setOnClickListener {
             SP.config = ""
             config.text = Editable.Factory.getInstance().newEditable("")
@@ -200,92 +221,75 @@ class SettingFragment : Fragment() {
         layoutParamsVersion.topMargin = application.px2Px(binding.version.marginTop)
         binding.version.layoutParams = layoutParamsVersion
 
-        binding.qrcode.layoutParams.width =
-            application.px2Px(binding.qrcode.layoutParams.width)
-        binding.qrcode.layoutParams.height =
-            application.px2Px(binding.qrcode.layoutParams.height)
-        binding.qrcode.textSize = application.px2PxFont(binding.qrcode.textSize)
-        val layoutParamsQrcode =
-            binding.qrcode.layoutParams as ViewGroup.MarginLayoutParams
-        layoutParamsQrcode.marginEnd = application.px2Px(binding.qrcode.marginEnd)
-        binding.qrcode.layoutParams = layoutParamsQrcode
-
-        binding.server.textSize = application.px2PxFont(binding.server.textSize)
-
-        binding.checkVersion.layoutParams.width =
-            application.px2Px(binding.checkVersion.layoutParams.width)
-        binding.checkVersion.layoutParams.height =
-            application.px2Px(binding.checkVersion.layoutParams.height)
-        binding.checkVersion.textSize = application.px2PxFont(binding.checkVersion.textSize)
-        val layoutParamsCheckVersion =
-            binding.checkVersion.layoutParams as ViewGroup.MarginLayoutParams
-        layoutParamsCheckVersion.marginEnd = application.px2Px(binding.checkVersion.marginEnd)
-        binding.checkVersion.layoutParams = layoutParamsCheckVersion
-
-        binding.versionName.textSize = application.px2PxFont(binding.versionName.textSize)
-
-        binding.confirmConfig.layoutParams.width =
+        val btnWidth =
             application.px2Px(binding.confirmConfig.layoutParams.width)
-        binding.confirmConfig.layoutParams.height =
+        val btnHeight =
             application.px2Px(binding.confirmConfig.layoutParams.height)
-        binding.confirmConfig.textSize = application.px2PxFont(binding.confirmConfig.textSize)
-        val layoutParamsConfirmConfig =
+        val btnTextSize =
+            application.px2PxFont(binding.confirmConfig.textSize)
+        val btnLayoutParams =
             binding.confirmConfig.layoutParams as ViewGroup.MarginLayoutParams
-        layoutParamsConfirmConfig.marginEnd = application.px2Px(binding.confirmConfig.marginEnd)
-        binding.confirmConfig.layoutParams = layoutParamsConfirmConfig
+        btnLayoutParams.marginEnd = application.px2Px(binding.confirmConfig.marginEnd)
 
-        binding.config.layoutParams.width =
+        val txtWidth =
             application.px2Px(binding.config.layoutParams.width)
-        binding.config.textSize = application.px2PxFont(binding.config.textSize)
+        val txtTextSize =
+            application.px2PxFont(binding.config.textSize)
 
-        binding.confirmChannel.layoutParams.width =
-            application.px2Px(binding.confirmChannel.layoutParams.width)
-        binding.confirmChannel.layoutParams.height =
-            application.px2Px(binding.confirmChannel.layoutParams.height)
-        binding.confirmChannel.textSize =
-            application.px2PxFont(binding.confirmChannel.textSize)
-        val layoutParamsConfirmDefaultChannel =
-            binding.confirmChannel.layoutParams as ViewGroup.MarginLayoutParams
-        layoutParamsConfirmDefaultChannel.marginEnd =
-            application.px2Px(binding.confirmChannel.marginEnd)
-        binding.confirmChannel.layoutParams = layoutParamsConfirmDefaultChannel
+        binding.checkVersion.layoutParams.width = btnWidth
+        binding.checkVersion.layoutParams.height = btnHeight
+        binding.checkVersion.textSize = btnTextSize
+        binding.checkVersion.layoutParams = btnLayoutParams
 
-        binding.channel.layoutParams.width =
-            application.px2Px(binding.channel.layoutParams.width)
-        binding.channel.textSize = application.px2PxFont(binding.channel.textSize)
+        binding.versionName.layoutParams.width = txtWidth
+        binding.versionName.textSize = txtTextSize
 
-        binding.clear.layoutParams.width =
-            application.px2Px(binding.clear.layoutParams.width)
-        binding.clear.layoutParams.height =
-            application.px2Px(binding.clear.layoutParams.height)
-        binding.clear.textSize = application.px2PxFont(binding.clear.textSize)
-        val layoutParamsPermission =
-            binding.clear.layoutParams as ViewGroup.MarginLayoutParams
-        layoutParamsPermission.topMargin =
-            application.px2Px(binding.clear.marginTop)
-        binding.clear.layoutParams = layoutParamsPermission
+        binding.qrcode.layoutParams.width = btnWidth
+        binding.qrcode.layoutParams.height = btnHeight
+        binding.qrcode.textSize = btnTextSize
+        binding.qrcode.layoutParams = btnLayoutParams
 
-        binding.appreciate.layoutParams.width =
-            application.px2Px(binding.appreciate.layoutParams.width)
-        binding.appreciate.layoutParams.height =
-            application.px2Px(binding.appreciate.layoutParams.height)
-        binding.appreciate.textSize = application.px2PxFont(binding.appreciate.textSize)
-        val layoutParamsAppreciate =
-            binding.appreciate.layoutParams as ViewGroup.MarginLayoutParams
-        layoutParamsAppreciate.topMargin =
-            application.px2Px(binding.appreciate.marginTop)
-        binding.appreciate.layoutParams = layoutParamsAppreciate
+        binding.server.layoutParams.width = txtWidth
+        binding.server.textSize = txtTextSize
 
-        binding.exit.layoutParams.width =
-            application.px2Px(binding.exit.layoutParams.width)
-        binding.exit.layoutParams.height =
-            application.px2Px(binding.exit.layoutParams.height)
-        binding.exit.textSize = application.px2PxFont(binding.exit.textSize)
-        val layoutParamsExit =
-            binding.exit.layoutParams as ViewGroup.MarginLayoutParams
-        layoutParamsExit.topMargin =
-            application.px2Px(binding.exit.marginTop)
-        binding.exit.layoutParams = layoutParamsExit
+        binding.confirmConfig.layoutParams.width = btnWidth
+        binding.confirmConfig.layoutParams.height = btnHeight
+        binding.confirmConfig.textSize = btnTextSize
+        binding.confirmConfig.layoutParams = btnLayoutParams
+
+        binding.config.layoutParams.width = txtWidth
+        binding.config.textSize = txtTextSize
+
+        binding.confirmChannel.layoutParams.width = btnWidth
+        binding.confirmChannel.layoutParams.height = btnHeight
+        binding.confirmChannel.textSize = btnTextSize
+        binding.confirmChannel.layoutParams = btnLayoutParams
+
+        binding.channel.layoutParams.width = txtWidth
+        binding.channel.textSize = txtTextSize
+
+        binding.confirmProxy.layoutParams.width = btnWidth
+        binding.confirmProxy.layoutParams.height = btnHeight
+        binding.confirmProxy.textSize = btnTextSize
+        binding.confirmProxy.layoutParams = btnLayoutParams
+
+        binding.proxy.layoutParams.width = txtWidth
+        binding.proxy.textSize = txtTextSize
+
+        binding.clear.layoutParams.width = btnWidth
+        binding.clear.layoutParams.height = btnHeight
+        binding.clear.textSize = btnTextSize
+        binding.clear.layoutParams = btnLayoutParams
+
+        binding.appreciate.layoutParams.width = btnWidth
+        binding.appreciate.layoutParams.height = btnHeight
+        binding.appreciate.textSize = btnTextSize
+        binding.appreciate.layoutParams = btnLayoutParams
+
+        binding.exit.layoutParams.width = btnWidth
+        binding.exit.layoutParams.height = btnHeight
+        binding.exit.textSize = btnTextSize
+        binding.exit.layoutParams = btnLayoutParams
 
         val textSize = application.px2PxFont(binding.switchChannelReversal.textSize)
 

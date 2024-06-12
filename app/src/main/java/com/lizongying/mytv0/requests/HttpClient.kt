@@ -1,20 +1,30 @@
 package com.lizongying.mytv0.requests
 
 
+import android.net.Uri
 import android.os.Build
 import android.util.Log
+import com.lizongying.mytv0.SP
 import okhttp3.ConnectionSpec
 import okhttp3.OkHttpClient
 import okhttp3.TlsVersion
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.net.InetSocketAddress
+import java.net.Proxy
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 
 
-class ApiClient {
-    private var okHttpClient = getUnsafeOkHttpClient()
+object HttpClient {
+    const val TAG = "HttpClient"
+    private const val HOST = "https://gitee.com/lizongying/my-tv-0/raw/"
+    const val DOWNLOAD_HOST = "https://gitee.com/lizongying/my-tv-0/releases/download/"
+
+    val okHttpClient: OkHttpClient by lazy {
+        getUnsafeOkHttpClient()
+    }
 
     val releaseService: ReleaseService by lazy {
         Retrofit.Builder()
@@ -22,6 +32,12 @@ class ApiClient {
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build().create(ReleaseService::class.java)
+    }
+
+    val configService: ConfigService by lazy {
+        Retrofit.Builder()
+            .client(okHttpClient)
+            .build().create(ConfigService::class.java)
     }
 
     private fun enableTls12OnPreLollipop(client: OkHttpClient.Builder): OkHttpClient.Builder {
@@ -82,17 +98,20 @@ class ApiClient {
             val builder = OkHttpClient.Builder()
                 .sslSocketFactory(sslContext.socketFactory, trustAllCerts[0] as X509TrustManager)
                 .hostnameVerifier { _, _ -> true }
+                .connectionSpecs(listOf(ConnectionSpec.COMPATIBLE_TLS, ConnectionSpec.CLEARTEXT))
                 .dns(DnsCache())
+
+            if (SP.proxy != "") {
+                Log.i(TAG, "proxy ${SP.proxy}")
+                val uri = Uri.parse(SP.proxy)
+                val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(uri.host, uri.port))
+                builder.proxy(proxy)
+            }
 
             return enableTls12OnPreLollipop(builder).build()
 
         } catch (e: Exception) {
             throw RuntimeException(e)
         }
-    }
-
-    companion object {
-        const val HOST = "https://gitee.com/lizongying/my-tv-0/raw/"
-        const val DOWNLOAD_HOST = "https://gitee.com/lizongying/my-tv-0/releases/download/"
     }
 }

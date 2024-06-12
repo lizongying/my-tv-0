@@ -123,6 +123,27 @@
                 android:scrollbars="vertical"
                 android:inputType="textMultiLine" />
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <Button
+                android:id="@+id/confirm_proxy"
+                android:layout_width="100dp"
+                android:layout_height="45dp"
+                android:layout_marginEnd="5dp"
+                android:textSize="14sp"
+                android:text="@string/proxy" />
+            <EditText
+                android:id="@+id/proxy"
+                android:layout_width="245dp"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:autofillHints=""
+                android:hint="@string/proxy"
+                android:scrollbars="vertical"
+                android:inputType="textMultiLine" />
+        </LinearLayout>
         <Button
             android:id="@+id/clear"
             android:layout_width="100dp"

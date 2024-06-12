@@ -1,6 +1,5 @@
 package com.lizongying.mytv0
 
-import android.app.Application
 import android.content.Context
 import android.content.res.Resources
 import android.os.Handler

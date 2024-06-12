@@ -35,6 +35,8 @@ object SP {
 
     private const val KEY_LIKE = "like"
 
+    private const val KEY_PROXY = "proxy"
+
     private lateinit var sp: SharedPreferences
 
     /**
@@ -114,4 +116,8 @@ object SP {
     fun deleteLike() {
         sp.edit().remove(KEY_LIKE).apply()
     }
+
+    var proxy: String?
+        get() = sp.getString(KEY_PROXY, "")
+        set(value) = sp.edit().putString(KEY_PROXY, value).apply()
 }

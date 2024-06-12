@@ -9,7 +9,6 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 class ReleaseRequest {
-    private var releaseService = ApiClient().releaseService
 
     suspend fun getRelease(): ReleaseResponse? {
         return withContext(Dispatchers.IO) {
@@ -19,7 +18,7 @@ class ReleaseRequest {
 
     private suspend fun fetchRelease(): ReleaseResponse? {
         return suspendCoroutine { continuation ->
-            releaseService.getRelease()
+            HttpClient.releaseService.getRelease()
                 .enqueue(object : Callback<ReleaseResponse> {
                     override fun onResponse(
                         call: Call<ReleaseResponse>,

@@ -68,6 +68,7 @@ class InfoFragment : Fragment() {
     }
 
     fun show(tvViewModel: TVModel) {
+        val context = requireContext()
         binding.title.text = tvViewModel.tv.title
 
         when (tvViewModel.tv.title) {
@@ -78,18 +79,22 @@ class InfoFragment : Fragment() {
                     val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
                     val canvas = Canvas(bitmap)
 
+                    val text = "${tvViewModel.tv.id + 1}"
+                    var size = 100f
+                    if (tvViewModel.tv.id > 999) {
+                        size = 90f
+                    }
                     val paint = Paint().apply {
-                        color = ContextCompat.getColor(context!!, R.color.blur)
-                        textSize = 100f
+                        color = ContextCompat.getColor(context, R.color.blur)
+                        textSize = size
                         textAlign = Paint.Align.CENTER
                     }
-                    val text = "${tvViewModel.tv.id + 1}"
                     val x = width / 2f
                     val y = height / 2f - (paint.descent() + paint.ascent()) / 2
                     canvas.drawText(text, x, y, paint)
 
                     Glide.with(this)
-                        .load(BitmapDrawable(context?.resources, bitmap))
+                        .load(BitmapDrawable(context.resources, bitmap))
 //                        .centerInside()
                         .into(binding.logo)
                 } else {

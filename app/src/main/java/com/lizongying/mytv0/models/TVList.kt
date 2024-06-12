@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData
 import com.google.gson.JsonSyntaxException
 import com.lizongying.mytv0.R
 import com.lizongying.mytv0.SP
+import com.lizongying.mytv0.requests.HttpClient
 import com.lizongying.mytv0.showToast
 import io.github.lizongying.Gua
 import kotlinx.coroutines.CoroutineScope
@@ -67,9 +68,8 @@ object TVList {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 Log.i(TAG, "request $serverUrl")
-                val client = okhttp3.OkHttpClient()
                 val request = okhttp3.Request.Builder().url(serverUrl).build()
-                val response = client.newCall(request).execute()
+                val response = HttpClient.okHttpClient.newCall(request).execute()
 
                 if (response.isSuccessful) {
                     val file = File(appDirectory, FILE_NAME)

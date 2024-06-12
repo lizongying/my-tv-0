@@ -16,5 +16,7 @@
         android:textColor="#B3EEEEEE"
         android:color="#FF263238"
         android:layout_marginVertical="5dp"
+        android:maxLines="1"
+        android:ellipsize="end"
         android:textSize="20sp" />
 </LinearLayout>

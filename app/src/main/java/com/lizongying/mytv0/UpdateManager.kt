@@ -14,7 +14,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.FragmentActivity
-import com.lizongying.mytv0.requests.ApiClient
+import com.lizongying.mytv0.requests.HttpClient
 import com.lizongying.mytv0.requests.ReleaseRequest
 import com.lizongying.mytv0.requests.ReleaseResponse
 import kotlinx.coroutines.CoroutineScope
@@ -68,10 +68,10 @@ class UpdateManager(
         val downloadManager =
             context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
         val request =
-            Request(Uri.parse("${ApiClient.DOWNLOAD_HOST}${release.version_name}/$apkName-${release.version_name}.apk"))
+            Request(Uri.parse("${HttpClient.DOWNLOAD_HOST}${release.version_name}/$apkName-${release.version_name}.apk"))
         Log.i(
             TAG,
-            "url ${Uri.parse("${ApiClient.DOWNLOAD_HOST}${release.version_name}/$apkName-${release.version_name}.apk")}"
+            "url ${Uri.parse("${HttpClient.DOWNLOAD_HOST}${release.version_name}/$apkName-${release.version_name}.apk")}"
         )
         context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)?.mkdirs()
         Log.i(TAG, "save dir ${Environment.DIRECTORY_DOWNLOADS}")

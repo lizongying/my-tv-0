@@ -23,7 +23,6 @@ import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.datasource.TransferListener
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.mediacodec.MediaCodecSelector
 import androidx.media3.exoplayer.mediacodec.MediaCodecUtil
 import com.google.android.exoplayer2.Player.DISCONTINUITY_REASON_PERIOD_TRANSITION
@@ -34,6 +33,7 @@ import com.lizongying.mytv0.models.TVModel
 
 class PlayerFragment : Fragment(), SurfaceHolder.Callback {
     private var _binding: PlayerBinding? = null
+    private val binding get() = _binding!!
 
     private var player: ExoPlayer? = null
     private var exoPlayer: SimpleExoPlayer? = null
