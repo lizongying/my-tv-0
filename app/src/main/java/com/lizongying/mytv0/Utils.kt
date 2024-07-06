@@ -1,14 +1,14 @@
 package com.lizongying.mytv0
 
-import android.content.Context
 import android.content.res.Resources
 import android.os.Build
 import android.util.TypedValue
 import com.google.gson.Gson
 import com.lizongying.mytv0.requests.TimeResponse
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -29,13 +29,20 @@ object Utils {
     }
 
     suspend fun init() {
-        var currentTimeMillis: Long = 0
         try {
-            currentTimeMillis = getTimestampFromServer()
+            val currentTimeMillis = getTimestampFromServer()
+            if (currentTimeMillis > 0) {
+                between = System.currentTimeMillis() - currentTimeMillis
+            }
         } catch (e: Exception) {
             println("Failed to retrieve timestamp from server: ${e.message}")
         }
-        between = System.currentTimeMillis() - currentTimeMillis
+    }
+
+    init {
+        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
+            init()
+        }
     }
 
     /**
@@ -44,9 +51,7 @@ object Utils {
      */
     private suspend fun getTimestampFromServer(): Long {
         return withContext(Dispatchers.IO) {
-            val client = okhttp3.OkHttpClient.Builder()
-                .connectTimeout(500, java.util.concurrent.TimeUnit.MILLISECONDS)
-                .readTimeout(1, java.util.concurrent.TimeUnit.SECONDS).build()
+            val client = okhttp3.OkHttpClient.Builder().build()
             val request = okhttp3.Request.Builder()
                 .url("https://api.m.taobao.com/rest/api3.do?api=mtop.common.getTimestamp")
                 .build()

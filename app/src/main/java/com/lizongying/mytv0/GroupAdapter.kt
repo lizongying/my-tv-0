@@ -146,7 +146,7 @@ class GroupAdapter(
 
         fun focus(hasFocus: Boolean) {
             if (hasFocus) {
-                binding.title.setTextColor(ContextCompat.getColor(context, R.color.white))
+                binding.title.setTextColor(ContextCompat.getColor(context, R.color.focus))
             } else {
                 binding.title.setTextColor(
                     ContextCompat.getColor(

@@ -219,7 +219,6 @@ class ListAdapter(
             if (hasFocus) {
                 binding.title.setTextColor(ContextCompat.getColor(context, R.color.white))
                 binding.description.setTextColor(ContextCompat.getColor(context, R.color.white))
-//                binding.root.alpha = 1.0F
                 binding.root.setBackgroundResource(R.color.focus)
             } else {
                 binding.title.setTextColor(ContextCompat.getColor(context, R.color.title_blur))
@@ -229,7 +228,6 @@ class ListAdapter(
                         R.color.description_blur
                     )
                 )
-//                binding.root.alpha = 0.8F
                 binding.root.setBackgroundResource(R.color.blur)
             }
         }

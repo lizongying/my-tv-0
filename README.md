@@ -86,3 +86,7 @@ adb install my-tv-0.apk
 ## 赞赏
 
 ![image](./screenshots/appreciate.jpeg)
+
+## 感谢
+
+[live](https://github.com/fanmingming/live)

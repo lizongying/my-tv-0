@@ -36,6 +36,14 @@ class TVModel(var tv: TV) : ViewModel() {
         _errInfo.value = info
     }
 
+    private var _epg = MutableLiveData<MutableList<EPG>>()
+    val epg: LiveData<MutableList<EPG>>
+        get() = _epg
+
+    fun setEpg(epg: MutableList<EPG>) {
+        _epg.value = epg
+    }
+
     private var _program = MutableLiveData<MutableList<Program>>()
     val program: LiveData<MutableList<Program>>
         get() = _program

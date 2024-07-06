@@ -27,6 +27,7 @@ object TVList {
     private lateinit var list: List<TV>
     var listModel: List<TVModel> = listOf()
     val groupModel = TVGroupModel()
+    private var epg = SP.epg
 
     private val _position = MutableLiveData<Int>()
     val position: LiveData<Int>
@@ -57,10 +58,44 @@ object TVList {
             Toast.makeText(context, "读取频道失败，请在菜单中进行设置", Toast.LENGTH_LONG).show()
         }
 
-        if (SP.configAutoLoad && !SP.config.isNullOrEmpty()) {
+        if (SP.config.isNullOrEmpty()) {
+            SP.config = "https://live.fanmingming.com/tv/m3u/index.m3u"
+        }
+
+        if (SP.configAutoLoad) {
             SP.config?.let {
                 update(it)
             }
+        } else if (!epg.isNullOrEmpty()) {
+            CoroutineScope(Dispatchers.IO).launch {
+                updateEPG()
+            }
+        }
+    }
+
+    private suspend fun updateEPG() {
+//        "EPG开始获取".showToast()
+        try {
+            val request = okhttp3.Request.Builder().url(epg!!).build()
+            val response = HttpClient.okHttpClient.newCall(request).execute()
+
+            if (response.isSuccessful) {
+                val epg = EPGXmlParser().parse(response.body()!!.byteStream())
+
+                withContext(Dispatchers.Main) {
+                    for (m in listModel) {
+                        epg[m.tv.name]?.let { m.setEpg(it) }
+                    }
+                    "EPG解析成功".showToast()
+                }
+                "EPG获取成功".showToast()
+            } else {
+                Log.e("", "request status ${response.code()}")
+                "EPG状态错误".showToast()
+            }
+        } catch (e: Exception) {
+            Log.e("", "request error $e")
+            "EPG请求错误".showToast()
         }
     }
 
@@ -82,6 +117,12 @@ object TVList {
                             file.writeText(str)
                             SP.config = serverUrl
                             "频道导入成功".showToast()
+
+                            if (!epg.isNullOrEmpty()) {
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    updateEPG()
+                                }
+                            }
                         } else {
                             "频道导入错误".showToast()
                         }
@@ -146,6 +187,7 @@ object TVList {
         if (string.isBlank()) {
             return false
         }
+
         when (string[0]) {
             '[' -> {
                 try {
@@ -163,12 +205,16 @@ object TVList {
                 val lines = string.lines()
                 val nameRegex = Regex("""tvg-name="([^"]+)"""")
                 val logRegex = Regex("""tvg-logo="([^"]+)"""")
+                val epgRegex = Regex("""x-tvg-url="([^"]+)"""")
                 val groupRegex = Regex("""group-title="([^"]+)"""")
 
                 val l = mutableListOf<TV>()
                 for ((index, line) in lines.withIndex()) {
                     val trimmedLine = line.trim()
-                    if (trimmedLine.startsWith("#EXTINF")) {
+                    if (trimmedLine.startsWith("#EXTM3U")) {
+                        epg = epgRegex.find(trimmedLine)?.groupValues?.get(1)?.trim()
+                        SP.epg = epg
+                    } else if (trimmedLine.startsWith("#EXTINF")) {
                         val info = trimmedLine.split(",")
                         val title = info.last().trim()
                         val name = nameRegex.find(info.first())?.groupValues?.get(1)?.trim()
