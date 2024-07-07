@@ -76,17 +76,15 @@ adb install my-tv-0.apk
 
 ## TODO
 
-* 节目增加预告
-* 兼容4.0
-* 插件商城
-* UI
-* 视频解码
+* 視頻解碼
 * 支持回看
+* 詳細EPG
+* 淺色菜單
 
-## 赞赏
+## 讚賞
 
 ![image](./screenshots/appreciate.jpeg)
 
-## 感谢
+## 感謝
 
 [live](https://github.com/fanmingming/live)

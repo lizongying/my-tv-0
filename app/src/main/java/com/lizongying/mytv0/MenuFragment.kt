@@ -194,6 +194,10 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
 //                    listAdapter.focusable(true)
 //                }
 
+                if (TVList.size() == 0) {
+                    "沒有頻道".showToast()
+                    return
+                }
                 val groupIndex = TVList.getTVModel().groupIndex
                 Log.i(
                     TAG,

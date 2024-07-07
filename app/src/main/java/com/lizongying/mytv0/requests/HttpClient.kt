@@ -12,8 +12,10 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.net.InetSocketAddress
 import java.net.Proxy
+import java.security.KeyStore
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
+import javax.net.ssl.TrustManagerFactory
 import javax.net.ssl.X509TrustManager
 
 
@@ -41,7 +43,7 @@ object HttpClient {
     }
 
     private fun enableTls12OnPreLollipop(client: OkHttpClient.Builder): OkHttpClient.Builder {
-        if (Build.VERSION.SDK_INT >= 16 && Build.VERSION.SDK_INT < 22) {
+        if (Build.VERSION.SDK_INT < 22) {
             try {
                 val sc = SSLContext.getInstance("TLSv1.2")
 
@@ -50,7 +52,18 @@ object HttpClient {
                 // a more robust version is to pass a custom X509TrustManager
                 // as the second parameter and make checkServerTrusted to accept your server.
                 // Credits: https://github.com/square/okhttp/issues/2372#issuecomment-1774955225
-                client.sslSocketFactory(Tls12SocketFactory(sc.socketFactory))
+                val trustManagerFactory = TrustManagerFactory.getInstance(
+                    TrustManagerFactory.getDefaultAlgorithm()
+                )
+                trustManagerFactory.init(null as KeyStore?)
+                val trustManagers = trustManagerFactory.trustManagers
+                check(!(trustManagers.size != 1 || trustManagers[0] !is X509TrustManager)) {
+                    ("Unexpected default trust managers:"
+                            + trustManagers.contentToString())
+                }
+                val trustManager = trustManagers[0] as X509TrustManager
+
+                client.sslSocketFactory(Tls12SocketFactory(sc.socketFactory), trustManager)
 
                 val cs = ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
                     .tlsVersions(TlsVersion.TLS_1_2)

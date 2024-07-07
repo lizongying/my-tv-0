@@ -6,7 +6,6 @@ import android.graphics.Paint
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -108,7 +107,6 @@ class InfoFragment : Fragment() {
         }
 
         val epg = tvViewModel.epg.value?.filter { it.beginTime < Utils.getDateTimestamp() }
-        Log.i(TAG, "info epg $epg")
         if (!epg.isNullOrEmpty()) {
             binding.desc.text = epg.last().title
         } else {

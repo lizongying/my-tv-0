@@ -12,6 +12,7 @@ data class TV(
     var uris: List<String>,
     var headers: Map<String, String>? = null,
     var group: String = "",
+    var sourceType: SourceType = SourceType.UNKNOWN,
     var child: List<TV>,
 ) : Serializable {
 
@@ -26,6 +27,7 @@ data class TV(
                 ", uris='" + uris + '\'' +
                 ", headers='" + headers + '\'' +
                 ", group='" + group + '\'' +
+                ", sourceType='" + sourceType + '\'' +
                 '}'
     }
 }

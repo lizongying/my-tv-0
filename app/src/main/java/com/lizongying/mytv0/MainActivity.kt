@@ -176,12 +176,13 @@ class MainActivity : FragmentActivity() {
                     hideFragment(loadingFragment)
                     if (tvModel.errInfo.value == "") {
                         Log.i(TAG, "${tvModel.tv.title} 播放中")
-                        hideErrorFragment()
+                        hideFragment(errorFragment)
                         showFragment(playerFragment)
                     } else {
                         Log.i(TAG, "${tvModel.tv.title} ${tvModel.errInfo.value.toString()}")
                         hideFragment(playerFragment)
-                        showErrorFragment(tvModel.errInfo.value.toString())
+                        errorFragment.setMsg(tvModel.errInfo.value.toString())
+                        showFragment(errorFragment)
                     }
                 }
             }
@@ -193,7 +194,7 @@ class MainActivity : FragmentActivity() {
                     && tvModel.tv.id == TVList.position.value
                 ) {
                     Log.i(TAG, "loading ${tvModel.tv.title}")
-                    hideErrorFragment()
+                    hideFragment(errorFragment)
                     showFragment(loadingFragment)
                     playerFragment.play(tvModel)
                     infoFragment.show(tvModel)
@@ -507,28 +508,6 @@ class MainActivity : FragmentActivity() {
             .hide(settingFragment)
             .commit()
         showTime()
-    }
-
-    private fun showErrorFragment(msg: String) {
-        errorFragment.show(msg)
-        if (!errorFragment.isHidden) {
-            return
-        }
-
-        supportFragmentManager.beginTransaction()
-            .show(errorFragment)
-            .commitNow()
-    }
-
-    private fun hideErrorFragment() {
-        errorFragment.show("hide")
-        if (errorFragment.isHidden) {
-            return
-        }
-
-        supportFragmentManager.beginTransaction()
-            .hide(errorFragment)
-            .commitNow()
     }
 
     fun onKey(keyCode: Int): Boolean {

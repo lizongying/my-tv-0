@@ -80,7 +80,7 @@ object TVList {
             val response = HttpClient.okHttpClient.newCall(request).execute()
 
             if (response.isSuccessful) {
-                val epg = EPGXmlParser().parse(response.body()!!.byteStream())
+                val epg = EPGXmlParser().parse(response.body!!.byteStream())
 
                 withContext(Dispatchers.Main) {
                     for (m in listModel) {
@@ -90,7 +90,7 @@ object TVList {
                 }
                 "EPG获取成功".showToast()
             } else {
-                Log.e("", "request status ${response.code()}")
+                Log.e("", "request status ${response.code}")
                 "EPG状态错误".showToast()
             }
         } catch (e: Exception) {
@@ -111,7 +111,7 @@ object TVList {
                     if (!file.exists()) {
                         file.createNewFile()
                     }
-                    val str = response.body()!!.string()
+                    val str = response.body!!.string()
                     withContext(Dispatchers.Main) {
                         if (str2List(str)) {
                             file.writeText(str)
@@ -128,7 +128,7 @@ object TVList {
                         }
                     }
                 } else {
-                    Log.e("", "request status ${response.code()}")
+                    Log.e("", "request status ${response.code}")
                     "频道状态错误".showToast()
                 }
             } catch (e: JsonSyntaxException) {
@@ -222,7 +222,6 @@ object TVList {
                         val logo = logRegex.find(info.first())?.groupValues?.get(1)?.trim()
                         val uris =
                             if (index + 1 < lines.size) listOf(lines[index + 1].trim()) else emptyList()
-                        Log.i("info", "1$title 2$name 3$group 4$logo 5$uris")
                         val tv = TV(
                             0,
                             name ?: "",
@@ -233,6 +232,7 @@ object TVList {
                             uris,
                             mapOf(),
                             group ?: "",
+                            SourceType.UNKNOWN,
                             listOf(),
                         )
 
@@ -256,7 +256,6 @@ object TVList {
                             val arr = trimmedLine.split(',').map { it.trim() }
                             val title = arr.first().trim()
                             val uris = arr.drop(1)
-                            Log.i("info", "$title $group $uris")
                             val tv = TV(
                                 0,
                                 "",
@@ -267,6 +266,7 @@ object TVList {
                                 uris,
                                 mapOf(),
                                 group,
+                                SourceType.UNKNOWN,
                                 listOf(),
                             )
 

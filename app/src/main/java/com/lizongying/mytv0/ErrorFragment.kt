@@ -29,12 +29,19 @@ class ErrorFragment : Fragment() {
 
         binding.msg.textSize = application.px2PxFont(binding.msg.textSize)
 
-        (activity as MainActivity).ready(TAG)
+        _binding = ErrorBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    fun show(msg: String) {
-        binding.msg.text = msg
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        (activity as MainActivity).ready(TAG)
+    }
+
+    fun setMsg(msg: String) {
+        if (_binding != null) {
+            binding.msg.text = msg
+        }
     }
 
     override fun onDestroyView() {

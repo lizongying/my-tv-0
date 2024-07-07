@@ -1,8 +1,8 @@
 import java.io.BufferedReader
 
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
 }
 
 android {
@@ -63,7 +63,8 @@ fun getVersionName(): String {
     return try {
         val process = Runtime.getRuntime().exec("git describe --tags --always")
         process.waitFor()
-        val versionName = process.inputStream.bufferedReader().use(BufferedReader::readText).trim().removePrefix("v")
+        val versionName = process.inputStream.bufferedReader().use(BufferedReader::readText).trim()
+            .removePrefix("v")
         versionName.ifEmpty {
             "1.0.0"
         }
@@ -74,47 +75,32 @@ fun getVersionName(): String {
 
 dependencies {
     // For AGP 7.4+
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
 
-    // 19 java8
-    val media3Version = "1.3.1"
-    implementation("androidx.media3:media3-ui:$media3Version")
+    implementation(libs.media3.ui)
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.exoplayer.hls)
+    implementation(libs.media3.exoplayer.dash)
+    implementation(libs.media3.exoplayer.rtsp)
+    implementation(libs.media3.datasource.okhttp)
 
-    // For media playback using ExoPlayer
-    implementation("androidx.media3:media3-exoplayer:$media3Version")
+    implementation(libs.nanohttpd)
+    implementation(libs.gua64)
+    implementation(libs.zxing)
+    implementation(libs.glide)
 
-    implementation("androidx.media3:media3-exoplayer-hls:$media3Version")
-    implementation("androidx.media3:media3-exoplayer-dash:$media3Version")
-    implementation("androidx.media3:media3-exoplayer-rtsp:$media3Version")
+    implementation(libs.gson)
+    implementation(libs.okhttp)
+    implementation(libs.converter.gson)
+    implementation(libs.retrofit)
 
-    implementation("androidx.core:core-ktx:1.13.1")
-    implementation("androidx.multidex:multidex:2.0.1")
-    implementation("androidx.recyclerview:recyclerview:1.3.2")
+    implementation(libs.core.ktx)
+    implementation(libs.coroutines)
+    implementation(libs.leanback)
 
-    //java7
-    implementation("com.github.bumptech.glide:glide:4.16.0")
-
-    // 21:2.11.0 17:2.6.4
-    val retrofit2Version = "2.11.0"
-    implementation("com.squareup.retrofit2:converter-gson:$retrofit2Version")
-    implementation ("com.squareup.retrofit2:retrofit:$retrofit2Version")
-
-    // For yunos
-    val exoplayerVersion = "2.13.3"
-    implementation("com.google.android.exoplayer:exoplayer-ui:$exoplayerVersion")
-    implementation("com.google.android.exoplayer:exoplayer-core:$exoplayerVersion")
-    implementation("com.google.android.exoplayer:exoplayer-hls:$exoplayerVersion")
-
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    implementation(libs.multidex)
+    implementation(libs.constraintlayout)
+    implementation(libs.recyclerview)
 
     implementation(files("libs/lib-decoder-ffmpeg-release.aar"))
-
-    implementation("io.github.lizongying:gua64:1.4.5")
-
-    implementation("org.nanohttpd:nanohttpd:2.3.1")
-
-    implementation("com.google.zxing:core:3.5.3")
-
-    implementation("androidx.leanback:leanback:1.0.0")
 }
