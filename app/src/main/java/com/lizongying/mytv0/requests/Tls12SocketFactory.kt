@@ -17,7 +17,7 @@ import javax.net.ssl.SSLSocketFactory
  * @link https://developer.android.com/reference/javax/net/ssl/SSLSocket.html
  * @see SSLSocketFactory
  */
-class Tls12SocketFactory(val delegate: SSLSocketFactory) : SSLSocketFactory() {
+class Tls12SocketFactory(private val delegate: SSLSocketFactory) : SSLSocketFactory() {
     override fun getDefaultCipherSuites(): Array<String> {
         return delegate.defaultCipherSuites
     }

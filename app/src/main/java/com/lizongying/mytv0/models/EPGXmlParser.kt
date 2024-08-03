@@ -23,10 +23,10 @@ class EPGXmlParser {
     }
 
     fun parse(inputStream: InputStream): MutableMap<String, MutableList<EPG>> {
-        inputStream.use { inputStream ->
+        inputStream.use { input ->
             val parser: XmlPullParser = Xml.newPullParser()
             parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false)
-            parser.setInput(inputStream, null)
+            parser.setInput(input, null)
             parser.nextTag()
             var channel = ""
             while (parser.eventType != XmlPullParser.END_DOCUMENT) {
