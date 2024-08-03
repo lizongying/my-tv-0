@@ -15,3 +15,5 @@
 .cxx
 local.properties
 files
+.kotlin/
+app/release/

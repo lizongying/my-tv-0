@@ -19,6 +19,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import com.lizongying.mytv0.models.TVGroupModel
 import com.lizongying.mytv0.models.TVList
 
 
@@ -152,6 +153,11 @@ class MainActivity : FragmentActivity() {
                 } else {
                     "播放上次频道".showToast(Toast.LENGTH_LONG)
                 }
+            }
+
+            TVList.groupModel.isInLikeMode = SP.defaultLike;
+            if (TVList.groupModel.isInLikeMode) {
+                Toast.makeText(this, "收藏模式", Toast.LENGTH_SHORT).show()
             }
 
             // TODO group position
@@ -348,6 +354,29 @@ class MainActivity : FragmentActivity() {
     fun prev() {
         val prevGroup = TVList.getTVModel().groupIndex
         var position = TVList.position.value?.dec() ?: 0
+
+        var currentId = TVList.getTVModel().tv.id
+        if (TVList.groupModel.isInLikeMode) {
+            var likeList = TVList.groupModel.getTVListModel(0)
+            if (likeList != null) {
+                var oldPositionInList = -1;
+                for (i in 0 until likeList.size()) {
+                    var tvmodel = likeList.getTVModel(i)
+                    if (tvmodel != null && tvmodel.tv.id == currentId) {
+                        oldPositionInList = i;
+                        break
+                    }
+                }
+                if (oldPositionInList != -1) {
+                    var newPos = oldPositionInList.dec()
+                    if (newPos < 0) {
+                        newPos = likeList.size()-1
+                    }
+                    position = likeList.getTVModel(newPos)?.tv?.id ?: 0;
+                }
+            }
+        }
+
         if (position == -1) {
             position = TVList.size() - 1
         }
@@ -362,6 +391,27 @@ class MainActivity : FragmentActivity() {
     fun next() {
         val prevGroup = TVList.getTVModel().groupIndex
         var position = TVList.position.value?.inc() ?: 0
+        var currentId = TVList.getTVModel().tv.id
+        if (TVList.groupModel.isInLikeMode) {
+            var likeList = TVList.groupModel.getTVListModel(0)
+            if (likeList != null) {
+                var oldPositionInList = -1;
+                for (i in 0 until likeList.size()) {
+                    var tvmodel = likeList.getTVModel(i)
+                    if (tvmodel != null && tvmodel.tv.id == currentId) {
+                        oldPositionInList = i;
+                        break
+                    }
+                }
+                if (oldPositionInList != -1) {
+                    var newPos = oldPositionInList.inc()
+                    if (newPos >= likeList.size()) {
+                        newPos = 0
+                    }
+                    position = likeList.getTVModel(newPos)?.tv?.id ?: 0;
+                }
+            }
+        }
         if (position == TVList.size()) {
             position = 0
         }
