@@ -59,7 +59,7 @@ object TVList {
         }
 
         if (SP.config.isNullOrEmpty()) {
-            SP.config = "https://live.fanmingming.com/tv/m3u/index.m3u"
+            SP.config = "https://live.fanmingming.com/tv/m3u/itv.m3u"
         }
 
         if (SP.configAutoLoad) {
