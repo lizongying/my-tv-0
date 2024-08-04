@@ -227,7 +227,7 @@ object TVList {
                         val uris =
                             if (index + 1 < lines.size) listOf(lines[index + 1].trim()) else emptyList()
                         val tv = TV(
-                            0,
+                            -1,
                             name,
                             title,
                             "",
@@ -250,7 +250,7 @@ object TVList {
                     val uris = tv.map { t -> t.uris }.flatten()
                     val t0 = tv[0]
                     val t1 = TV(
-                        0,
+                        -1,
                         t0.name,
                         t0.name,
                         "",
@@ -292,7 +292,7 @@ object TVList {
                 }
                 for ((title, uris) in tvMap) {
                     val tv = TV(
-                        0,
+                        -1,
                         "",
                         title,
                         "",
@@ -329,6 +329,7 @@ object TVList {
             val tvListModel = TVListModel(k, groupIndex)
             for ((listIndex, v1) in v.withIndex()) {
                 v1.tv.id = id
+                v1.setLike(SP.getLike(id))
                 v1.groupIndex = groupIndex
                 v1.listIndex = listIndex
                 tvListModel.addTVModel(v1)

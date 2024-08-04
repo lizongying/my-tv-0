@@ -3,7 +3,7 @@ package com.lizongying.mytv0.models
 import java.io.Serializable
 
 data class TV(
-    var id: Int = 0,
+    var id: Int = -1,
     var name: String = "",
     var title: String = "",
     var description: String? = null,
