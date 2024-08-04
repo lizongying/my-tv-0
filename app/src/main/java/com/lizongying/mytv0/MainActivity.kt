@@ -205,7 +205,7 @@ class MainActivity : FragmentActivity() {
             }
 
             tvModel.like.observe(this) { _ ->
-                if (tvModel.like.value != null) {
+                if (tvModel.like.value != null && tvModel.tv.id != -1) {
                     val liked = tvModel.like.value as Boolean
                     if (liked) {
                         TVList.groupModel.getTVListModel(0)?.replaceTVModel(tvModel)
