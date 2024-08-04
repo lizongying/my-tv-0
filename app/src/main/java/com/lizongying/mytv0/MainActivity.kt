@@ -355,14 +355,14 @@ class MainActivity : FragmentActivity() {
         val prevGroup = TVList.getTVModel().groupIndex
         var position = TVList.position.value?.dec() ?: 0
 
-        var currentId = TVList.getTVModel().tv.id
-        if (TVList.groupModel.isInLikeMode) {
-            var likeList = TVList.groupModel.getTVListModel(0)
+        val currentId = TVList.getTVModel().tv.id
+        if (SP.defaultLike && TVList.groupModel.isInLikeMode) {
+            val likeList = TVList.groupModel.getTVListModel(0)
             if (likeList != null) {
                 var oldPositionInList = -1;
                 for (i in 0 until likeList.size()) {
-                    var tvmodel = likeList.getTVModel(i)
-                    if (tvmodel != null && tvmodel.tv.id == currentId) {
+                    val tvModel = likeList.getTVModel(i)
+                    if (tvModel != null && tvModel.tv.id == currentId) {
                         oldPositionInList = i;
                         break
                     }
@@ -391,14 +391,14 @@ class MainActivity : FragmentActivity() {
     fun next() {
         val prevGroup = TVList.getTVModel().groupIndex
         var position = TVList.position.value?.inc() ?: 0
-        var currentId = TVList.getTVModel().tv.id
-        if (TVList.groupModel.isInLikeMode) {
-            var likeList = TVList.groupModel.getTVListModel(0)
+        val currentId = TVList.getTVModel().tv.id
+        if (SP.defaultLike && TVList.groupModel.isInLikeMode) {
+            val likeList = TVList.groupModel.getTVListModel(0)
             if (likeList != null) {
                 var oldPositionInList = -1;
                 for (i in 0 until likeList.size()) {
-                    var tvmodel = likeList.getTVModel(i)
-                    if (tvmodel != null && tvmodel.tv.id == currentId) {
+                    val tvModel = likeList.getTVModel(i)
+                    if (tvModel != null && tvModel.tv.id == currentId) {
                         oldPositionInList = i;
                         break
                     }

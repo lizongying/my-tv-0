@@ -114,7 +114,6 @@ object SP {
         }
 
         sp.edit().putStringSet(KEY_LIKE, stringSet).apply()
-        sp.edit().commit()
     }
 
     fun deleteLike() {
