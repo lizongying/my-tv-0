@@ -6,7 +6,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +17,8 @@ import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import com.lizongying.mytv0.databinding.SettingBinding
 import com.lizongying.mytv0.models.TVList
+import kotlin.math.max
+import kotlin.math.min
 
 
 class SettingFragment : Fragment() {
@@ -107,49 +108,14 @@ class SettingFragment : Fragment() {
             (activity as MainActivity).settingActive()
         }
 
-        val config = binding.config
-        config.text = SP.config?.let { Editable.Factory.getInstance().newEditable(it) }
-            ?: Editable.Factory.getInstance().newEditable("")
+        confirmConfig()
         binding.confirmConfig.setOnClickListener {
-            var url = config.text.toString().trim()
-            url = Utils.formatUrl(url)
-            uri = Uri.parse(url)
-            Log.i(TAG, "uri.scheme ${uri.scheme}")
-            if (uri.scheme == "") {
-                uri = uri.buildUpon().scheme("http").build()
-            }
-            Log.i(TAG, "Uri $uri")
-            if (uri.isAbsolute) {
-                Log.i(TAG, "Uri ok")
-                if (uri.scheme == "file") {
-                    requestReadPermissions()
-                } else {
-                    TVList.parseUri(uri)
-                }
-            } else {
-                config.error = "无效的地址"
-            }
-            (activity as MainActivity).settingActive()
+            confirmConfig()
         }
 
-        val defaultChannel = binding.channel
-        defaultChannel.text =
-            SP.channel.let { Editable.Factory.getInstance().newEditable(it.toString()) }
-                ?: Editable.Factory.getInstance().newEditable("")
+        confirmChannel()
         binding.confirmChannel.setOnClickListener {
-            val c = defaultChannel.text.toString().trim()
-            var channel = 0
-            try {
-                channel = c.toInt()
-            } catch (e: NumberFormatException) {
-                println(e)
-            }
-            if (channel > 0 && channel <= TVList.listModel.size) {
-                SP.channel = channel
-            } else {
-                defaultChannel.error = "无效的频道"
-            }
-            (activity as MainActivity).settingActive()
+            confirmChannel()
         }
 
         val defaultProxy = binding.proxy
@@ -174,10 +140,10 @@ class SettingFragment : Fragment() {
         }
 
         binding.clear.setOnClickListener {
-            SP.config = ""
-            config.text = Editable.Factory.getInstance().newEditable("")
-            SP.channel = 0
-            defaultChannel.text = Editable.Factory.getInstance().newEditable("")
+            SP.config = SP.DEFAULT_CONFIG_URL
+            confirmConfig()
+            SP.channel = SP.DEFAULT_CHANNEL
+            confirmChannel()
             context.deleteFile(TVList.FILE_NAME)
             SP.deleteLike()
             SP.position = 0
@@ -322,6 +288,40 @@ class SettingFragment : Fragment() {
         updateManager = UpdateManager(context, context.appVersionCode)
 
         return binding.root
+    }
+
+    private fun confirmConfig() {
+        val config = binding.config
+        config.text = SP.config?.let { Editable.Factory.getInstance().newEditable(it) }
+            ?: Editable.Factory.getInstance().newEditable(SP.DEFAULT_CONFIG_URL)
+
+        var url = config.text.toString().trim()
+        url = Utils.formatUrl(url)
+        uri = Uri.parse(url)
+        if (uri.scheme == "") {
+            uri = uri.buildUpon().scheme("http").build()
+        }
+        if (uri.isAbsolute) {
+            if (uri.scheme == "file") {
+                requestReadPermissions()
+            } else {
+                TVList.parseUri(uri)
+            }
+        } else {
+            config.error = "无效的地址"
+        }
+        (activity as MainActivity).settingActive()
+    }
+
+    private fun confirmChannel() {
+        val defaultChannel = binding.channel
+        SP.channel = min(max(SP.channel, 1), TVList.listModel.size)
+
+        defaultChannel.text =
+            Editable.Factory.getInstance()
+                .newEditable(SP.channel.toString())
+
+        (activity as MainActivity).settingActive()
     }
 
     fun setServer(server: String) {

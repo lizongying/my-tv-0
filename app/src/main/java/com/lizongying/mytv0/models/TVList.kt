@@ -58,10 +58,6 @@ object TVList {
             Toast.makeText(context, "读取频道失败，请在菜单中进行设置", Toast.LENGTH_LONG).show()
         }
 
-        if (SP.config.isNullOrEmpty()) {
-            SP.config = "https://live.fanmingming.com/tv/m3u/itv.m3u"
-        }
-
         if (SP.configAutoLoad) {
             SP.config?.let {
                 update(it)
