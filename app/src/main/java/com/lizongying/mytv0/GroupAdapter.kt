@@ -1,7 +1,6 @@
 package com.lizongying.mytv0
 
 import android.content.Context
-import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -101,14 +100,14 @@ class GroupAdapter(
         view.setOnKeyListener { _, keyCode, event: KeyEvent? ->
             if (event?.action == KeyEvent.ACTION_UP) {
                 recyclerView.postDelayed({
-                    var oldlikemode = tvGroupModel.isInLikeMode;
+                    val oldLikeMode = tvGroupModel.isInLikeMode;
                     tvGroupModel.isInLikeMode = position == 0
                     if (tvGroupModel.isInLikeMode) {
                         Toast.makeText(context, "收藏模式", Toast.LENGTH_SHORT).show()
-                    } else if ( oldlikemode){
+                    } else if (oldLikeMode) {
                         Toast.makeText(context, "标准模式", Toast.LENGTH_SHORT).show()
                     }
-                },500)
+                }, 500)
             }
             if (event?.action == KeyEvent.ACTION_DOWN) {
                 if (keyCode == KeyEvent.KEYCODE_DPAD_UP && position == 0) {

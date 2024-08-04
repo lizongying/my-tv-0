@@ -22,8 +22,12 @@ class LoadingFragment : Fragment() {
         binding.bar.layoutParams.width = application.px2Px(binding.bar.layoutParams.width)
         binding.bar.layoutParams.height = application.px2Px(binding.bar.layoutParams.height)
 
-        (activity as MainActivity).ready(TAG)
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        (activity as MainActivity).ready(TAG)
     }
 
     override fun onDestroyView() {

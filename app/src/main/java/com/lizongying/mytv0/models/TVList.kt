@@ -59,7 +59,7 @@ object TVList {
         }
 
         if (SP.config.isNullOrEmpty()) {
-            SP.config = "https://live.fanmingming.com/tv/m3u/index.m3u"
+            SP.config = "https://live.fanmingming.com/tv/m3u/itv.m3u"
         }
 
         if (SP.configAutoLoad) {
@@ -94,6 +94,7 @@ object TVList {
                 "EPG状态错误".showToast()
             }
         } catch (e: Exception) {
+            e.printStackTrace()
             Log.e("", "request error $e")
             "EPG请求错误".showToast()
         }
@@ -138,6 +139,7 @@ object TVList {
                 Log.e("Null Pointer Error", e.toString())
                 "无法读取频道".showToast()
             } catch (e: Exception) {
+                e.printStackTrace()
                 Log.e("", "request error $e")
                 "频道请求错误".showToast()
             }
@@ -209,6 +211,7 @@ object TVList {
                 val groupRegex = Regex("""group-title="([^"]+)"""")
 
                 val l = mutableListOf<TV>()
+                val tvMap = mutableMapOf<String, List<TV>>()
                 for ((index, line) in lines.withIndex()) {
                     val trimmedLine = line.trim()
                     if (trimmedLine.startsWith("#EXTM3U")) {
@@ -217,14 +220,15 @@ object TVList {
                     } else if (trimmedLine.startsWith("#EXTINF")) {
                         val info = trimmedLine.split(",")
                         val title = info.last().trim()
-                        val name = nameRegex.find(info.first())?.groupValues?.get(1)?.trim()
+                        var name = nameRegex.find(info.first())?.groupValues?.get(1)?.trim()
+                        name = name ?: title
                         val group = groupRegex.find(info.first())?.groupValues?.get(1)?.trim()
                         val logo = logRegex.find(info.first())?.groupValues?.get(1)?.trim()
                         val uris =
                             if (index + 1 < lines.size) listOf(lines[index + 1].trim()) else emptyList()
                         val tv = TV(
                             -1,
-                            name ?: "",
+                            name,
                             title,
                             "",
                             logo ?: "",
@@ -236,8 +240,29 @@ object TVList {
                             listOf(),
                         )
 
-                        l.add(tv)
+                        if (!tvMap.containsKey(name)) {
+                            tvMap[name] = listOf()
+                        }
+                        tvMap[name] = tvMap[name]!! + tv
                     }
+                }
+                for ((_, tv) in tvMap) {
+                    val uris = tv.map { t -> t.uris }.flatten()
+                    val t0 = tv[0]
+                    val t1 = TV(
+                        -1,
+                        t0.name,
+                        t0.name,
+                        "",
+                        t0.logo,
+                        "",
+                        uris,
+                        mapOf(),
+                        t0.group,
+                        SourceType.UNKNOWN,
+                        listOf(),
+                    )
+                    l.add(t1)
                 }
                 list = l
                 Log.i(TAG, "导入频道 ${list.size}")
@@ -247,6 +272,7 @@ object TVList {
                 val lines = string.lines()
                 var group = ""
                 val l = mutableListOf<TV>()
+                val tvMap = mutableMapOf<String, List<String>>()
                 for (line in lines) {
                     val trimmedLine = line.trim()
                     if (trimmedLine.isNotEmpty()) {
@@ -256,23 +282,30 @@ object TVList {
                             val arr = trimmedLine.split(',').map { it.trim() }
                             val title = arr.first().trim()
                             val uris = arr.drop(1)
-                            val tv = TV(
-                                -1,
-                                "",
-                                title,
-                                "",
-                                "",
-                                "",
-                                uris,
-                                mapOf(),
-                                group,
-                                SourceType.UNKNOWN,
-                                listOf(),
-                            )
 
-                            l.add(tv)
+                            if (!tvMap.containsKey(title)) {
+                                tvMap[title] = listOf()
+                            }
+                            tvMap[title] = tvMap[title]!! + uris
                         }
                     }
+                }
+                for ((title, uris) in tvMap) {
+                    val tv = TV(
+                        -1,
+                        "",
+                        title,
+                        "",
+                        "",
+                        "",
+                        uris,
+                        mapOf(),
+                        group,
+                        SourceType.UNKNOWN,
+                        listOf(),
+                    )
+
+                    l.add(tv)
                 }
                 list = l
                 Log.i(TAG, "导入频道 ${list.size}")
