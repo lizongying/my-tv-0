@@ -80,7 +80,7 @@ class UpdateManager(
             Environment.DIRECTORY_DOWNLOADS,
             apkFileName
         )
-        request.setTitle("${context.resources.getString(R.string.app_name)} ${release.version_name}")
+        request.setTitle("${context.getString(R.string.app_name)} ${release.version_name}")
         request.setNotificationVisibility(Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
         request.setAllowedOverRoaming(false)
         request.setMimeType("application/vnd.android.package-archive")

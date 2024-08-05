@@ -8,7 +8,6 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,11 +22,6 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
 
     private lateinit var groupAdapter: GroupAdapter
     private lateinit var listAdapter: ListAdapter
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        Log.i(TAG, "onCreate")
-        super.onActivityCreated(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -129,7 +123,7 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
         when (keyCode) {
             KeyEvent.KEYCODE_DPAD_RIGHT -> {
                 if (listAdapter.itemCount == 0) {
-                    Toast.makeText(context, "暂无频道", Toast.LENGTH_LONG).show()
+                    R.string.channel_not_exist.showToast()
                     return true
                 }
                 binding.group.visibility = GONE
@@ -195,7 +189,7 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
 //                }
 
                 if (TVList.size() == 0) {
-                    "沒有頻道".showToast()
+                    R.string.channel_not_exist.showToast()
                     return
                 }
                 val groupIndex = TVList.getTVModel().groupIndex

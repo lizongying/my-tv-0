@@ -43,9 +43,14 @@ class TVGroupModel : ViewModel() {
     }
 
     fun clear() {
-        _tvGroupModel.value = mutableListOf(getTVListModel(0)!!, getTVListModel(1)!!)
-        setPosition(0)
-        getTVListModel(1)?.clear()
+        if (SP.showAllChannels) {
+            _tvGroupModel.value = mutableListOf(getTVListModel(0)!!, getTVListModel(1)!!)
+            setPosition(0)
+            getTVListModel(1)?.clear()
+        } else {
+            _tvGroupModel.value = mutableListOf(getTVListModel(0)!!)
+            setPosition(0)
+        }
     }
 
     fun getTVListModel(): TVListModel? {
@@ -56,7 +61,10 @@ class TVGroupModel : ViewModel() {
         if (idx >= size()) {
             return null
         }
-        return _tvGroupModel.value?.get(idx)
+        if (SP.showAllChannels) {
+            return _tvGroupModel.value?.get(idx)
+        }
+        return _tvGroupModel.value?.filter { it.getName() != "全部頻道" }?.get(idx)
     }
 
     init {
@@ -68,7 +76,9 @@ class TVGroupModel : ViewModel() {
         if (_tvGroupModel.value == null) {
             return 0
         }
-
-        return _tvGroupModel.value!!.size
+        if (SP.showAllChannels) {
+            return _tvGroupModel.value!!.size
+        }
+        return _tvGroupModel.value!!.filter { it.getName() != "全部頻道" }.size
     }
 }

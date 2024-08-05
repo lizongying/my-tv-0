@@ -33,6 +33,8 @@ object SP {
 
     private const val KEY_DEFAULT_LIKE = "default_like"
 
+    private const val KEY_SHOW_ALL_CHANNELS = "show all channelS"
+
     private const val KEY_LIKE = "like"
 
     private const val KEY_PROXY = "proxy"
@@ -41,6 +43,7 @@ object SP {
 
     const val DEFAULT_CONFIG_URL = "https://live.fanmingming.com/tv/m3u/itv.m3u"
     const val DEFAULT_CHANNEL = 1
+    const val DEFAULT_SHOW_ALL_CHANNELS = false
 
     private lateinit var sp: SharedPreferences
 
@@ -49,7 +52,7 @@ object SP {
      */
     fun init(context: Context) {
         sp = context.getSharedPreferences(
-            context.resources.getString(R.string.app_name),
+            context.getString(R.string.app_name),
             Context.MODE_PRIVATE
         )
     }
@@ -97,6 +100,10 @@ object SP {
     var channel: Int
         get() = sp.getInt(KEY_CHANNEL, DEFAULT_CHANNEL)
         set(value) = sp.edit().putInt(KEY_CHANNEL, value).apply()
+
+    var showAllChannels: Boolean
+        get() = sp.getBoolean(KEY_SHOW_ALL_CHANNELS, DEFAULT_SHOW_ALL_CHANNELS)
+        set(value) = sp.edit().putBoolean(KEY_SHOW_ALL_CHANNELS, value).apply()
 
     var defaultLike: Boolean
         get() = sp.getBoolean(KEY_DEFAULT_LIKE, false)

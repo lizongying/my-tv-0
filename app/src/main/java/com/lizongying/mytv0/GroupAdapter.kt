@@ -5,7 +5,6 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.marginBottom
 import androidx.core.view.marginStart
@@ -103,9 +102,9 @@ class GroupAdapter(
                     val oldLikeMode = tvGroupModel.isInLikeMode;
                     tvGroupModel.isInLikeMode = position == 0
                     if (tvGroupModel.isInLikeMode) {
-                        Toast.makeText(context, "收藏模式", Toast.LENGTH_SHORT).show()
+                        R.string.favorite_mode.showToast()
                     } else if (oldLikeMode) {
-                        Toast.makeText(context, "标准模式", Toast.LENGTH_SHORT).show()
+                        R.string.standard_mode.showToast()
                     }
                 }, 500)
             }

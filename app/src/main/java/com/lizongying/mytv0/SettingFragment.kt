@@ -5,13 +5,12 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.marginBottom
 import androidx.core.view.marginEnd
 import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
@@ -30,113 +29,99 @@ class SettingFragment : Fragment() {
 
     private lateinit var updateManager: UpdateManager
 
+    private var server = ""
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        val application = requireActivity().applicationContext as MyTVApplication
         val context = requireContext()
+        val mainActivity = (activity as MainActivity)
 
         _binding = SettingBinding.inflate(inflater, container, false)
 
-        binding.versionName.text = "当前版本: v${context.appVersionName}"
+        binding.versionName.text = "v${context.appVersionName}"
         binding.version.text = "https://github.com/lizongying/my-tv-0"
 
         val switchChannelReversal = _binding?.switchChannelReversal
         switchChannelReversal?.isChecked = SP.channelReversal
         switchChannelReversal?.setOnCheckedChangeListener { _, isChecked ->
             SP.channelReversal = isChecked
-            (activity as MainActivity).settingActive()
+            mainActivity.settingActive()
         }
 
         val switchChannelNum = _binding?.switchChannelNum
         switchChannelNum?.isChecked = SP.channelNum
         switchChannelNum?.setOnCheckedChangeListener { _, isChecked ->
             SP.channelNum = isChecked
-            (activity as MainActivity).settingActive()
+            mainActivity.settingActive()
         }
 
         val switchTime = _binding?.switchTime
         switchTime?.isChecked = SP.time
         switchTime?.setOnCheckedChangeListener { _, isChecked ->
             SP.time = isChecked
-            (activity as MainActivity).settingActive()
+            mainActivity.settingActive()
         }
 
         val switchBootStartup = _binding?.switchBootStartup
         switchBootStartup?.isChecked = SP.bootStartup
         switchBootStartup?.setOnCheckedChangeListener { _, isChecked ->
             SP.bootStartup = isChecked
-            (activity as MainActivity).settingActive()
+            mainActivity.settingActive()
         }
 
         val switchRepeatInfo = _binding?.switchRepeatInfo
         switchRepeatInfo?.isChecked = SP.repeatInfo
         switchRepeatInfo?.setOnCheckedChangeListener { _, isChecked ->
             SP.repeatInfo = isChecked
-            (activity as MainActivity).settingActive()
+            mainActivity.settingActive()
         }
 
         val switchConfigAutoLoad = _binding?.switchConfigAutoLoad
         switchConfigAutoLoad?.isChecked = SP.configAutoLoad
         switchConfigAutoLoad?.setOnCheckedChangeListener { _, isChecked ->
             SP.configAutoLoad = isChecked
-            (activity as MainActivity).settingActive()
+            mainActivity.settingActive()
         }
 
         val switchDefaultLike = _binding?.switchDefaultLike
         switchDefaultLike?.isChecked = SP.defaultLike
         switchDefaultLike?.setOnCheckedChangeListener { _, isChecked ->
             SP.defaultLike = isChecked
-            (activity as MainActivity).settingActive()
+            mainActivity.settingActive()
+        }
+
+        val switchShowAllChannels = _binding?.switchShowAllChannels
+        switchShowAllChannels?.isChecked = SP.showAllChannels
+        switchShowAllChannels?.setOnCheckedChangeListener { _, isChecked ->
+            SP.showAllChannels = isChecked
+            TVList.groupModel.tvGroupModel.value?.let { TVList.groupModel.setTVListModelList(it) }
+            mainActivity.update()
+            mainActivity.settingActive()
         }
 
         binding.qrcode.setOnClickListener {
             val imageModalFragment = ModalFragment()
             val size = Utils.dpToPx(200)
-            val img = QrCodeUtil().createQRCodeBitmap(binding.server.text.toString(), size, size)
+            val img = QrCodeUtil().createQRCodeBitmap(server, size, size)
             val args = Bundle()
             args.putParcelable("bitmap", img);
             imageModalFragment.arguments = args
 
             imageModalFragment.show(requireFragmentManager(), ModalFragment.TAG)
-            (activity as MainActivity).settingActive()
+            mainActivity.settingActive()
         }
 
         binding.checkVersion.setOnClickListener {
             requestInstallPermissions()
-            (activity as MainActivity).settingActive()
+            mainActivity.settingActive()
         }
 
-        confirmConfig()
         binding.confirmConfig.setOnClickListener {
             confirmConfig()
-        }
-
-        confirmChannel()
-        binding.confirmChannel.setOnClickListener {
-            confirmChannel()
-        }
-
-        val defaultProxy = binding.proxy
-        defaultProxy.text =
-            SP.proxy.let { Editable.Factory.getInstance().newEditable(it) }
-                ?: Editable.Factory.getInstance().newEditable("")
-        binding.confirmProxy.setOnClickListener {
-            val c = defaultProxy.text.toString().trim()
-            var proxy = ""
-            try {
-                proxy = Uri.parse(c).toString()
-            } catch (e: Exception) {
-                println(e)
-            }
-            if (proxy != "") {
-                SP.proxy = proxy
-                "代理配置成功".showToast(Toast.LENGTH_LONG)
-            } else {
-                defaultProxy.error = "无效的代理"
-            }
-            (activity as MainActivity).settingActive()
         }
 
         binding.clear.setOnClickListener {
@@ -148,7 +133,9 @@ class SettingFragment : Fragment() {
             SP.deleteLike()
             SP.position = 0
             TVList.setPosition(0)
-            "已恢复默认".showToast(Toast.LENGTH_LONG)
+            SP.showAllChannels = SP.DEFAULT_SHOW_ALL_CHANNELS
+
+            R.string.config_restored.showToast()
         }
 
         binding.appreciate.setOnClickListener {
@@ -159,7 +146,7 @@ class SettingFragment : Fragment() {
             imageModalFragment.arguments = args
 
             imageModalFragment.show(requireFragmentManager(), ModalFragment.TAG)
-            (activity as MainActivity).settingActive()
+            mainActivity.settingActive()
         }
 
         binding.setting.setOnClickListener {
@@ -169,8 +156,6 @@ class SettingFragment : Fragment() {
         binding.exit.setOnClickListener {
             requireActivity().finishAffinity()
         }
-
-        val application = requireActivity().applicationContext as MyTVApplication
 
         binding.content.layoutParams.width =
             application.px2Px(binding.content.layoutParams.width)
@@ -185,6 +170,7 @@ class SettingFragment : Fragment() {
         binding.version.textSize = application.px2PxFont(binding.version.textSize)
         val layoutParamsVersion = binding.version.layoutParams as ViewGroup.MarginLayoutParams
         layoutParamsVersion.topMargin = application.px2Px(binding.version.marginTop)
+        layoutParamsVersion.bottomMargin = application.px2Px(binding.version.marginBottom)
         binding.version.layoutParams = layoutParamsVersion
 
         val btnWidth =
@@ -198,9 +184,9 @@ class SettingFragment : Fragment() {
         btnLayoutParams.marginEnd = application.px2Px(binding.confirmConfig.marginEnd)
 
         val txtWidth =
-            application.px2Px(binding.config.layoutParams.width)
+            application.px2Px(binding.versionName.layoutParams.width)
         val txtTextSize =
-            application.px2PxFont(binding.config.textSize)
+            application.px2PxFont(binding.versionName.textSize)
 
         binding.checkVersion.layoutParams.width = btnWidth
         binding.checkVersion.layoutParams.height = btnHeight
@@ -215,32 +201,10 @@ class SettingFragment : Fragment() {
         binding.qrcode.textSize = btnTextSize
         binding.qrcode.layoutParams = btnLayoutParams
 
-        binding.server.layoutParams.width = txtWidth
-        binding.server.textSize = txtTextSize
-
         binding.confirmConfig.layoutParams.width = btnWidth
         binding.confirmConfig.layoutParams.height = btnHeight
         binding.confirmConfig.textSize = btnTextSize
         binding.confirmConfig.layoutParams = btnLayoutParams
-
-        binding.config.layoutParams.width = txtWidth
-        binding.config.textSize = txtTextSize
-
-        binding.confirmChannel.layoutParams.width = btnWidth
-        binding.confirmChannel.layoutParams.height = btnHeight
-        binding.confirmChannel.textSize = btnTextSize
-        binding.confirmChannel.layoutParams = btnLayoutParams
-
-        binding.channel.layoutParams.width = txtWidth
-        binding.channel.textSize = txtTextSize
-
-        binding.confirmProxy.layoutParams.width = btnWidth
-        binding.confirmProxy.layoutParams.height = btnHeight
-        binding.confirmProxy.textSize = btnTextSize
-        binding.confirmProxy.layoutParams = btnLayoutParams
-
-        binding.proxy.layoutParams.width = txtWidth
-        binding.proxy.textSize = txtTextSize
 
         binding.clear.layoutParams.width = btnWidth
         binding.clear.layoutParams.height = btnHeight
@@ -285,17 +249,20 @@ class SettingFragment : Fragment() {
         binding.switchDefaultLike.textSize = textSize
         binding.switchDefaultLike.layoutParams = layoutParamsChannelReversal
 
+        binding.switchShowAllChannels.textSize = textSize
+        binding.switchShowAllChannels.layoutParams = layoutParamsChannelReversal
+
         updateManager = UpdateManager(context, context.appVersionCode)
 
         return binding.root
     }
 
     private fun confirmConfig() {
-        val config = binding.config
-        config.text = SP.config?.let { Editable.Factory.getInstance().newEditable(it) }
-            ?: Editable.Factory.getInstance().newEditable(SP.DEFAULT_CONFIG_URL)
+        if (SP.config == null) {
+            return
+        }
 
-        var url = config.text.toString().trim()
+        var url = SP.config!!
         url = Utils.formatUrl(url)
         uri = Uri.parse(url)
         if (uri.scheme == "") {
@@ -308,24 +275,19 @@ class SettingFragment : Fragment() {
                 TVList.parseUri(uri)
             }
         } else {
-            config.error = "无效的地址"
+            R.string.invalid_config_address.showToast()
         }
         (activity as MainActivity).settingActive()
     }
 
     private fun confirmChannel() {
-        val defaultChannel = binding.channel
         SP.channel = min(max(SP.channel, 1), TVList.listModel.size)
-
-        defaultChannel.text =
-            Editable.Factory.getInstance()
-                .newEditable(SP.channel.toString())
 
         (activity as MainActivity).settingActive()
     }
 
     fun setServer(server: String) {
-        binding.server.text = "http://$server"
+        this.server = "http://$server"
     }
 
     fun setVersionName(versionName: String) {
@@ -342,9 +304,6 @@ class SettingFragment : Fragment() {
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         if (!hidden) {
-            val config = binding.config
-            config.text = SP.config?.let { Editable.Factory.getInstance().newEditable(it) }
-                ?: Editable.Factory.getInstance().newEditable("")
         }
     }
 
@@ -419,7 +378,7 @@ class SettingFragment : Fragment() {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 TVList.parseUri(uri)
             } else {
-                "权限授权失败".showToast(Toast.LENGTH_LONG)
+                R.string.authorization_failed.showToast()
             }
         }
         if (requestCode == PERMISSIONS_REQUEST_CODE) {
@@ -433,7 +392,7 @@ class SettingFragment : Fragment() {
             if (allPermissionsGranted) {
                 updateManager.checkAndUpdate()
             } else {
-                "权限授权失败".showToast(Toast.LENGTH_LONG)
+                R.string.authorization_failed.showToast()
             }
         }
     }

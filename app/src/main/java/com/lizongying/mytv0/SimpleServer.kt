@@ -16,32 +16,28 @@ import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 
 
-class SimpleServer(private val context: Context, port: Int) : NanoHTTPD(port) {
+class SimpleServer(private val context: Context) : NanoHTTPD(PORT) {
     private val handler = Handler(Looper.getMainLooper())
 
     init {
         try {
             start()
             val host = PortUtil.lan()
-            (context as MainActivity).setServer("$host:$port")
-            println("Server running on $host:$port")
-        } catch (e: IOException) {
+            (context as MainActivity).setServer("$host:$PORT")
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
     override fun serve(session: IHTTPSession): Response {
         return when (session.uri) {
-            "/api/hello" -> handleHelloRequest(session)
             "/api/channels" -> handleChannelsRequest(session)
             "/api/uri" -> handleUriRequest(session)
+            "/api/channel" -> handleChannel(session)
+            "/api/proxy" -> handleProxy(session)
+            "/api/settings" -> handleSettings()
             else -> handleStaticContent(session)
         }
-    }
-
-    private fun handleHelloRequest(session: IHTTPSession): Response {
-        val response = "Hello from NanoHTTPD API!"
-        return newFixedLengthResponse(Response.Status.OK, "text/plain", response)
     }
 
     private fun handleChannelsRequest(session: IHTTPSession): Response {
@@ -52,20 +48,21 @@ class SimpleServer(private val context: Context, port: Int) : NanoHTTPD(port) {
                 handler.post {
                     if (TVList.str2List(it)) {
                         File(context.filesDir, TVList.FILE_NAME).writeText(it)
-                        "频道导入成功".showToast()
+                        R.string.channel_import_success.showToast()
                     } else {
-                        "频道导入错误".showToast()
+                        R.string.channel_import_error.showToast()
                     }
                 }
             }
-        } catch (e: IOException) {
+        } catch (e: Exception) {
+            e.printStackTrace()
             return newFixedLengthResponse(
                 Response.Status.INTERNAL_ERROR,
                 MIME_PLAINTEXT,
-                "SERVER INTERNAL ERROR: IOException: " + e.message
+                e.message
             )
         }
-        val response = "频道读取中"
+        val response = ""
         return newFixedLengthResponse(Response.Status.OK, "text/plain", response)
     }
 
@@ -110,6 +107,95 @@ class SimpleServer(private val context: Context, port: Int) : NanoHTTPD(port) {
         return newFixedLengthResponse(Response.Status.OK, "text/plain", response)
     }
 
+    data class ReqChannel(
+        val channel: Int,
+    )
+
+    private fun handleChannel(session: IHTTPSession): Response {
+        try {
+            val map = HashMap<String, String>()
+            session.parseBody(map)
+            map["postData"]?.let {
+                handler.post {
+                    val reqChannel = Gson().fromJson(it, ReqChannel::class.java)
+                    if (reqChannel.channel > 1) {
+                        SP.channel = reqChannel.channel
+                        R.string.default_channel_set_success.showToast()
+                    } else {
+                        R.string.default_channel_set_failure.showToast()
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return newFixedLengthResponse(
+                Response.Status.INTERNAL_ERROR,
+                MIME_PLAINTEXT,
+                e.message
+            )
+        }
+        val response = ""
+        return newFixedLengthResponse(Response.Status.OK, "text/plain", response)
+    }
+
+    data class RespSettings(
+        val channelUri: String,
+        val channelDefault: Int,
+        val proxy: String,
+    )
+
+    private fun handleSettings(): Response {
+        val response: String
+        try {
+            val respSettings = RespSettings(
+                channelUri = SP.config ?: "",
+                channelDefault = SP.channel,
+                proxy = SP.proxy ?: "",
+            )
+            response = Gson().toJson(respSettings) ?: ""
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return newFixedLengthResponse(
+                Response.Status.INTERNAL_ERROR,
+                MIME_PLAINTEXT,
+                e.message
+            )
+        }
+
+        return newFixedLengthResponse(Response.Status.OK, "application/json", response)
+    }
+
+    data class ReqProxy(
+        val proxy: String,
+    )
+
+    private fun handleProxy(session: IHTTPSession): Response {
+        try {
+            val map = HashMap<String, String>()
+            session.parseBody(map)
+            map["postData"]?.let {
+                handler.post {
+                    val reqProxy = Gson().fromJson(it, ReqProxy::class.java)
+                    if (reqProxy.proxy.isNotEmpty()) {
+                        SP.proxy = reqProxy.proxy
+                        R.string.default_proxy_set_success.showToast()
+                    } else {
+                        R.string.default_proxy_set_failure.showToast()
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return newFixedLengthResponse(
+                Response.Status.INTERNAL_ERROR,
+                MIME_PLAINTEXT,
+                e.message
+            )
+        }
+        val response = ""
+        return newFixedLengthResponse(Response.Status.OK, "text/plain", response)
+    }
+
     private fun handleStaticContent(session: IHTTPSession): Response {
         val html = loadHtmlFromResource(R.raw.index)
         return newFixedLengthResponse(Response.Status.OK, "text/html", html)
@@ -122,5 +208,6 @@ class SimpleServer(private val context: Context, port: Int) : NanoHTTPD(port) {
 
     companion object {
         const val TAG = "SimpleServer"
+        const val PORT = 34567
     }
 }

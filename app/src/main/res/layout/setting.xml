@@ -15,7 +15,7 @@
         >
     <LinearLayout
         android:id="@+id/content"
-        android:layout_width="350dp"
+        android:layout_width="330dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingTop="20dp"
@@ -23,151 +23,97 @@
         android:paddingRight="10dp"
         android:background="@color/blur"
         >
-        <TextView
-            android:id="@+id/name"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/app_name"
-            android:textSize="16sp" />
+            android:orientation="horizontal"
+            >
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name"
+                android:textSize="16sp"
+                android:layout_gravity="bottom" />
+            <TextView
+                android:id="@+id/version_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="14sp"
+                android:layout_gravity="bottom"
+                android:layout_marginStart="8dp" />
+        </LinearLayout>
+
         <TextView
             android:id="@+id/version"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
             android:text=""
             android:textSize="14sp"
             />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             >
             <Button
+                android:id="@+id/qrcode"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:textSize="14sp"
+                android:text="@string/server" />
+            <Button
+                android:id="@+id/confirm_config"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:textSize="14sp"
+                android:text="@string/channels" />
+            <Button
+                android:id="@+id/clear"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:text="@string/clear"
+                android:textSize="14sp"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <Button
                 android:id="@+id/check_version"
                 android:layout_width="100dp"
-                android:layout_height="45dp"
+                android:layout_height="wrap_content"
                 android:layout_marginEnd="5dp"
                 android:textSize="14sp"
                 android:text="@string/check_version"
                 />
-            <ProgressBar
-                android:visibility="gone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                />
-            <TextView
-                android:id="@+id/version_name"
-                android:text=""
-                android:textSize="14sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
             <Button
-                android:id="@+id/qrcode"
+                android:id="@+id/exit"
                 android:layout_width="100dp"
-                android:layout_height="45dp"
-                android:layout_marginEnd="5dp"
-                android:textSize="14sp"
-                android:text="@string/server" />
-            <TextView
-                android:id="@+id/server"
-                android:layout_width="245dp"
                 android:layout_height="wrap_content"
-                android:text=""
+                android:layout_marginEnd="5dp"
+                android:text="@string/exit"
+                android:textSize="14sp"
+                />
+            <Button
+                android:id="@+id/appreciate"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:text="@string/appreciate"
                 android:textSize="14sp"
                 />
         </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <Button
-                android:id="@+id/confirm_config"
-                android:layout_width="100dp"
-                android:layout_height="45dp"
-                android:layout_marginEnd="5dp"
-                android:textSize="14sp"
-                android:text="@string/channels" />
-            <EditText
-                android:id="@+id/config"
-                android:layout_width="245dp"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:autofillHints=""
-                android:hint="@string/channels"
-                android:scrollbars="vertical"
-                android:inputType="textMultiLine" />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <Button
-                android:id="@+id/confirm_channel"
-                android:layout_width="100dp"
-                android:layout_height="45dp"
-                android:layout_marginEnd="5dp"
-                android:textSize="14sp"
-                android:text="@string/channel" />
-            <EditText
-                android:id="@+id/channel"
-                android:layout_width="245dp"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:autofillHints=""
-                android:hint="@string/channel"
-                android:scrollbars="vertical"
-                android:inputType="textMultiLine" />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <Button
-                android:id="@+id/confirm_proxy"
-                android:layout_width="100dp"
-                android:layout_height="45dp"
-                android:layout_marginEnd="5dp"
-                android:textSize="14sp"
-                android:text="@string/proxy" />
-            <EditText
-                android:id="@+id/proxy"
-                android:layout_width="245dp"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:autofillHints=""
-                android:hint="@string/proxy"
-                android:scrollbars="vertical"
-                android:inputType="textMultiLine" />
-        </LinearLayout>
-        <Button
-            android:id="@+id/clear"
-            android:layout_width="100dp"
-            android:layout_height="45dp"
-            android:layout_marginTop="0dp"
-            android:text="@string/clear"
-            android:textSize="14sp"
-            />
-        <Button
-            android:id="@+id/appreciate"
-            android:layout_width="100dp"
-            android:layout_height="45dp"
-            android:layout_marginTop="0dp"
-            android:text="@string/appreciate"
-            android:textSize="14sp"
-            />
-        <Button
-            android:id="@+id/exit"
-            android:layout_width="100dp"
-            android:layout_height="45dp"
-            android:layout_marginTop="0dp"
-            android:text="@string/exit"
-            android:textSize="14sp"
-            />
+
         <Switch
             android:id="@+id/switch_channel_reversal"
             android:text="@string/title_channel_reversal"
@@ -214,6 +160,14 @@
         <Switch
             android:id="@+id/switch_default_like"
             android:text="@string/title_default_like"
+            android:textSize="14sp"
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Switch
+            android:id="@+id/switch_show_all_channels"
+            android:text="@string/show_all_channels"
             android:textSize="14sp"
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"

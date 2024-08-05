@@ -9,6 +9,7 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.multidex.MultiDex
 import androidx.multidex.MultiDexApplication
+import java.util.Locale
 
 class MyTVApplication : MultiDexApplication() {
 
@@ -99,8 +100,13 @@ class MyTVApplication : MultiDexApplication() {
         return (sp * ratio * scale).toFloat()
     }
 
-    override fun attachBaseContext(base: Context?) {
-        super.attachBaseContext(base)
+    override fun attachBaseContext(base: Context) {
+        //Locale.SIMPLIFIED_CHINESE
+        //Locale.TRADITIONAL_CHINESE
+        val locale = Locale.TRADITIONAL_CHINESE
+        val context = LocaleContextWrapper.wrap(base, locale)
+        super.attachBaseContext(context)
+
         MultiDex.install(this)
     }
 }

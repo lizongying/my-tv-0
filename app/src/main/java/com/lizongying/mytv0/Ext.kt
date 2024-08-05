@@ -87,3 +87,11 @@ private fun hashSignature(signature: Signature): String {
 fun String.showToast(duration: Int = Toast.LENGTH_SHORT) {
     MyTVApplication.getInstance().toast(this, duration)
 }
+
+fun Int.getString(): String {
+    return MyTVApplication.getInstance().getString(this)
+}
+
+fun Int.showToast(duration: Int = Toast.LENGTH_SHORT) {
+    this.getString().showToast(duration)
+}
