@@ -42,7 +42,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
                         android:gravity="start"
-                        android:textColor="#FFEEEEEE"
+                        android:textColor="@color/title_blur"
                         android:textSize="20sp" />
 
                     <TextView
@@ -53,7 +53,7 @@
                         android:layout_marginTop="8dp"
                         android:gravity="start"
                         android:singleLine="true"
-                        android:textColor="#B3EEEEEE"
+                        android:textColor="@color/description_blur"
                         android:textSize="14sp" />
                 </LinearLayout>
         </LinearLayout>

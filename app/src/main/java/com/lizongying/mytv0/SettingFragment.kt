@@ -2,6 +2,7 @@ package com.lizongying.mytv0
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
@@ -212,11 +213,23 @@ class SettingFragment : Fragment() {
                             R.color.focus
                         )
                     )
+                    i.setTextColor(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.white
+                        )
+                    )
                 } else {
                     i.background = ColorDrawable(
                         ContextCompat.getColor(
                             context,
                             R.color.description_blur
+                        )
+                    )
+                    i.setTextColor(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.blur
                         )
                     )
                 }

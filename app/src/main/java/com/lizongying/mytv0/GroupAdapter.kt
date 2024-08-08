@@ -166,7 +166,7 @@ class GroupAdapter(
                 binding.title.setTextColor(
                     ContextCompat.getColor(
                         context,
-                        R.color.description_blur
+                        R.color.title_blur
                     )
                 )
             }
