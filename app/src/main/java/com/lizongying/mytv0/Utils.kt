@@ -4,15 +4,52 @@ import android.content.res.Resources
 import android.os.Build
 import android.util.TypedValue
 import com.google.gson.Gson
+import com.lizongying.mytv0.ISP.CHINA_MOBILE
+import com.lizongying.mytv0.ISP.CHINA_TELECOM
+import com.lizongying.mytv0.ISP.CHINA_UNICOM
+import com.lizongying.mytv0.ISP.UNKNOWN
+import com.lizongying.mytv0.models.TVList
 import com.lizongying.mytv0.requests.TimeResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+
+enum class ISP {
+    UNKNOWN,
+    CHINA_MOBILE,
+    CHINA_UNICOM,
+    CHINA_TELECOM;
+
+    fun fromName(name: String): ISP {
+        val isp = when (name) {
+            "ChinaMobile" -> CHINA_MOBILE
+            "ChinaUnicom" -> CHINA_UNICOM
+            "ChinaTelecom" -> CHINA_TELECOM
+            else -> UNKNOWN
+        }
+        return isp
+    }
+}
+
+data class IpInfo(
+    val ip: String,
+    val location: Location
+)
+
+data class Location(
+    val city_name: String,
+    val country_name: String,
+    val isp_domain: String,
+    val latitude: String,
+    val longitude: String,
+    val owner_domain: String,
+    val region_name: String,
+)
+
 
 object Utils {
     private var between: Long = 0
@@ -35,8 +72,15 @@ object Utils {
                 between = System.currentTimeMillis() - currentTimeMillis
             }
         } catch (e: Exception) {
-            println("Failed to retrieve timestamp from server: ${e.message}")
+            e.printStackTrace()
         }
+//
+//        try {
+//            val isp = getISP()
+//            TVList.setISP(isp)
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
     }
 
     init {
@@ -57,13 +101,38 @@ object Utils {
                 .build()
             try {
                 client.newCall(request).execute().use { response ->
-                    if (!response.isSuccessful) throw IOException("Unexpected code $response")
+                    if (!response.isSuccessful) return@withContext 0
                     val string = response.body?.string()
                     Gson().fromJson(string, TimeResponse::class.java).data.t.toLong()
                 }
-            } catch (e: IOException) {
-                // Handle network errors
-                throw IOException("Error during network request", e)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                0
+            }
+        }
+    }
+
+    suspend fun getISP(): ISP {
+        return withContext(Dispatchers.IO) {
+            val client = okhttp3.OkHttpClient.Builder().build()
+            val request = okhttp3.Request.Builder()
+                .url("https://api.myip.la/json")
+                .build()
+            try {
+                client.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) return@withContext UNKNOWN
+                    val string = response.body?.string()
+                    val isp = Gson().fromJson(string, IpInfo::class.java).location.isp_domain
+                    when (isp) {
+                        "ChinaMobile" -> CHINA_MOBILE
+                        "ChinaUnicom" -> CHINA_UNICOM
+                        "ChinaTelecom" -> CHINA_TELECOM
+                        else -> UNKNOWN
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                UNKNOWN
             }
         }
     }

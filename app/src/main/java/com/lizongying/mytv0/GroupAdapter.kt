@@ -102,9 +102,9 @@ class GroupAdapter(
                     val oldLikeMode = tvGroupModel.isInLikeMode;
                     tvGroupModel.isInLikeMode = position == 0
                     if (tvGroupModel.isInLikeMode) {
-                        R.string.favorite_mode.showToast()
+//                        R.string.favorite_mode.showToast()
                     } else if (oldLikeMode) {
-                        R.string.standard_mode.showToast()
+//                        R.string.standard_mode.showToast()
                     }
                 }, 500)
             }
@@ -152,7 +152,11 @@ class GroupAdapter(
     class ViewHolder(private val context: Context, private val binding: GroupItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bindTitle(text: String) {
-            binding.title.text = text
+            binding.title.text = when (text) {
+                "我的收藏" -> context.getString(R.string.my_favorites)
+                "全部頻道" -> context.getString(R.string.all_channels)
+                else -> text
+            }
         }
 
         fun focus(hasFocus: Boolean) {

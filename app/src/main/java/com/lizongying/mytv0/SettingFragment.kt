@@ -2,6 +2,7 @@ package com.lizongying.mytv0
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -188,69 +189,77 @@ class SettingFragment : Fragment() {
         val txtTextSize =
             application.px2PxFont(binding.versionName.textSize)
 
-        binding.checkVersion.layoutParams.width = btnWidth
-        binding.checkVersion.layoutParams.height = btnHeight
-        binding.checkVersion.textSize = btnTextSize
-        binding.checkVersion.layoutParams = btnLayoutParams
-
         binding.versionName.layoutParams.width = txtWidth
         binding.versionName.textSize = txtTextSize
 
-        binding.qrcode.layoutParams.width = btnWidth
-        binding.qrcode.layoutParams.height = btnHeight
-        binding.qrcode.textSize = btnTextSize
-        binding.qrcode.layoutParams = btnLayoutParams
+        for (i in listOf(
+            binding.qrcode,
+            binding.confirmConfig,
+            binding.clear,
+            binding.checkVersion,
+            binding.exit,
+            binding.appreciate,
+        )) {
+            i.layoutParams.width = btnWidth
+            i.layoutParams.height = btnHeight
+            i.textSize = btnTextSize
+            i.layoutParams = btnLayoutParams
+            i.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    i.background = ColorDrawable(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.focus
+                        )
+                    )
+                } else {
+                    i.background = ColorDrawable(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.description_blur
+                        )
+                    )
+                }
+            }
+        }
 
-        binding.confirmConfig.layoutParams.width = btnWidth
-        binding.confirmConfig.layoutParams.height = btnHeight
-        binding.confirmConfig.textSize = btnTextSize
-        binding.confirmConfig.layoutParams = btnLayoutParams
+        val textSizeSwitch = application.px2PxFont(binding.switchChannelReversal.textSize)
 
-        binding.clear.layoutParams.width = btnWidth
-        binding.clear.layoutParams.height = btnHeight
-        binding.clear.textSize = btnTextSize
-        binding.clear.layoutParams = btnLayoutParams
-
-        binding.appreciate.layoutParams.width = btnWidth
-        binding.appreciate.layoutParams.height = btnHeight
-        binding.appreciate.textSize = btnTextSize
-        binding.appreciate.layoutParams = btnLayoutParams
-
-        binding.exit.layoutParams.width = btnWidth
-        binding.exit.layoutParams.height = btnHeight
-        binding.exit.textSize = btnTextSize
-        binding.exit.layoutParams = btnLayoutParams
-
-        val textSize = application.px2PxFont(binding.switchChannelReversal.textSize)
-
-        val layoutParamsChannelReversal =
+        val layoutParamsSwitch =
             binding.switchChannelReversal.layoutParams as ViewGroup.MarginLayoutParams
-        layoutParamsChannelReversal.topMargin =
+        layoutParamsSwitch.topMargin =
             application.px2Px(binding.switchChannelReversal.marginTop)
 
-        binding.switchChannelReversal.textSize = textSize
-        binding.switchChannelReversal.layoutParams = layoutParamsChannelReversal
-
-        binding.switchChannelNum.textSize = textSize
-        binding.switchChannelNum.layoutParams = layoutParamsChannelReversal
-
-        binding.switchTime.textSize = textSize
-        binding.switchTime.layoutParams = layoutParamsChannelReversal
-
-        binding.switchBootStartup.textSize = textSize
-        binding.switchBootStartup.layoutParams = layoutParamsChannelReversal
-
-        binding.switchRepeatInfo.textSize = textSize
-        binding.switchRepeatInfo.layoutParams = layoutParamsChannelReversal
-
-        binding.switchConfigAutoLoad.textSize = textSize
-        binding.switchConfigAutoLoad.layoutParams = layoutParamsChannelReversal
-
-        binding.switchDefaultLike.textSize = textSize
-        binding.switchDefaultLike.layoutParams = layoutParamsChannelReversal
-
-        binding.switchShowAllChannels.textSize = textSize
-        binding.switchShowAllChannels.layoutParams = layoutParamsChannelReversal
+        for (i in listOf(
+            binding.switchChannelReversal,
+            binding.switchChannelNum,
+            binding.switchTime,
+            binding.switchBootStartup,
+            binding.switchRepeatInfo,
+            binding.switchConfigAutoLoad,
+            binding.switchDefaultLike,
+            binding.switchShowAllChannels,
+        )) {
+            i.textSize = textSizeSwitch
+            i.layoutParams = layoutParamsSwitch
+            i.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    i.setTextColor(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.focus
+                        )
+                    )
+                } else {
+                    i.setTextColor(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.title_blur
+                        )
+                    )
+                }
+            }
+        }
 
         updateManager = UpdateManager(context, context.appVersionCode)
 

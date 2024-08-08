@@ -14,16 +14,16 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import com.lizongying.mytv0.models.TVList
 import java.util.Locale
 
 
-class MainActivity : FragmentActivity() {
+class MainActivity : AppCompatActivity() {
 
     private var ok = 0
     private var playerFragment = PlayerFragment()
@@ -144,26 +144,26 @@ class MainActivity : FragmentActivity() {
             if (SP.channel > 0) {
                 if (SP.channel < TVList.listModel.size) {
                     TVList.setPosition(SP.channel - 1)
-                    R.string.play_default_channel.showToast()
+//                    R.string.play_default_channel.showToast()
                 } else {
                     SP.channel = 0
                     TVList.setPosition(0)
-                    R.string.default_channel_out_of_range.showToast()
+//                    R.string.default_channel_out_of_range.showToast()
                 }
             } else {
                 if (!TVList.setPosition(SP.position)) {
                     TVList.setPosition(0)
-                    R.string.last_channel_out_of_range.showToast()
+//                    R.string.last_channel_out_of_range.showToast()
                 } else {
-                    R.string.play_last_channel.showToast()
+//                    R.string.play_last_channel.showToast()
                 }
             }
 
             TVList.groupModel.isInLikeMode = SP.defaultLike;
             if (TVList.groupModel.isInLikeMode) {
-                R.string.favorite_mode.showToast()
+//                R.string.favorite_mode.showToast()
             } else {
-                R.string.standard_mode.showToast()
+//                R.string.standard_mode.showToast()
             }
 
             // TODO group position

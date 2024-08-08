@@ -41,4 +41,8 @@
     <string name="default_channel_set_failure">Failed to set default channel</string>
     <string name="default_proxy_set_success">Proxy set successfully</string>
     <string name="default_proxy_set_failure">Failed to set proxy</string>
+    <string name="start_config_channel">Start Configuring Channel</string>
+    <string name="start_set_default_channel">Start Setting Default Channel</string>
+    <string name="my_favorites">My Favorites</string>
+    <string name="all_channels">All Channels</string>
 </resources>

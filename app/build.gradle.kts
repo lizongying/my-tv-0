@@ -74,6 +74,7 @@ fun getVersionName(): String {
 }
 
 dependencies {
+    implementation(libs.appcompat)
     // For AGP 7.4+
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
@@ -96,7 +97,6 @@ dependencies {
 
     implementation(libs.core.ktx)
     implementation(libs.coroutines)
-    implementation(libs.leanback)
 
     implementation(libs.multidex)
     implementation(libs.constraintlayout)

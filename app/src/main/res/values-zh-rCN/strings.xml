@@ -41,4 +41,8 @@
     <string name="default_channel_set_failure">默认频道设置失败</string>
     <string name="default_proxy_set_success">代理地址设置成功</string>
     <string name="default_proxy_set_failure">代理地址设置失败</string>
+    <string name="start_config_channel">开始配置频道</string>
+    <string name="start_set_default_channel">开始设置默认频道</string>
+    <string name="my_favorites">我的收藏</string>
+    <string name="all_channels">全部频道</string>
 </resources>

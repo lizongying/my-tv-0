@@ -22,7 +22,7 @@
                 android:id="@+id/logo"
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
-                android:background="@drawable/rounded_white_left"
+                android:background="@drawable/rounded_dark_left"
                 android:padding="10dp"
 
                 />

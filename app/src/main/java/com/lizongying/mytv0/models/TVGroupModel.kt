@@ -42,6 +42,15 @@ class TVGroupModel : ViewModel() {
         _tvGroupModel.value = newList
     }
 
+    fun clearNotFilter() {
+        _tvGroupModel.value = mutableListOf(
+            (_tvGroupModel.value as List<TVListModel>)[0],
+            (_tvGroupModel.value as List<TVListModel>)[1]
+        )
+        setPosition(0)
+        (_tvGroupModel.value as List<TVListModel>)[1].clear()
+    }
+
     fun clear() {
         if (SP.showAllChannels) {
             _tvGroupModel.value = mutableListOf(getTVListModel(0)!!, getTVListModel(1)!!)
@@ -80,5 +89,9 @@ class TVGroupModel : ViewModel() {
             return _tvGroupModel.value!!.size
         }
         return _tvGroupModel.value!!.filter { it.getName() != "全部頻道" }.size
+    }
+
+    companion object {
+        const val TAG = "TVGroupModel"
     }
 }

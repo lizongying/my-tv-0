@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/setting"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -60,24 +61,27 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             >
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/qrcode"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
+                android:background="@color/description_blur"
                 android:layout_marginEnd="5dp"
                 android:textSize="14sp"
                 android:text="@string/server" />
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/confirm_config"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
+                android:background="@color/description_blur"
                 android:layout_marginEnd="5dp"
                 android:textSize="14sp"
                 android:text="@string/channels" />
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/clear"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
+                android:background="@color/description_blur"
                 android:layout_marginEnd="5dp"
                 android:text="@string/clear"
                 android:textSize="14sp"
@@ -87,91 +91,125 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
             android:orientation="horizontal">
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/check_version"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
+                android:background="@color/description_blur"
                 android:layout_marginEnd="5dp"
                 android:textSize="14sp"
                 android:text="@string/check_version"
                 />
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/exit"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
+                android:background="@color/description_blur"
                 android:layout_marginEnd="5dp"
                 android:text="@string/exit"
                 android:textSize="14sp"
                 />
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/appreciate"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
+                android:background="@color/description_blur"
                 android:layout_marginEnd="5dp"
                 android:text="@string/appreciate"
                 android:textSize="14sp"
                 />
         </LinearLayout>
 
-        <Switch
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switch_channel_reversal"
             android:text="@string/title_channel_reversal"
+            android:textColor="@color/title_blur"
             android:textSize="14sp"
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <Switch
+            android:layout_height="wrap_content"
+            app:thumbTint="@color/switch_thumb_color"
+            app:trackTint="@color/switch_track_color"
+            />
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switch_channel_num"
             android:text="@string/title_channel_num"
+            android:textColor="@color/title_blur"
             android:textSize="14sp"
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <Switch
+            android:layout_height="wrap_content"
+            app:thumbTint="@color/switch_thumb_color"
+            app:trackTint="@color/switch_track_color"
+            />
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switch_time"
             android:text="@string/title_time"
+            android:textColor="@color/title_blur"
             android:textSize="14sp"
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <Switch
+            android:layout_height="wrap_content"
+            app:thumbTint="@color/switch_thumb_color"
+            app:trackTint="@color/switch_track_color"
+            />
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switch_boot_startup"
             android:text="@string/title_boot_startup"
+            android:textColor="@color/title_blur"
             android:layout_marginTop="5dp"
             android:textSize="14sp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <Switch
+            android:layout_height="wrap_content"
+            app:thumbTint="@color/switch_thumb_color"
+            app:trackTint="@color/switch_track_color"
+            />
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switch_repeat_info"
             android:text="@string/title_repeat_info"
+            android:textColor="@color/title_blur"
             android:textSize="14sp"
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <Switch
+            android:layout_height="wrap_content"
+            app:thumbTint="@color/switch_thumb_color"
+            app:trackTint="@color/switch_track_color"
+            />
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switch_config_auto_load"
             android:text="@string/title_config_auto_load"
+            android:textColor="@color/title_blur"
             android:textSize="14sp"
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <Switch
+            android:layout_height="wrap_content"
+            app:thumbTint="@color/switch_thumb_color"
+            app:trackTint="@color/switch_track_color"
+            />
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switch_default_like"
             android:text="@string/title_default_like"
+            android:textColor="@color/title_blur"
             android:textSize="14sp"
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <Switch
+            android:layout_height="wrap_content"
+            app:thumbTint="@color/switch_thumb_color"
+            app:trackTint="@color/switch_track_color"
+            />
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switch_show_all_channels"
             android:text="@string/show_all_channels"
+            android:textColor="@color/title_blur"
             android:textSize="14sp"
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            app:thumbTint="@color/switch_thumb_color"
+            app:trackTint="@color/switch_track_color"
+            />
     </LinearLayout>
     </ScrollView>
 </LinearLayout>

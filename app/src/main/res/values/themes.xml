@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="Theme.MyTV0" parent="@style/Theme.Leanback">
+    <style name="Theme.MyTV0" parent="@style/Theme.AppCompat.DayNight">
         <item name="windowNoTitle">true</item>
     </style>
 </resources>
