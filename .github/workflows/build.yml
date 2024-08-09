@@ -43,7 +43,7 @@ jobs:
       - name: Run build with Gradle wrapper
         run: ./gradlew clean && ./gradlew assembleRelease
 
-      - name: Sign app APK mobile
+      - name: Sign app APK
         id: sign_app
         uses: r0adkll/sign-android-release@v1
         with:
