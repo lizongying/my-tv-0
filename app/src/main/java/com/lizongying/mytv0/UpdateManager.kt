@@ -67,11 +67,12 @@ class UpdateManager(
         val apkFileName = "$apkName-${release.version_name}.apk"
         val downloadManager =
             context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+        val v = release.version_name?.removePrefix("v")
         val request =
-            Request(Uri.parse("${HttpClient.DOWNLOAD_HOST}${release.version_name}/$apkName-${release.version_name}.apk"))
+            Request(Uri.parse("${HttpClient.DOWNLOAD_HOST}${release.version_name}/$apkName.${v}.apk"))
         Log.i(
             TAG,
-            "url ${Uri.parse("${HttpClient.DOWNLOAD_HOST}${release.version_name}/$apkName-${release.version_name}.apk")}"
+            "url ${Uri.parse("${HttpClient.DOWNLOAD_HOST}${release.version_name}/$apkName.${v}.apk")}"
         )
         context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)?.mkdirs()
         Log.i(TAG, "save dir ${Environment.DIRECTORY_DOWNLOADS}")

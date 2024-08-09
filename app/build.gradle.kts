@@ -73,6 +73,39 @@ fun getVersionName(): String {
     }
 }
 
+tasks.register("modifySource") {
+    doLast {
+        val net = project.findProperty("net") ?: "mobile"
+        println("net: $net")
+
+        val channels = when (net) {
+            "ipv6" ->  "R.raw.ipv6"
+            "mobile" -> ""
+            else -> ""
+        }
+
+        if (channels.isNotEmpty()) {
+            val f = file("src/main/java/com/lizongying/mytv0/models/TVList.kt")
+            f.writeText(f.readText().replace("R.raw.channels", channels))
+        }
+
+        val url = when (net) {
+            "ipv6" ->  "https://live.fanmingming.com/tv/m3u/ipv6.m3u"
+            "mobile" -> ""
+            else -> ""
+        }
+
+        if (url.isNotEmpty()) {
+            val f = file( "src/main/java/com/lizongying/mytv0/SP.kt")
+            f.writeText(f.readText().replace("https://live.fanmingming.com/tv/m3u/itv.m3u", url))
+        }
+    }
+}
+
+tasks.named("assembleRelease") {
+    dependsOn("modifySource")
+}
+
 dependencies {
     implementation(libs.appcompat)
     // For AGP 7.4+
