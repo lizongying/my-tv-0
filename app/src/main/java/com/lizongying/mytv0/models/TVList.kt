@@ -52,7 +52,7 @@ object TVList {
             file.readText()
         } else {
             Log.i(TAG, "read resource")
-            context.resources.openRawResource(R.raw.itv).bufferedReader()
+            context.resources.openRawResource(R.raw.channels).bufferedReader()
                 .use { it.readText() }
         }
 

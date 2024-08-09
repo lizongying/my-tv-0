@@ -79,7 +79,7 @@ tasks.register("modifySource") {
         println("net: $net")
 
         val channels = when (net) {
-            "ipv6" ->  "R.raw.ipv6"
+            "ipv6" -> "R.raw.ipv6"
             "mobile" -> "R.raw.itv"
             else -> ""
         }
@@ -90,14 +90,40 @@ tasks.register("modifySource") {
         }
 
         val url = when (net) {
-            "ipv6" ->  "DEFAULT_CONFIG_URL = \"https://live.fanmingming.com/tv/m3u/ipv6.m3u\""
+            "ipv6" -> "DEFAULT_CONFIG_URL = \"https://live.fanmingming.com/tv/m3u/ipv6.m3u\""
             "mobile" -> "DEFAULT_CONFIG_URL = \"https://live.fanmingming.com/tv/m3u/itv.m3u\""
             else -> ""
         }
 
         if (url.isNotEmpty()) {
-            val f = file( "src/main/java/com/lizongying/mytv0/SP.kt")
+            val f = file("src/main/java/com/lizongying/mytv0/SP.kt")
             f.writeText(f.readText().replace("DEFAULT_CONFIG_URL = \"\"", url))
+        }
+    }
+    doLast {
+        val net = project.findProperty("net") ?: ""
+        println("net: $net")
+
+        val channels = when (net) {
+            "ipv6" -> "R.raw.ipv6"
+            "mobile" -> "R.raw.itv"
+            else -> ""
+        }
+
+        if (channels.isNotEmpty()) {
+            val f = file("src/main/java/com/lizongying/mytv0/models/TVList.kt")
+            f.writeText(f.readText().replace(channels, "R.raw.channels"))
+        }
+
+        val url = when (net) {
+            "ipv6" -> "DEFAULT_CONFIG_URL = \"https://live.fanmingming.com/tv/m3u/ipv6.m3u\""
+            "mobile" -> "DEFAULT_CONFIG_URL = \"https://live.fanmingming.com/tv/m3u/itv.m3u\""
+            else -> ""
+        }
+
+        if (url.isNotEmpty()) {
+            val f = file("src/main/java/com/lizongying/mytv0/SP.kt")
+            f.writeText(f.readText().replace(url, "DEFAULT_CONFIG_URL = \"\""))
         }
     }
 }
@@ -110,11 +136,11 @@ tasks.whenTaskAdded {
     }
 }
 
-tasks.register("task1"){
+tasks.register("task1") {
     println("REGISTER TASK1: This is executed during the configuration phase")
 }
 
-tasks.named("task1"){
+tasks.named("task1") {
     println("NAMED TASK1: This is executed during the configuration phase")
     doFirst {
         println("NAMED TASK1 - doFirst: This is executed during the execution phase")
