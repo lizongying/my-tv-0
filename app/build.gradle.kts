@@ -98,7 +98,6 @@ dependencies {
     implementation(libs.core.ktx)
     implementation(libs.coroutines)
 
-    implementation(libs.multidex)
     implementation(libs.constraintlayout)
     implementation(libs.recyclerview)
 

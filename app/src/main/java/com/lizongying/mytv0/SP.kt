@@ -33,7 +33,9 @@ object SP {
 
     private const val KEY_DEFAULT_LIKE = "default_like"
 
-    private const val KEY_SHOW_ALL_CHANNELS = "show all channelS"
+    private const val KEY_SHOW_ALL_CHANNELS = "show_all_channelS"
+
+    private const val KEY_COMPACT_MEME = "compact_meme"
 
     private const val KEY_LIKE = "like"
 
@@ -44,6 +46,7 @@ object SP {
     const val DEFAULT_CONFIG_URL = "https://live.fanmingming.com/tv/m3u/itv.m3u"
     const val DEFAULT_CHANNEL = 1
     const val DEFAULT_SHOW_ALL_CHANNELS = false
+    const val DEFAULT_COMPACT_MEME = true
 
     private lateinit var sp: SharedPreferences
 
@@ -100,6 +103,10 @@ object SP {
     var channel: Int
         get() = sp.getInt(KEY_CHANNEL, DEFAULT_CHANNEL)
         set(value) = sp.edit().putInt(KEY_CHANNEL, value).apply()
+
+    var compactMenu: Boolean
+        get() = sp.getBoolean(KEY_COMPACT_MEME, DEFAULT_COMPACT_MEME)
+        set(value) = sp.edit().putBoolean(KEY_COMPACT_MEME, value).apply()
 
     var showAllChannels: Boolean
         get() = sp.getBoolean(KEY_SHOW_ALL_CHANNELS, DEFAULT_SHOW_ALL_CHANNELS)

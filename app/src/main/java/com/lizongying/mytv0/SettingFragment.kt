@@ -105,6 +105,14 @@ class SettingFragment : Fragment() {
             mainActivity.settingActive()
         }
 
+        val switchCompactMenu = _binding?.switchCompactMenu
+        switchCompactMenu?.isChecked = SP.compactMenu
+        switchCompactMenu?.setOnCheckedChangeListener { _, isChecked ->
+            SP.compactMenu = isChecked
+            mainActivity.updateMenuSize()
+            mainActivity.settingActive()
+        }
+
         binding.qrcode.setOnClickListener {
             val imageModalFragment = ModalFragment()
             val size = Utils.dpToPx(200)
@@ -136,6 +144,7 @@ class SettingFragment : Fragment() {
             SP.position = 0
             TVList.setPosition(0)
             SP.showAllChannels = SP.DEFAULT_SHOW_ALL_CHANNELS
+            SP.compactMenu = SP.DEFAULT_COMPACT_MEME
 
             R.string.config_restored.showToast()
         }
@@ -252,6 +261,7 @@ class SettingFragment : Fragment() {
             binding.switchConfigAutoLoad,
             binding.switchDefaultLike,
             binding.switchShowAllChannels,
+            binding.switchCompactMenu,
         )) {
             i.textSize = textSizeSwitch
             i.layoutParams = layoutParamsSwitch

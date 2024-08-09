@@ -1,86 +1,49 @@
-name: Bug 反馈
-description: 反馈一个 Bug
+name: 問題反饋
+description: 使用過程中遇到的錯誤或不合理功能
 labels: [ "bug" ]
 title: "[BUG] "
 body:
   - type: checkboxes
     id: checklist
     attributes:
-      label: 检查清单
-      description: 确保我们的错误报告表单适合您。
+      label: 提問題前請檢查
+      description: 確認問題依然存在
       options:
-        - label: 之前没有人提交过类似或相同的 bug report。
+        - label: 已檢查過問題列表，沒有人提過相同問題
           required: true
-        - label: 我正在使用本软件的最新版本。
+        - label: 軟件的最新版本依然沒有被修復
           required: true
-  - type: dropdown
+
+  - type: input
     id: version
     attributes:
-      label: 我的电视·〇 版本
-      description: 请选择正在使用的版本
-      options:
-        - 最新
-        - v1.1.3
-        - v1.1.2
-        - v1.1.1
-        - v1.1.0
+      label: 軟件版本
     validations:
       required: true
-  - type: textarea
-    id: bug
-    attributes:
-      label: Bug 描述
-      description: 请描述 bug 详情
-      placeholder: |
-        e.g. Crashed when generating snapshot.
-    validations:
-      required: true
-  - type: textarea
-    id: expected
-    attributes:
-      label: 预期行为
-      description: 你预期会发生什么？
-      placeholder: |
-        e.g. A New snapshot!
-    validations:
-      required: true
-  - type: textarea
-    id: actual
-    attributes:
-      label: 实际行为
-      description: 反而发生了什么？
-      placeholder: |
-        e.g. Crashed.
-    validations:
-      required: true
-  - type: textarea
-    id: steps
-    attributes:
-      label: 复现步骤
-      description: 如何复现这个 bug。
-      placeholder: |
-        1. Open the app
-        2. Crashed
 
-        What an app.
   - type: input
-    id: ui
+    id: device
     attributes:
-      label: UI / OS
-      description: 你的电视系统 UI 或 OS 或 品牌
-      placeholder: TCL / XIAOMI / PHONE / etc.
+      label: 電視品牌
     validations:
       required: true
+
   - type: input
     id: android
     attributes:
-      label: Android 版本
-      description: 你的 Android 版本
-      placeholder: "12"
+      label: Android版本
     validations:
       required: true
+
   - type: textarea
-    id: additional
+    id: bug
     attributes:
-      label: 额外信息
-      description: 任何你觉得值得说的。
+      label: 問題描述
+      description: 請描述下問題的具體細節
+      placeholder: |
+        1. 錯誤表現
+        2. 如何復現
+        3. 想法建議
+    validations:
+      required: true
+

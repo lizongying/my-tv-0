@@ -23,10 +23,14 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
     private lateinit var groupAdapter: GroupAdapter
     private lateinit var listAdapter: ListAdapter
 
+    private var groupWidth = 0
+    private var listWidth = 0
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        val application = requireActivity().applicationContext as MyTVApplication
         val context = requireContext()
         _binding = MenuBinding.inflate(inflater, container, false)
 
@@ -38,6 +42,12 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
         binding.group.adapter = groupAdapter
         binding.group.layoutManager =
             LinearLayoutManager(context)
+        groupWidth = application.px2Px(binding.group.layoutParams.width)
+        binding.group.layoutParams.width = if (SP.compactMenu) {
+            groupWidth * 2 / 3
+        } else {
+            groupWidth
+        }
         groupAdapter.setItemListener(this)
 
         var tvListModel = TVList.groupModel.getTVListModel(TVList.groupModel.position.value!!)
@@ -55,6 +65,12 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
         binding.list.adapter = listAdapter
         binding.list.layoutManager =
             LinearLayoutManager(context)
+        listWidth = application.px2Px(binding.list.layoutParams.width)
+        binding.list.layoutParams.width = if (SP.compactMenu) {
+            listWidth * 4 / 5
+        } else {
+            listWidth
+        }
         listAdapter.focusable(false)
         listAdapter.setItemListener(this)
 
@@ -77,6 +93,22 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
 
             if (tvListModel != null) {
                 (binding.list.adapter as ListAdapter).update(tvListModel)
+            }
+        }
+    }
+
+    fun updateSize() {
+        view?.post {
+            binding.group.layoutParams.width = if (SP.compactMenu) {
+                groupWidth * 2 / 3
+            } else {
+                groupWidth
+            }
+
+            binding.list.layoutParams.width = if (SP.compactMenu) {
+                listWidth * 4 / 5
+            } else {
+                listWidth
             }
         }
     }

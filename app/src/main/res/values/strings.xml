@@ -45,4 +45,6 @@
     <string name="start_set_default_channel">Start Setting Default Channel</string>
     <string name="my_favorites">My Favorites</string>
     <string name="all_channels">All Channels</string>
+    <string name="compact_menu">Compact Menu</string>
+
 </resources>

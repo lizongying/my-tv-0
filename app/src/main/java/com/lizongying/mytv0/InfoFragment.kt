@@ -73,26 +73,26 @@ class InfoFragment : Fragment() {
 
         when (tvViewModel.tv.title) {
             else -> {
+                val width = Utils.dpToPx(100)
+                val height = Utils.dpToPx(60)
+                val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+                val canvas = Canvas(bitmap)
+
+                val text = "${tvViewModel.tv.id + 1}"
+                var size = 100f
+                if (tvViewModel.tv.id > 999) {
+                    size = 90f
+                }
+                val paint = Paint().apply {
+                    color = ContextCompat.getColor(context, R.color.title_blur)
+                    textSize = size
+                    textAlign = Paint.Align.CENTER
+                }
+                val x = width / 2f
+                val y = height / 2f - (paint.descent() + paint.ascent()) / 2
+                canvas.drawText(text, x, y, paint)
+
                 if (tvViewModel.tv.logo.isNullOrBlank()) {
-                    val width = Utils.dpToPx(100)
-                    val height = Utils.dpToPx(60)
-                    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-                    val canvas = Canvas(bitmap)
-
-                    val text = "${tvViewModel.tv.id + 1}"
-                    var size = 100f
-                    if (tvViewModel.tv.id > 999) {
-                        size = 90f
-                    }
-                    val paint = Paint().apply {
-                        color = ContextCompat.getColor(context, R.color.blur)
-                        textSize = size
-                        textAlign = Paint.Align.CENTER
-                    }
-                    val x = width / 2f
-                    val y = height / 2f - (paint.descent() + paint.ascent()) / 2
-                    canvas.drawText(text, x, y, paint)
-
                     Glide.with(this)
                         .load(BitmapDrawable(context.resources, bitmap))
 //                        .centerInside()
@@ -100,6 +100,8 @@ class InfoFragment : Fragment() {
                 } else {
                     Glide.with(this)
                         .load(tvViewModel.tv.logo)
+//                        .placeholder(BitmapDrawable(context.resources, bitmap))
+                        .error(BitmapDrawable(context.resources, bitmap))
 //                        .centerInside()
                         .into(binding.logo)
                 }
@@ -110,7 +112,7 @@ class InfoFragment : Fragment() {
         if (!epg.isNullOrEmpty()) {
             binding.desc.text = epg.last().title
         } else {
-            binding.desc.text = ""
+            binding.desc.text = "精彩節目"
         }
 
         handler.removeCallbacks(removeRunnable)

@@ -1,5 +1,6 @@
 package com.lizongying.mytv0
 
+import android.app.Application
 import android.content.Context
 import android.content.res.Resources
 import android.os.Handler
@@ -7,11 +8,9 @@ import android.os.Looper
 import android.util.DisplayMetrics
 import android.view.WindowManager
 import android.widget.Toast
-import androidx.multidex.MultiDex
-import androidx.multidex.MultiDexApplication
 import java.util.Locale
 
-class MyTVApplication : MultiDexApplication() {
+class MyTVApplication : Application() {
 
     companion object {
         private const val TAG = "MyTVApplication"
@@ -106,7 +105,5 @@ class MyTVApplication : MultiDexApplication() {
         val locale = Locale.TRADITIONAL_CHINESE
         val context = LocaleContextWrapper.wrap(base, locale)
         super.attachBaseContext(context)
-
-        MultiDex.install(this)
     }
 }

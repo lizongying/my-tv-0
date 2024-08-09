@@ -186,21 +186,22 @@ class ListAdapter(
         }
 
         fun bindImage(url: String?, id: Int) {
-            if (url.isNullOrBlank()) {
-                val width = Utils.dpToPx(40)
-                val height = Utils.dpToPx(40)
-                val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-                val canvas = Canvas(bitmap)
+            val width = Utils.dpToPx(40)
+            val height = Utils.dpToPx(40)
+            val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bitmap)
 
-                val paint = Paint().apply {
-                    color = Color.WHITE
-                    textSize = 32f
-                    textAlign = Paint.Align.CENTER
-                }
-                val text = String.format("%3d", id + 1)
-                val x = width / 2f
-                val y = height / 2f - (paint.descent() + paint.ascent()) / 2
-                canvas.drawText(text, x, y, paint)
+            val paint = Paint().apply {
+                color = Color.WHITE
+                textSize = 32f
+                textAlign = Paint.Align.CENTER
+            }
+            val text = String.format("%3d", id + 1)
+            val x = width / 2f
+            val y = height / 2f - (paint.descent() + paint.ascent()) / 2
+            canvas.drawText(text, x, y, paint)
+
+            if (url.isNullOrBlank()) {
                 Glide.with(context)
                     .load(BitmapDrawable(context.resources, bitmap))
                     .centerInside()
@@ -210,7 +211,7 @@ class ListAdapter(
                 Glide.with(context)
                     .load(url)
                     .centerInside()
-//                    .error(BitmapDrawable(context.resources, bitmap))
+                    .error(BitmapDrawable(context.resources, bitmap))
                     .into(binding.icon)
             }
         }
