@@ -74,13 +74,13 @@ fun getVersionName(): String {
 }
 
 tasks.register("modifySource") {
-    doLast {
-        val net = project.findProperty("net") ?: "mobile"
+    doFirst {
+        val net = project.findProperty("net") ?: ""
         println("net: $net")
 
         val channels = when (net) {
             "ipv6" ->  "R.raw.ipv6"
-            "mobile" -> ""
+            "mobile" -> "R.raw.itv"
             else -> ""
         }
 
@@ -91,23 +91,40 @@ tasks.register("modifySource") {
 
         val url = when (net) {
             "ipv6" ->  "https://live.fanmingming.com/tv/m3u/ipv6.m3u"
-            "mobile" -> ""
+            "mobile" -> "https://live.fanmingming.com/tv/m3u/itv.m3u"
             else -> ""
         }
 
         if (url.isNotEmpty()) {
             val f = file( "src/main/java/com/lizongying/mytv0/SP.kt")
-            f.writeText(f.readText().replace("https://live.fanmingming.com/tv/m3u/itv.m3u", url))
+            f.writeText(f.readText().replace("DEFAULT_CONFIG_URL = \"\"", url))
         }
     }
 }
 
-tasks.named("assemble") {
-    dependsOn("modifySource")
+tasks.whenTaskAdded {
+    if (name == "assembleRelease") {
+        tasks.named("assembleRelease") {
+            dependsOn(tasks.findByName("modifySource"))
+        }
+    }
+}
+
+tasks.register("task1"){
+    println("REGISTER TASK1: This is executed during the configuration phase")
+}
+
+tasks.named("task1"){
+    println("NAMED TASK1: This is executed during the configuration phase")
+    doFirst {
+        println("NAMED TASK1 - doFirst: This is executed during the execution phase")
+    }
+    doLast {
+        println("NAMED TASK1 - doLast: This is executed during the execution phase")
+    }
 }
 
 dependencies {
-    implementation(libs.appcompat)
     // For AGP 7.4+
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
@@ -132,6 +149,7 @@ dependencies {
     implementation(libs.coroutines)
 
     implementation(libs.constraintlayout)
+    implementation(libs.appcompat)
     implementation(libs.recyclerview)
 
     implementation(files("libs/lib-decoder-ffmpeg-release.aar"))

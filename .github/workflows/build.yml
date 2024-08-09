@@ -15,10 +15,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: set up JDK 17
+      - name: set up JDK 22
         uses: actions/setup-java@v4
         with:
-          java-version: '21'
+          java-version: '22'
           distribution: 'temurin'
 
       - name: Get History
