@@ -102,7 +102,7 @@ tasks.register("modifySource") {
     }
 }
 
-tasks.named("assembleRelease") {
+tasks.named("assemble") {
     dependsOn("modifySource")
 }
 
