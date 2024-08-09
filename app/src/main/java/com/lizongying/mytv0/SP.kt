@@ -43,7 +43,7 @@ object SP {
 
     private const val KEY_EPG = "epg"
 
-    const val https://live.fanmingming.com/tv/m3u/itv.m3u
+    const val DEFAULT_CONFIG_URL = ""
     const val DEFAULT_CHANNEL = 1
     const val DEFAULT_SHOW_ALL_CHANNELS = false
     const val DEFAULT_COMPACT_MEME = true

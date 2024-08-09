@@ -90,8 +90,8 @@ tasks.register("modifySource") {
         }
 
         val url = when (net) {
-            "ipv6" ->  "https://live.fanmingming.com/tv/m3u/ipv6.m3u"
-            "mobile" -> "https://live.fanmingming.com/tv/m3u/itv.m3u"
+            "ipv6" ->  "DEFAULT_CONFIG_URL = \"https://live.fanmingming.com/tv/m3u/ipv6.m3u\""
+            "mobile" -> "DEFAULT_CONFIG_URL = \"https://live.fanmingming.com/tv/m3u/itv.m3u\""
             else -> ""
         }
 
