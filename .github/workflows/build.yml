@@ -62,7 +62,7 @@ jobs:
           VERSION_WITHOUT_V=$(echo '${{ github.ref_name }}' | sed 's/^v//')
           echo "asset_name=my-tv-0.${VERSION_WITHOUT_V}.apk" >> $GITHUB_ENV
 
-      - name: Upload Release Asset mobile
+      - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
