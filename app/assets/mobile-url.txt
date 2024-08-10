@@ -1,0 +1,1 @@
+DEFAULT_CONFIG_URL = "https://live.fanmingming.com/tv/m3u/itv.m3u"

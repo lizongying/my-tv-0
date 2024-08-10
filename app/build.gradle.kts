@@ -73,20 +73,20 @@ fun getVersionName(): String {
     }
 }
 
-tasks.register("modifySource") {
-    doFirst {
+task("modifySource") {
+    doLast {
         val net = project.findProperty("net") ?: ""
         println("net: $net")
 
         val channels = when (net) {
-            "ipv6" -> "R.raw.ipv6"
-            "mobile" -> "R.raw.itv"
-            else -> ""
+            "ipv6" -> "assets/ipv6.txt"
+            "mobile" -> "assets/mobile.txt"
+            else -> "assets/common.txt"
         }
 
         if (channels.isNotEmpty()) {
-            val f = file("src/main/java/com/lizongying/mytv0/models/TVList.kt")
-            f.writeText(f.readText().replace("R.raw.channels", channels))
+            val f = file("src/main/res/raw/channels.txt")
+            f.writeText(file(channels).readText())
         }
 
         val url = when (net) {
@@ -100,88 +100,24 @@ tasks.register("modifySource") {
             f.writeText(f.readText().replace("DEFAULT_CONFIG_URL = \"\"", url))
         }
     }
-    doLast {
-        val net = project.findProperty("net") ?: ""
-        println("net: $net")
-
-        val channels = when (net) {
-            "ipv6" -> "R.raw.ipv6"
-            "mobile" -> "R.raw.itv"
-            else -> ""
-        }
-
-        if (channels.isNotEmpty()) {
-            val f = file("src/main/java/com/lizongying/mytv0/models/TVList.kt")
-            f.writeText(f.readText().replace(channels, "R.raw.channels"))
-        }
-
-        val url = when (net) {
-            "ipv6" -> "DEFAULT_CONFIG_URL = \"https://live.fanmingming.com/tv/m3u/ipv6.m3u\""
-            "mobile" -> "DEFAULT_CONFIG_URL = \"https://live.fanmingming.com/tv/m3u/itv.m3u\""
-            else -> ""
-        }
-
-        if (url.isNotEmpty()) {
-            val f = file("src/main/java/com/lizongying/mytv0/SP.kt")
-            f.writeText(f.readText().replace(url, "DEFAULT_CONFIG_URL = \"\""))
-        }
-    }
 }
 
 tasks.whenTaskAdded {
     if (name == "assembleRelease") {
-        tasks.named("assembleRelease") {
-            doFirst {
-                val net = project.findProperty("net") ?: ""
-                println("net: $net")
+        dependsOn("modifySource")
+        doLast {
+            val net = project.findProperty("net") ?: ""
+            println("net: $net")
 
-                val channels = when (net) {
-                    "ipv6" -> "R.raw.ipv6"
-                    "mobile" -> "R.raw.itv"
-                    else -> ""
-                }
-
-                if (channels.isNotEmpty()) {
-                    val f = file("src/main/java/com/lizongying/mytv0/models/TVList.kt")
-                    f.writeText(f.readText().replace("R.raw.channels", channels))
-                }
-
-                val url = when (net) {
-                    "ipv6" -> "DEFAULT_CONFIG_URL = \"https://live.fanmingming.com/tv/m3u/ipv6.m3u\""
-                    "mobile" -> "DEFAULT_CONFIG_URL = \"https://live.fanmingming.com/tv/m3u/itv.m3u\""
-                    else -> ""
-                }
-
-                if (url.isNotEmpty()) {
-                    val f = file("src/main/java/com/lizongying/mytv0/SP.kt")
-                    f.writeText(f.readText().replace("DEFAULT_CONFIG_URL = \"\"", url))
-                }
+            val url = when (net) {
+                "ipv6" -> "DEFAULT_CONFIG_URL = \"https://live.fanmingming.com/tv/m3u/ipv6.m3u\""
+                "mobile" -> "DEFAULT_CONFIG_URL = \"https://live.fanmingming.com/tv/m3u/itv.m3u\""
+                else -> ""
             }
-            doLast {
-                val net = project.findProperty("net") ?: ""
-                println("net: $net")
 
-                val channels = when (net) {
-                    "ipv6" -> "R.raw.ipv6"
-                    "mobile" -> "R.raw.itv"
-                    else -> ""
-                }
-
-                if (channels.isNotEmpty()) {
-                    val f = file("src/main/java/com/lizongying/mytv0/models/TVList.kt")
-                    f.writeText(f.readText().replace(channels, "R.raw.channels"))
-                }
-
-                val url = when (net) {
-                    "ipv6" -> "DEFAULT_CONFIG_URL = \"https://live.fanmingming.com/tv/m3u/ipv6.m3u\""
-                    "mobile" -> "DEFAULT_CONFIG_URL = \"https://live.fanmingming.com/tv/m3u/itv.m3u\""
-                    else -> ""
-                }
-
-                if (url.isNotEmpty()) {
-                    val f = file("src/main/java/com/lizongying/mytv0/SP.kt")
-                    f.writeText(f.readText().replace(url, "DEFAULT_CONFIG_URL = \"\""))
-                }
+            if (url.isNotEmpty()) {
+                val f = file("src/main/java/com/lizongying/mytv0/SP.kt")
+                f.writeText(f.readText().replace(url, "DEFAULT_CONFIG_URL = \"\""))
             }
         }
     }

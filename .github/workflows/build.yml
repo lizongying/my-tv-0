@@ -92,7 +92,7 @@ jobs:
         id: set_asset_name_mobile
         run: |
           VERSION_WITHOUT_V=$(echo '${{ github.ref_name }}' | sed 's/^v//')
-          echo "asset_name=my-tv-0.china-mobile.${VERSION_WITHOUT_V}.apk" >> $GITHUB_ENV
+          echo "asset_name=my-tv-0.${VERSION_WITHOUT_V}.china-mobile.apk" >> $GITHUB_ENV
 
       - name: Upload Release Asset mobile
         uses: actions/upload-release-asset@v1
@@ -124,7 +124,7 @@ jobs:
         id: set_asset_name_ipv6
         run: |
           VERSION_WITHOUT_V=$(echo '${{ github.ref_name }}' | sed 's/^v//')
-          echo "asset_name=my-tv-0.ipv6.${VERSION_WITHOUT_V}.apk" >> $GITHUB_ENV
+          echo "asset_name=my-tv-0.${VERSION_WITHOUT_V}.ipv6.apk" >> $GITHUB_ENV
 
       - name: Upload Release Asset ipv6
         uses: actions/upload-release-asset@v1
