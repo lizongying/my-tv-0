@@ -53,7 +53,7 @@
 
 下載安裝 [releases](https://github.com/lizongying/my-tv-0/releases/)
 
-更多地址 [my-tv](https://lyrics.run/my-tv-0.html)
+更多地址 [my-tv-0](https://lyrics.run/my-tv-0.html)
 
 ![image](./screenshots/Screenshot_20240810_151748.png)
 ![image](./screenshots/Screenshot_20240813_232847.png)
@@ -83,6 +83,7 @@ adb install my-tv-0.apk
 * 判断文件是否被修改
 * 多源管理
 * 如果上次播放頻道不在收藏？
+* 當list為空，顯示group
 
 ## 讚賞
 
