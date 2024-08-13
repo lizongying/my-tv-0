@@ -55,8 +55,9 @@
 
 更多地址 [my-tv](https://lyrics.run/my-tv-0.html)
 
-![image](./screenshots/img.png)
-![image](./screenshots/img_1.png)
+![image](./screenshots/Screenshot_20240810_151748.png)
+![image](./screenshots/Screenshot_20240813_232847.png)
+![image](./screenshots/Screenshot_20240813_232900.png)
 
 ## 更新日誌
 
