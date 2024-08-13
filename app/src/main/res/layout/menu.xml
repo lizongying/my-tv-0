@@ -11,7 +11,7 @@
             android:id="@+id/group"
             android:layout_width="200dp"
             android:layout_height="match_parent"
-            android:layout_marginEnd="2dp"
+            android:layout_marginEnd="1dp"
             android:padding="10dp"
             android:background="@color/blur">
         </androidx.recyclerview.widget.RecyclerView>

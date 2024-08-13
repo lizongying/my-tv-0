@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.drawable.BitmapDrawable
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -26,7 +27,7 @@ import com.lizongying.mytv0.models.TVModel
 class ListAdapter(
     private val context: Context,
     private val recyclerView: RecyclerView,
-    var tvListModel: TVListModel,
+    var listTVModel: TVListModel,
 ) :
     RecyclerView.Adapter<ListAdapter.ViewHolder>() {
     private var listener: ItemListener? = null
@@ -74,8 +75,8 @@ class ListAdapter(
         }
     }
 
-    fun update(tvListModel: TVListModel) {
-        this.tvListModel = tvListModel
+    fun update(listTVModel: TVListModel) {
+        this.listTVModel = listTVModel
         recyclerView.post {
             notifyDataSetChanged()
         }
@@ -87,7 +88,7 @@ class ListAdapter(
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        val tvModel = tvListModel.getTVModel(position)!!
+        val tvModel = listTVModel.getTVModel(position)!!
         val view = viewHolder.itemView
 
         view.isFocusable = true
@@ -113,8 +114,8 @@ class ListAdapter(
                 viewHolder.focus(true)
                 focused = view
                 if (visiable) {
-                    if (position != tvListModel.position.value) {
-                        tvListModel.setPosition(position)
+                    if (position != listTVModel.position.value) {
+                        listTVModel.setPosition(position)
                     }
                 } else {
                     visiable = true
@@ -127,7 +128,7 @@ class ListAdapter(
         view.onFocusChangeListener = onFocusChangeListener
 
         view.setOnClickListener { _ ->
-            listener?.onItemClicked(tvModel)
+            listener?.onItemClicked(position)
         }
 
         view.setOnKeyListener { _, keyCode, event: KeyEvent? ->
@@ -177,7 +178,7 @@ class ListAdapter(
         viewHolder.bindImage(tvModel.tv.logo, tvModel.tv.id)
     }
 
-    override fun getItemCount() = tvListModel.size()
+    override fun getItemCount() = listTVModel.size()
 
     class ViewHolder(private val context: Context, val binding: ListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -253,6 +254,7 @@ class ListAdapter(
     }
 
     fun toPosition(position: Int) {
+        Log.i(TAG, "position $position")
         recyclerView.post {
             (recyclerView.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(
                 position,
@@ -269,7 +271,7 @@ class ListAdapter(
 
     interface ItemListener {
         fun onItemFocusChange(tvModel: TVModel, hasFocus: Boolean)
-        fun onItemClicked(tvModel: TVModel)
+        fun onItemClicked(position: Int, type: String = "list")
         fun onKey(listAdapter: ListAdapter, keyCode: Int): Boolean
     }
 

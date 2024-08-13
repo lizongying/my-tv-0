@@ -150,6 +150,7 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.appcompat)
     implementation(libs.recyclerview)
+    implementation(libs.lifecycle.viewmodel)
 
     implementation(files("libs/lib-decoder-ffmpeg-release.aar"))
 }

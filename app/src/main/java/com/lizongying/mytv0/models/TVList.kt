@@ -29,19 +29,7 @@ object TVList {
     val groupModel = TVGroupModel()
     private var epg = SP.epg
 
-    private var isp = ISP.UNKNOWN
-
-    private val _position = MutableLiveData<Int>()
-    val position: LiveData<Int>
-        get() = _position
-
-    fun setISP(isp: ISP) {
-        this.isp = isp
-    }
-
     fun init(context: Context) {
-        _position.value = 0
-
         groupModel.addTVListModel(TVListModel("我的收藏", 0))
         groupModel.addTVListModel(TVListModel("全部頻道", 1))
 
@@ -70,29 +58,27 @@ object TVList {
                     update(it)
                 }
             }
-        } else if (!epg.isNullOrEmpty()) {
-            CoroutineScope(Dispatchers.IO).launch {
-                updateEPG()
-            }
         }
     }
 
-    private suspend fun updateEPG() {
+    suspend fun updateEPG() {
         try {
-            val request = okhttp3.Request.Builder().url(epg!!).build()
-            val response = HttpClient.okHttpClient.newCall(request).execute()
+            withContext(Dispatchers.IO) {
+                val request = okhttp3.Request.Builder().url(epg!!).build()
+                val response = HttpClient.okHttpClient.newCall(request).execute()
 
-            if (response.isSuccessful) {
-                val epg = EPGXmlParser().parse(response.body!!.byteStream())
+                if (response.isSuccessful) {
+                    val epg = EPGXmlParser().parse(response.body!!.byteStream())
 
-                withContext(Dispatchers.Main) {
-                    for (m in listModel) {
-                        epg[m.tv.name]?.let { m.setEpg(it) }
+                    withContext(Dispatchers.Main) {
+                        for (m in listModel) {
+                            epg[m.tv.name]?.let { m.setEpg(it) }
+                        }
                     }
+                } else {
+                    Log.e(TAG, "EPG ${response.code}")
+                    R.string.epg_status_err.showToast()
                 }
-            } else {
-                Log.e(TAG, "EPG ${response.code}")
-                R.string.epg_status_err.showToast()
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -151,6 +137,25 @@ object TVList {
     private fun update(serverUrl: String) {
         this.serverUrl = serverUrl
         update()
+    }
+
+    fun reset(context: Context) {
+        groupModel.setPosition(0)
+        groupModel.setPositionPlaying(0)
+
+        val tvListModel= groupModel.getCurrentList()
+        tvListModel?.setPosition(0)
+        tvListModel?.setPositionPlaying(0)
+
+        val str = context.resources.openRawResource(R.raw.channels).bufferedReader()
+            .use { it.readText() }
+
+        try {
+            str2List(str)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            R.string.channel_read_error.showToast()
+        }
     }
 
     fun parseUri(uri: Uri) {
@@ -314,7 +319,7 @@ object TVList {
             }
         }
 
-        groupModel.clearNotFilter()
+        groupModel.initTVGroup()
 
         val map: MutableMap<String, MutableList<TVModel>> = mutableMapOf()
         for (v in list) {
@@ -328,60 +333,37 @@ object TVList {
         var groupIndex = 2
         var id = 0
         for ((k, v) in map) {
-            val tvListModel = TVListModel(k, groupIndex)
+            val listTVModel = TVListModel(k, groupIndex)
             for ((listIndex, v1) in v.withIndex()) {
                 v1.tv.id = id
                 v1.setLike(SP.getLike(id))
-                v1.groupIndex = groupIndex
+                v1.setGroupIndex(groupIndex)
                 v1.listIndex = listIndex
-                tvListModel.addTVModel(v1)
+                listTVModel.addTVModel(v1)
                 listModelNew.add(v1)
                 id++
             }
-            groupModel.addTVListModel(tvListModel)
+            groupModel.addTVListModel(listTVModel)
             groupIndex++
         }
 
         listModel = listModelNew
 
         // 全部频道
-        (groupModel.tvGroupModel.value as List<TVListModel>)[1].setTVListModel(listModel)
+        (groupModel.tvGroup.value as List<TVListModel>)[1].setTVListModel(listModel)
+
+//        for (i in groupModel.tvGroup.value as List<TVListModel>) {
+////            Log.i(TAG, "tvGroup ${i.getName()} ${i.getGroupIndex()}")
+//            if (i.tvList.value == null) {
+//                continue
+//            }
+//            for (ii in i.tvList.value as List<TVModel>) {
+////                Log.i(TAG, "tvList ${ii.tv.id} ${ii.tv.name} ${i.getGroupIndex()}")
+//            }
+//        }
 
         groupModel.setChange()
 
         return true
-    }
-
-    fun getTVModel(): TVModel {
-        return getTVModel(position.value!!)
-    }
-
-    private fun getTVModel(idx: Int): TVModel {
-        return listModel[idx]
-    }
-
-    fun setPosition(position: Int): Boolean {
-        if (position >= size()) {
-            return false
-        }
-
-        if (_position.value != position) {
-            _position.value = position
-        }
-
-        val tvModel = getTVModel(position)
-
-        // set a new position or retry when position same
-        tvModel.setReady()
-
-        groupModel.setPosition(tvModel.groupIndex)
-
-        SP.positionGroup = tvModel.groupIndex
-        SP.position = position
-        return true
-    }
-
-    fun size(): Int {
-        return listModel.size
     }
 }

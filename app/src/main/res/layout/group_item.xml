@@ -17,5 +17,5 @@
         android:layout_marginVertical="5dp"
         android:maxLines="1"
         android:ellipsize="end"
-        android:textSize="20sp" />
+        android:textSize="18sp" />
 </LinearLayout>

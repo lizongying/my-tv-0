@@ -95,3 +95,9 @@ fun Int.getString(): String {
 fun Int.showToast(duration: Int = Toast.LENGTH_SHORT) {
     this.getString().showToast(duration)
 }
+
+fun String.md5(): String {
+    val md = MessageDigest.getInstance("MD5")
+    val digest = md.digest(this.toByteArray())
+    return digest.joinToString("") { String.format("%02x", it) }
+}

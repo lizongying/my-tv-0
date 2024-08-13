@@ -16,7 +16,6 @@ import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import com.lizongying.mytv0.SP
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.random.Random
 
 class TVModel(var tv: TV) : ViewModel() {
     private val _position = MutableLiveData<Int>()
@@ -27,7 +26,18 @@ class TVModel(var tv: TV) : ViewModel() {
     var retryMaxTimes = 10
     var programUpdateTime = 0L
 
-    var groupIndex = 0
+    private var _groupIndex = 0
+    val groupIndex: Int
+        get() = if (SP.showAllChannels || _groupIndex == 0) _groupIndex else _groupIndex - 1
+
+    fun setGroupIndex(index: Int) {
+        _groupIndex = index
+    }
+
+    fun getGroupIndexInAll(): Int {
+        return _groupIndex
+    }
+
     var listIndex = 0
 
     private var sources: MutableList<SourceType> =

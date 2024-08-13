@@ -5,7 +5,7 @@
     <meta
             name="viewport"
             content="width=device-width, initial-scale=1.0">
-    <title>我的电视·〇</title>
+    <title>我的電視·〇</title>
     <style>
         body {
             height: 100vh;
@@ -55,29 +55,37 @@
     </style>
 </head>
 <body>
-<h1 class="title"></h1>
+<h1 class="title">我的電視·〇</h1>
 
 <hr/>
 
 <div class="item">
-    <label for="uri" id="uri-label">视频源地址，点击确认后保存</label>
+    <label for="uri" id="uri-label">視頻源地址，點擊確認後保存</label>
     <input type="text" id="uri"/>
-    <input type="button" id="confirm-uri" value="确认" class="confirm"/>
+    <input type="button" id="confirm-uri" value="確認" class="confirm"/>
 </div>
 
 <hr/>
 
 <div class="item">
-    <label for="upload-file" id="upload-file-label">选择视频源文件后会自动上传保存</label>
+    <label for="upload-file" id="upload-file-label">選擇視頻文件後會自動保存上傳</label>
     <input type="file" id="upload-file" multiple/>
 </div>
 
 <hr/>
 
 <div class="item">
-    <label for="channel" id="channel-label">默认播放频道，从1开始</label>
+    <label for="channel" id="channel-label">默認播放頻道號，從1開始。0代表沒有設置</label>
     <input type="text" id="channel"/>
-    <input type="button" id="confirm-channel" value="确认" class="confirm"/>
+    <input type="button" id="confirm-channel" value="確認" class="confirm"/>
+</div>
+
+<hr/>
+
+<div class="item">
+    <label for="proxy" id="epg-label">EPG</label>
+    <input type="text" id="epg"/>
+    <input type="button" id="confirm-epg" value="確認" class="confirm"/>
 </div>
 
 <hr/>
@@ -85,7 +93,7 @@
 <div class="item">
     <label for="proxy" id="proxy-label">代理地址</label>
     <input type="text" id="proxy"/>
-    <input type="button" id="confirm-proxy" value="确认" class="confirm"/>
+    <input type="button" id="confirm-proxy" value="確認" class="confirm"/>
 </div>
 
 <hr/>
@@ -97,6 +105,7 @@
             uriLabel: '視頻源地址',
             uploadFileLabel: '選擇視頻源文件後會自動上傳保存',
             channelLabel: '默認播放頻道，從1開始',
+            epgLabel: 'EPG',
             proxyLabel: '代理地址',
             confirm: '確認',
         },
@@ -105,6 +114,7 @@
             uriLabel: '视频源地址',
             uploadFileLabel: '选择视频源文件后会自动上传保存',
             channelLabel: '默认播放频道，从1开始',
+            epgLabel: 'EPG',
             proxyLabel: '代理地址',
             confirm: '确认',
         }
@@ -116,6 +126,7 @@
     document.querySelector('#channel-label').innerText = t('channelLabel');
     document.querySelector('#upload-file-label').innerText = t('uploadFileLabel');
     document.querySelector('#uri-label').innerText = t('uriLabel');
+    document.querySelector('#epg-label').innerText = t('epgLabel');
     document.querySelector('#proxy-label').innerText = t('proxyLabel');
     document.querySelectorAll('.confirm').forEach(
         i => i.value = t('confirm')
@@ -136,64 +147,48 @@
     const read = async (file) => {
         const reader = new FileReader();
         reader.onload = (e) => {
-            sendFile(e.target.result);
+            save('/api/channels', e.target.result);
         };
         reader.readAsText(file);
-    }
-
-    const sendFile = async (body) => {
-        const response = await fetch('/api/channels', {
-            method: 'POST',
-            body: body
-        });
-        const json = await response.text();
-        console.log(json);
     }
 
     document.querySelector('#confirm-uri').onclick = () => {
         const uri = document.querySelector('#uri').value.trim();
         if (uri.length > 0) {
-            saveUri(JSON.stringify({
+            save('/api/uri', JSON.stringify({
                 uri: uri
             }))
         }
-    }
-    const saveUri = async (body) => {
-        const response = await fetch('/api/uri', {
-            method: 'POST',
-            body: body
-        });
-        const json = await response.text();
-        console.log(json);
     }
 
     document.querySelector('#confirm-channel').onclick = () => {
         const channel = document.querySelector('#channel').value.trim();
         if (channel.length > 0) {
-            saveChannel(JSON.stringify({
+            save('/api/channel', JSON.stringify({
                 channel: channel
             }))
         }
-    }
-    const saveChannel = async (body) => {
-        const response = await fetch('/api/channel', {
-            method: 'POST',
-            body: body
-        });
-        const json = await response.text();
-        console.log(json);
     }
 
     document.querySelector('#confirm-proxy').onclick = () => {
         const proxy = document.querySelector('#proxy').value.trim();
         if (proxy.length > 0) {
-            saveProxy(JSON.stringify({
+            save('/api/proxy', JSON.stringify({
                 proxy: proxy
             }))
         }
     }
-    const saveProxy = async (body) => {
-        const response = await fetch('/api/proxy', {
+
+    document.querySelector('#confirm-epg').onclick = () => {
+        const epg = document.querySelector('#epg').value.trim();
+        if (epg.length > 0) {
+            save('/api/epg', JSON.stringify({
+                epg: epg
+            }))
+        }
+    }
+    const save = async (url, body) => {
+        const response = await fetch(url, {
             method: 'POST',
             body: body
         });

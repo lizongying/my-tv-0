@@ -44,7 +44,8 @@ object SP {
     private const val KEY_EPG = "epg"
 
     const val DEFAULT_CONFIG_URL = ""
-    const val DEFAULT_CHANNEL = 1
+    const val DEFAULT_EPG = "https://live.fanmingming.com/e.xml"
+    const val DEFAULT_CHANNEL = 0
     const val DEFAULT_SHOW_ALL_CHANNELS = false
     const val DEFAULT_COMPACT_MEME = true
 
@@ -76,13 +77,13 @@ object SP {
         get() = sp.getBoolean(KEY_BOOT_STARTUP, false)
         set(value) = sp.edit().putBoolean(KEY_BOOT_STARTUP, value).apply()
 
-    var position: Int
-        get() = sp.getInt(KEY_POSITION, 0)
-        set(value) = sp.edit().putInt(KEY_POSITION, value).apply()
-
     var positionGroup: Int
         get() = sp.getInt(KEY_POSITION_GROUP, 0)
         set(value) = sp.edit().putInt(KEY_POSITION_GROUP, value).apply()
+
+    var position: Int
+        get() = sp.getInt(KEY_POSITION, 0)
+        set(value) = sp.edit().putInt(KEY_POSITION, value).apply()
 
     var positionSub: Int
         get() = sp.getInt(KEY_POSITION_SUB, 0)
@@ -141,6 +142,6 @@ object SP {
         set(value) = sp.edit().putString(KEY_PROXY, value).apply()
 
     var epg: String?
-        get() = sp.getString(KEY_EPG, "https://live.fanmingming.com/e.xml")
+        get() = sp.getString(KEY_EPG, DEFAULT_EPG)
         set(value) = sp.edit().putString(KEY_EPG, value).apply()
 }

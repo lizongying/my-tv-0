@@ -25,7 +25,7 @@
     <string name="channel_read_error">无法读取频道</string>
     <string name="channel_request_error">频道请求错误</string>
     <string name="file_not_exist">文件不存在</string>
-    <string name="channel_not_exist">频道不存在</string>
+    <string name="channel_not_exist">频道为空</string>
     <string name="config_restored">已恢复到默认配置</string>
     <string name="invalid_config_address">无效的配置地址</string>
     <string name="authorization_failed">授权失败</string>
@@ -41,6 +41,8 @@
     <string name="default_channel_set_failure">默认频道设置失败</string>
     <string name="default_proxy_set_success">代理地址设置成功</string>
     <string name="default_proxy_set_failure">代理地址设置失败</string>
+    <string name="default_epg_set_success">EPG设置成功</string>
+    <string name="default_epg_set_failure">EPG设置失败</string>
     <string name="start_config_channel">开始配置频道</string>
     <string name="start_set_default_channel">开始设置默认频道</string>
     <string name="my_favorites">我的收藏</string>

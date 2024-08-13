@@ -49,7 +49,7 @@ appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "a
 recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "core_ktx" }
 work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
+lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }

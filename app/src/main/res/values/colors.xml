@@ -9,4 +9,5 @@
     <color name="track_unchecked_color">#B3EEEEEE</color>
     <color name="thumb_checked_color">#0096A6</color>
     <color name="thumb_unchecked_color">#B3EEEEEE</color>
+    <color name="heart">#FF0000</color>
 </resources>

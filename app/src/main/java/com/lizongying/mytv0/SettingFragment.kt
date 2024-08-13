@@ -2,7 +2,6 @@ package com.lizongying.mytv0
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
@@ -18,6 +17,10 @@ import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import com.lizongying.mytv0.databinding.SettingBinding
 import com.lizongying.mytv0.models.TVList
+import com.lizongying.mytv0.models.TVList.updateEPG
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlin.math.max
 import kotlin.math.min
 
@@ -100,7 +103,7 @@ class SettingFragment : Fragment() {
         switchShowAllChannels?.isChecked = SP.showAllChannels
         switchShowAllChannels?.setOnCheckedChangeListener { _, isChecked ->
             SP.showAllChannels = isChecked
-            TVList.groupModel.tvGroupModel.value?.let { TVList.groupModel.setTVListModelList(it) }
+            TVList.groupModel.tvGroup.value?.let { TVList.groupModel.setTVListModelList(it) }
             mainActivity.update()
             mainActivity.settingActive()
         }
@@ -136,15 +139,31 @@ class SettingFragment : Fragment() {
 
         binding.clear.setOnClickListener {
             SP.config = SP.DEFAULT_CONFIG_URL
+            TVList.reset(context)
             confirmConfig()
+
             SP.channel = SP.DEFAULT_CHANNEL
             confirmChannel()
+
             context.deleteFile(TVList.FILE_NAME)
             SP.deleteLike()
             SP.position = 0
-            TVList.setPosition(0)
+//            TVList.setPosition(0)
+            val tvModel = TVList.groupModel.getPosition(0)
+            tvModel?.setReady()
+            TVList.groupModel.setPositionPlaying(TVList.groupModel.positionValue)
+            TVList.groupModel.getTVListModelNotFilter(TVList.groupModel.positionValue)?.let {
+                it.setPositionPlaying(it.positionValue)
+            }
             SP.showAllChannels = SP.DEFAULT_SHOW_ALL_CHANNELS
             SP.compactMenu = SP.DEFAULT_COMPACT_MEME
+
+            SP.epg = SP.DEFAULT_EPG
+            if (!SP.epg.isNullOrEmpty()) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    updateEPG()
+                }
+            }
 
             R.string.config_restored.showToast()
         }
@@ -313,7 +332,7 @@ class SettingFragment : Fragment() {
     }
 
     private fun confirmChannel() {
-        SP.channel = min(max(SP.channel, 1), TVList.listModel.size)
+        SP.channel = min(max(SP.channel, 0), TVList.groupModel.getTVListModelNotFilter(1)!!.size())
 
         (activity as MainActivity).settingActive()
     }

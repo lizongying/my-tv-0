@@ -1,48 +1,46 @@
-# 我的电视·〇
+# 我的電視·〇
 
-电视网络视频播放软件，可以自定义视频源
+電視網絡視頻播放軟件，可以自定義視頻源
 
 [my-tv-0](https://github.com/lizongying/my-tv-0)
 
 ## 使用
 
-* 遥控器左键/触屏单击打开节目列表
-* 遥控器右键/触屏双击打开配置
-* 遥控器返回键关闭节目列表/配置
-* 打开配置页后，配置地址后并确认，更新节目列表
-* 配置了视频源地址，并且打开了“启动后自动更新视频源”后，软件启动后自动更新视频源
-* 在节目列表显示的时候，右键收藏/取消收藏
+* 遙控器左鍵/觸屏單擊打開節目列表
+* 遙控器右鍵/觸屏雙擊打開配置
+* 遙控器返回鍵關閉節目列表/配置
+* 打開配置頁后，選擇遠程配置，掃描二維碼可以配置視頻源地址等。
+* 如果視頻源地址已配置，並且打開了“啟動后自動更新視頻源”后，軟件啟動后自動更新視頻源
+* 在節目列表顯示的時候，右鍵收藏/取消收藏
 
 注意：
 
-* 视频源可以设置为本地文件，格式如：file:///mnt/sdcard/tmp/channels.m3u
+* 視頻源可以設置為本地文件，格式如：file:///mnt/sdcard/tmp/channels.m3u
   /channels.m3u
-* 如果设置的是本地文件，则软件重新启动后不会自动更新。需要手动确认。
-* 高版本可能需要授权
 
 目前支持的配置格式：
 
 * txt
     ```
-    组名,#genre#
-    标题,视频地址
+    組名,#genre#
+    標題,視頻地址
     ```
 * m3u
     ```
     #EXTM3U
-    #EXTINF:-1 tvg-name="标准标题" tvg-logo="图标" group-title="组名",标题
-    视频地址
+    #EXTINF:-1 tvg-name="標準標題" tvg-logo="图标" group-title="組名",標題
+    視頻地址
     ```
 * json
     ```json
     [
       {
-        "group": "组名",
+        "group": "組名",
         "logo": "图标",
-        "name": "标准标题",
-        "title": "标题",
+        "name": "標準標題",
+        "title": "標題",
         "uris": [
-          "视频地址"
+          "視頻地址"
         ],
         "headers": {
           "user-agent": ""
@@ -51,28 +49,28 @@
     ]
     ```
 
-推荐配合使用 [my-tv-server](https://github.com/lizongying/my-tv-server)
+推薦配合使用 [my-tv-server](https://github.com/lizongying/my-tv-server)
 
-下载安装 [releases](https://github.com/lizongying/my-tv-0/releases/)
+下載安裝 [releases](https://github.com/lizongying/my-tv-0/releases/)
 
 更多地址 [my-tv](https://lyrics.run/my-tv-0.html)
 
 ![image](./screenshots/img.png)
 ![image](./screenshots/img_1.png)
 
-## 更新日志
+## 更新日誌
 
-[更新日志](./HISTORY.md)
+[更新日誌](./HISTORY.md)
 
 ## 其他
 
-小米电视可以使用小米电视助手进行安装
-
-如电视可以启用ADB，也可以通过ADB进行安装：
+建議通過ADB進行安裝：
 
 ```shell
 adb install my-tv-0.apk
 ```
+
+小米電視可以使用小米電視助手進行安裝
 
 ## TODO
 
@@ -83,6 +81,7 @@ adb install my-tv-0.apk
 * 無效的頻道？
 * 判断文件是否被修改
 * 多源管理
+* 如果上次播放頻道不在收藏？
 
 ## 讚賞
 

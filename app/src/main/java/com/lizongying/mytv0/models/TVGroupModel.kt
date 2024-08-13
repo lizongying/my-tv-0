@@ -1,63 +1,96 @@
 package com.lizongying.mytv0.models
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.lizongying.mytv0.ISP
 import com.lizongying.mytv0.SP
 
 class TVGroupModel : ViewModel() {
     var isInLikeMode = false
-    private val _tvGroupModel = MutableLiveData<List<TVListModel>>()
-    val tvGroupModel: LiveData<List<TVListModel>>
-        get() = _tvGroupModel
+    private val _tvGroup = MutableLiveData<List<TVListModel>>()
+    val tvGroup: LiveData<List<TVListModel>>
+        get() = _tvGroup
+    val tvGroupValue: List<TVListModel>
+        get() = _tvGroup.value!!
 
+    // Filtered
     private val _position = MutableLiveData<Int>()
     val position: LiveData<Int>
         get() = _position
+    val positionValue: Int
+        get() = _position.value!!
+
+
+    private val _positionPlaying = MutableLiveData<Int>()
+    val positionPlaying: LiveData<Int>
+        get() = _positionPlaying
+    val positionPlayingValue: Int
+        get() = _positionPlaying.value!!
 
     private val _change = MutableLiveData<Boolean>()
     val change: LiveData<Boolean>
         get() = _change
 
+    private var isp = ISP.UNKNOWN
+    fun setISP(isp: ISP) {
+        this.isp = isp
+    }
+
     fun setPosition(position: Int) {
+        Log.i(TAG, "group setPosition $position")
         _position.value = position
+    }
+
+    fun setPositionPlaying(position: Int) {
+        Log.i(TAG, "group setPositionPlaying $position")
+        _positionPlaying.value = position
+        SP.positionGroup = position
+    }
+
+    fun setPrevPosition() {
+        _position.value = (positionValue - 1) % size()
+    }
+
+    fun setNextPosition() {
+        _position.value = (positionValue + 1) % size()
     }
 
     fun setChange() {
         _change.value = true
     }
 
-    fun setTVListModelList(tvListModelList: List<TVListModel>) {
-        _tvGroupModel.value = tvListModelList
+    fun setTVListModelList(tvGroup: List<TVListModel>) {
+        _tvGroup.value = tvGroup
     }
 
-    fun addTVListModel(tvListModel: TVListModel) {
-        if (_tvGroupModel.value == null) {
-            _tvGroupModel.value = mutableListOf(tvListModel)
+    fun addTVListModel(listTVModel: TVListModel) {
+        if (_tvGroup.value == null) {
+            _tvGroup.value = mutableListOf(listTVModel)
             return
         }
 
-        val newList = _tvGroupModel.value!!.toMutableList()
-        newList.add(tvListModel)
-        _tvGroupModel.value = newList
+        val newList = _tvGroup.value!!.toMutableList()
+        newList.add(listTVModel)
+        _tvGroup.value = newList
     }
 
-    fun clearNotFilter() {
-        _tvGroupModel.value = mutableListOf(
-            (_tvGroupModel.value as List<TVListModel>)[0],
-            (_tvGroupModel.value as List<TVListModel>)[1]
+    fun initTVGroup() {
+        _tvGroup.value = mutableListOf(
+            (_tvGroup.value as List<TVListModel>)[0],
+            (_tvGroup.value as List<TVListModel>)[1]
         )
-        setPosition(0)
-        (_tvGroupModel.value as List<TVListModel>)[1].clear()
+        (_tvGroup.value as List<TVListModel>)[1].initTVList()
     }
 
     fun clear() {
         if (SP.showAllChannels) {
-            _tvGroupModel.value = mutableListOf(getTVListModel(0)!!, getTVListModel(1)!!)
+            _tvGroup.value = mutableListOf(getTVListModel(0)!!, getTVListModel(1)!!)
             setPosition(0)
             getTVListModel(1)?.clear()
         } else {
-            _tvGroupModel.value = mutableListOf(getTVListModel(0)!!)
+            _tvGroup.value = mutableListOf(getTVListModel(0)!!)
             setPosition(0)
         }
     }
@@ -71,24 +104,145 @@ class TVGroupModel : ViewModel() {
             return null
         }
         if (SP.showAllChannels) {
-            return _tvGroupModel.value?.get(idx)
+            return _tvGroup.value?.get(idx)
         }
-        return _tvGroupModel.value?.filter { it.getName() != "全部頻道" }?.get(idx)
+        return _tvGroup.value?.filter { it.getName() != "全部頻道" }?.get(idx)
+    }
+
+    fun getTVListModelNotFilter(idx: Int): TVListModel? {
+        if (idx >= tvGroupValue.size) {
+            return null
+        }
+
+        return _tvGroup.value?.get(idx)
+    }
+
+    // get & set
+    fun getPosition(position: Int): TVModel? {
+
+        // No item
+        if (tvGroupValue[1].size() == 0) {
+            return null
+        }
+
+        var count = 0
+        for ((index, i) in tvGroupValue.withIndex()) {
+            val countBefore = count
+            count += i.size()
+            if (count > position) {
+                setPosition(index)
+                val listPosition = position - countBefore
+                i.setPosition(listPosition)
+                return i.getTVModel(listPosition)
+            }
+        }
+
+        return null
+    }
+
+    fun getCurrent(): TVModel? {
+
+        // No item
+        if (tvGroupValue.size < 2 || tvGroupValue[1].size() == 0) {
+            return null
+        }
+
+        return getTVListModelNotFilter(positionValue)?.getCurrent()
+    }
+
+    fun getCurrentList(): TVListModel? {
+        return getTVListModelNotFilter(positionValue)
+    }
+
+    // get & set
+    // keep: In the current list loop
+    fun getPrev(keep: Boolean = false): TVModel? {
+
+        Log.i(TAG, "keep $keep")
+
+        // No item
+        if (tvGroupValue.size < 2 || tvGroupValue[1].size() == 0) {
+            return null
+        }
+
+        var tvListModel = getTVListModelNotFilter(positionValue)!!
+//        var tvListModel = getTVListModel()!!
+        if (keep) {
+            Log.i(TAG, "group position $positionValue")
+            return tvListModel.getPrev()
+        }
+
+        // Prev tvListModel
+        if (tvListModel.positionValue == 0) {
+            var p = (tvGroupValue.size + positionValue - 1) % tvGroupValue.size
+            setPosition(p)
+            if (p == 1) {
+                p = (tvGroupValue.size + positionValue - 1) % tvGroupValue.size
+                setPosition(p)
+            }
+            if (p == 0) {
+                p = (tvGroupValue.size + positionValue - 1) % tvGroupValue.size
+                setPosition(p)
+            }
+
+            Log.i(TAG, "group position $p/${tvGroupValue.size}")
+            tvListModel = getTVListModelNotFilter(p)!!
+            return tvListModel.getTVModel(tvListModel.size() - 1)
+        }
+
+        return tvListModel.getPrev()
+    }
+
+    // get & set
+    fun getNext(keep: Boolean = false): TVModel? {
+        Log.i(TAG, "keep $keep")
+
+        // No item
+        if (tvGroupValue.size < 2 || tvGroupValue[1].size() == 0) {
+            return null
+        }
+
+        var tvListModel = getTVListModelNotFilter(positionValue)!!
+//        var tvListModel = getTVListModel()!!
+        if (keep) {
+            return tvListModel.getNext()
+        }
+
+        // Next tvListModel
+        if (tvListModel.positionValue == tvListModel.size() - 1) {
+            var p = (positionValue + 1) % tvGroupValue.size
+            setPosition(p)
+            if (p == 0) {
+                p = (tvGroupValue.size + positionValue + 1) % tvGroupValue.size
+                setPosition(p)
+            }
+            if (p == 1) {
+                p = (tvGroupValue.size + positionValue + 1) % tvGroupValue.size
+                setPosition(p)
+            }
+
+            Log.i(TAG, "group position $p/${tvGroupValue.size}")
+            tvListModel = getTVListModelNotFilter(p)!!
+            return tvListModel.getTVModel(0)
+        }
+
+        return tvListModel.getNext()
     }
 
     init {
         _position.value = SP.positionGroup
-        isInLikeMode = SP.defaultLike
+        Log.i(TAG, "SP.positionGroup ${SP.positionGroup}")
+        isInLikeMode = SP.defaultLike && _position.value == 0
     }
 
     fun size(): Int {
-        if (_tvGroupModel.value == null) {
+        if (_tvGroup.value == null) {
             return 0
         }
         if (SP.showAllChannels) {
-            return _tvGroupModel.value!!.size
+            return _tvGroup.value!!.size
         }
-        return _tvGroupModel.value!!.filter { it.getName() != "全部頻道" }.size
+        return _tvGroup.value!!.filter { it.getName() != "全部頻道" }.size
     }
 
     companion object {
