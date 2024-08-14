@@ -1,22 +1,31 @@
 package com.lizongying.mytv0
 
+import MainViewModel
 import android.os.Bundle
-import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.marginEnd
 import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
-import com.lizongying.mytv0.Utils.getDateFormat
+import androidx.lifecycle.ViewModelProvider
 import com.lizongying.mytv0.databinding.TimeBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 class TimeFragment : Fragment() {
     private var _binding: TimeBinding? = null
     private val binding get() = _binding!!
 
-    private val handler = Handler()
     private val delay: Long = 1000
+
+    private var job: Job? = null
+
+    private lateinit var viewModel: MainViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,29 +52,29 @@ class TimeFragment : Fragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
+    }
+
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         if (!hidden) {
-            handler.removeCallbacks(showRunnable)
-            handler.postDelayed(showRunnable, 0)
-        } else {
-            handler.removeCallbacks(showRunnable)
-        }
-    }
-
-    private val showRunnable: Runnable = Runnable {
-        run {
-            if (_binding == null) {
-                return@Runnable
+            job = CoroutineScope(Dispatchers.Main).launch {
+                while (isActive) {
+                    binding.content.text = viewModel.getTime()
+                    delay(delay)
+                }
             }
-            binding.content.text = getDateFormat("HH:mm")
-            handler.postDelayed(showRunnable, delay)
+        } else {
+            job?.cancel()
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        job?.cancel()
     }
 
     companion object {

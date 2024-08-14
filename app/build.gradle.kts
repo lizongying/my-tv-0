@@ -84,9 +84,12 @@ task("modifySource") {
             else -> "assets/common.txt"
         }
 
+        println("channels: $channels")
+
         if (channels.isNotEmpty()) {
             val f = file("src/main/res/raw/channels.txt")
             f.writeText(file(channels).readText())
+            println(f.readText())
         }
 
         val url = when (net) {

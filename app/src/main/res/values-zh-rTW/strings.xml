@@ -46,5 +46,5 @@
     <string name="my_favorites">我的收藏</string>
     <string name="all_channels">全部頻道</string>
     <string name="compact_menu">緊湊的菜單</string>
-
+    <string name="display_seconds">時間顯示秒</string>
 </resources>

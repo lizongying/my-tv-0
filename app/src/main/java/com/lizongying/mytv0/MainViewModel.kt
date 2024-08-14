@@ -1,18 +1,22 @@
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lizongying.mytv0.SP
+import com.lizongying.mytv0.Utils.getDateFormat
 import com.lizongying.mytv0.models.TVList
 import kotlinx.coroutines.launch
 
 
 class MainViewModel : ViewModel() {
 
-    private val _data = MutableLiveData<String>()
-    val data: LiveData<String> get() = _data
+    private var timeFormat = if (SP.displaySeconds) "HH:mm:ss" else "HH:mm"
 
-    fun updateData(newData: String) {
-        _data.value = newData
+    fun setDisplaySeconds(displaySeconds: Boolean) {
+        timeFormat = if (displaySeconds) "HH:mm:ss" else "HH:mm"
+        SP.displaySeconds = displaySeconds
+    }
+
+    fun getTime(): String {
+        return getDateFormat(timeFormat)
     }
 
     fun updateEPG() {

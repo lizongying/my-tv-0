@@ -9,6 +9,7 @@ import androidx.core.view.marginEnd
 import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import com.lizongying.mytv0.databinding.ChannelBinding
+import com.lizongying.mytv0.models.TVList
 import com.lizongying.mytv0.models.TVModel
 
 class ChannelFragment : Fragment() {
@@ -16,8 +17,9 @@ class ChannelFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val handler = Handler()
-    private val delay: Long = 3000
+    private val delay: Long = 5000
     private var channel = 0
+    private var channelCount = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,18 +56,22 @@ class ChannelFragment : Fragment() {
     }
 
     fun show(channel: String) {
-        if (binding.content.text.length > 1) {
+        if (TVList.groupModel.getCurrent()!!.tv.id > 10 && TVList.groupModel.getCurrent()!!.tv.id == this.channel - 1) {
+            this.channel = 0
+            channelCount = 0
+        }
+        if (channelCount > 2) {
             return
         }
-        this.channel = "${binding.content.text}$channel".toInt()
+        channelCount++
+        this.channel = "${this.channel}$channel".toInt()
         handler.removeCallbacks(hideRunnable)
         handler.removeCallbacks(playRunnable)
-        if (binding.content.text == "") {
-            binding.content.text = channel
+        if (channelCount < 3) {
+            binding.content.text = this.channel.toString()
             view?.visibility = View.VISIBLE
             handler.postDelayed(playRunnable, delay)
         } else {
-            binding.content.text = "${binding.content.text}$channel"
             handler.postDelayed(playRunnable, 0)
         }
     }
@@ -84,8 +90,10 @@ class ChannelFragment : Fragment() {
     }
 
     private val hideRunnable = Runnable {
-        binding.content.text = ""
+        binding.content.text = BLANK
         view?.visibility = View.GONE
+        channel = 0
+        channelCount = 0
     }
 
     private val playRunnable = Runnable {
@@ -100,5 +108,6 @@ class ChannelFragment : Fragment() {
 
     companion object {
         private const val TAG = "ChannelFragment"
+        private const val BLANK = ""
     }
 }

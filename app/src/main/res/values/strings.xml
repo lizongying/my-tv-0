@@ -48,5 +48,5 @@
     <string name="my_favorites">My Favorites</string>
     <string name="all_channels">All Channels</string>
     <string name="compact_menu">Compact Menu</string>
-
+    <string name="display_seconds">Display Seconds</string>
 </resources>

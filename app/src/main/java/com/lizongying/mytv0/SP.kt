@@ -33,9 +33,11 @@ object SP {
 
     private const val KEY_DEFAULT_LIKE = "default_like"
 
-    private const val KEY_SHOW_ALL_CHANNELS = "show_all_channelS"
+    private const val KEY_DISPLAY_SECONDS = "display_seconds"
 
-    private const val KEY_COMPACT_MEME = "compact_meme"
+    private const val KEY_SHOW_ALL_CHANNELS = "show_all_channels"
+
+    private const val KEY_COMPACT_MENU = "compact_menu"
 
     private const val KEY_LIKE = "like"
 
@@ -47,7 +49,8 @@ object SP {
     const val DEFAULT_EPG = "https://live.fanmingming.com/e.xml"
     const val DEFAULT_CHANNEL = 0
     const val DEFAULT_SHOW_ALL_CHANNELS = false
-    const val DEFAULT_COMPACT_MEME = true
+    const val DEFAULT_COMPACT_MENU = true
+    const val DEFAULT_DISPLAY_SECONDS = false
 
     private lateinit var sp: SharedPreferences
 
@@ -106,8 +109,8 @@ object SP {
         set(value) = sp.edit().putInt(KEY_CHANNEL, value).apply()
 
     var compactMenu: Boolean
-        get() = sp.getBoolean(KEY_COMPACT_MEME, DEFAULT_COMPACT_MEME)
-        set(value) = sp.edit().putBoolean(KEY_COMPACT_MEME, value).apply()
+        get() = sp.getBoolean(KEY_COMPACT_MENU, DEFAULT_COMPACT_MENU)
+        set(value) = sp.edit().putBoolean(KEY_COMPACT_MENU, value).apply()
 
     var showAllChannels: Boolean
         get() = sp.getBoolean(KEY_SHOW_ALL_CHANNELS, DEFAULT_SHOW_ALL_CHANNELS)
@@ -116,6 +119,10 @@ object SP {
     var defaultLike: Boolean
         get() = sp.getBoolean(KEY_DEFAULT_LIKE, false)
         set(value) = sp.edit().putBoolean(KEY_DEFAULT_LIKE, value).apply()
+
+    var displaySeconds: Boolean
+        get() = sp.getBoolean(KEY_DISPLAY_SECONDS, DEFAULT_DISPLAY_SECONDS)
+        set(value) = sp.edit().putBoolean(KEY_DISPLAY_SECONDS, value).apply()
 
     fun getLike(id: Int): Boolean {
         val stringSet = sp.getStringSet(KEY_LIKE, emptySet())

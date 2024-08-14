@@ -1,5 +1,6 @@
 package com.lizongying.mytv0
 
+import MainViewModel
 import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.drawable.ColorDrawable
@@ -15,6 +16,7 @@ import androidx.core.view.marginBottom
 import androidx.core.view.marginEnd
 import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.lizongying.mytv0.databinding.SettingBinding
 import com.lizongying.mytv0.models.TVList
 import com.lizongying.mytv0.models.TVList.updateEPG
@@ -35,6 +37,8 @@ class SettingFragment : Fragment() {
     private lateinit var updateManager: UpdateManager
 
     private var server = ""
+
+    private lateinit var viewModel: MainViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -116,6 +120,9 @@ class SettingFragment : Fragment() {
             mainActivity.settingActive()
         }
 
+        val switchDisplaySeconds = _binding?.switchDisplaySeconds
+        switchDisplaySeconds?.isChecked = SP.displaySeconds
+
         binding.qrcode.setOnClickListener {
             val imageModalFragment = ModalFragment()
             val size = Utils.dpToPx(200)
@@ -135,37 +142,6 @@ class SettingFragment : Fragment() {
 
         binding.confirmConfig.setOnClickListener {
             confirmConfig()
-        }
-
-        binding.clear.setOnClickListener {
-            SP.config = SP.DEFAULT_CONFIG_URL
-            TVList.reset(context)
-            confirmConfig()
-
-            SP.channel = SP.DEFAULT_CHANNEL
-            confirmChannel()
-
-            context.deleteFile(TVList.FILE_NAME)
-            SP.deleteLike()
-            SP.position = 0
-//            TVList.setPosition(0)
-            val tvModel = TVList.groupModel.getPosition(0)
-            tvModel?.setReady()
-            TVList.groupModel.setPositionPlaying(TVList.groupModel.positionValue)
-            TVList.groupModel.getTVListModelNotFilter(TVList.groupModel.positionValue)?.let {
-                it.setPositionPlaying(it.positionValue)
-            }
-            SP.showAllChannels = SP.DEFAULT_SHOW_ALL_CHANNELS
-            SP.compactMenu = SP.DEFAULT_COMPACT_MEME
-
-            SP.epg = SP.DEFAULT_EPG
-            if (!SP.epg.isNullOrEmpty()) {
-                CoroutineScope(Dispatchers.IO).launch {
-                    updateEPG()
-                }
-            }
-
-            R.string.config_restored.showToast()
         }
 
         binding.appreciate.setOnClickListener {
@@ -281,6 +257,7 @@ class SettingFragment : Fragment() {
             binding.switchDefaultLike,
             binding.switchShowAllChannels,
             binding.switchCompactMenu,
+            binding.switchDisplaySeconds,
         )) {
             i.textSize = textSizeSwitch
             i.layoutParams = layoutParamsSwitch
@@ -306,6 +283,48 @@ class SettingFragment : Fragment() {
         updateManager = UpdateManager(context, context.appVersionCode)
 
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val context = requireActivity()
+        viewModel = ViewModelProvider(context)[MainViewModel::class.java]
+
+        binding.switchDisplaySeconds.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.setDisplaySeconds(isChecked)
+        }
+
+        binding.clear.setOnClickListener {
+            SP.config = SP.DEFAULT_CONFIG_URL
+            TVList.reset(context)
+            confirmConfig()
+
+            SP.channel = SP.DEFAULT_CHANNEL
+            confirmChannel()
+
+            context.deleteFile(TVList.FILE_NAME)
+            SP.deleteLike()
+            SP.position = 0
+            val tvModel = TVList.groupModel.getPosition(0)
+            tvModel?.setReady()
+            TVList.groupModel.setPositionPlaying(TVList.groupModel.positionValue)
+            TVList.groupModel.getTVListModelNotFilter(TVList.groupModel.positionValue)?.let {
+                it.setPositionPlaying(it.positionValue)
+            }
+            SP.showAllChannels = SP.DEFAULT_SHOW_ALL_CHANNELS
+            SP.compactMenu = SP.DEFAULT_COMPACT_MENU
+
+            viewModel.setDisplaySeconds(SP.DEFAULT_DISPLAY_SECONDS)
+
+            SP.epg = SP.DEFAULT_EPG
+            if (!SP.epg.isNullOrEmpty()) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    updateEPG()
+                }
+            }
+
+            R.string.config_restored.showToast()
+        }
     }
 
     private fun confirmConfig() {

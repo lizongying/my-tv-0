@@ -24,7 +24,7 @@ class InfoFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val handler = Handler()
-    private val delay: Long = 3000
+    private val delay: Long = 5000
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

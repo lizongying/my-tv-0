@@ -13,7 +13,7 @@
 
         <RelativeLayout
             android:id="@+id/channel"
-            android:layout_width="120dp"
+            android:layout_width="150dp"
             android:layout_height="60dp"
             android:layout_gravity="end|top"
             android:layout_marginTop="15dp"
@@ -26,8 +26,8 @@
                 android:layout_gravity="end|bottom"
                 android:textColor="@color/white"
                 android:textStyle="bold"
-                android:textSize="40sp"
-                tools:text="99"
+                android:textSize="36sp"
+                tools:text="999"
                 android:layout_alignBaseline="@+id/time"/>
             <TextView
                 android:id="@+id/time"
@@ -36,8 +36,8 @@
                 android:layout_gravity="end|bottom"
                 android:textColor="@color/white"
                 android:textStyle="bold"
-                android:textSize="32sp"
-                tools:text="12:34" />
+                android:textSize="30sp"
+                tools:text="12:34:56" />
         </RelativeLayout>
     </FrameLayout>
 </LinearLayout>
