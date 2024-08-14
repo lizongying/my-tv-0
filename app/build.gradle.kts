@@ -74,22 +74,25 @@ fun getVersionName(): String {
 }
 
 task("modifySource") {
+    val net = project.findProperty("net") ?: ""
+    println("net: $net")
+
+    val channels = when (net) {
+        "ipv6" -> "assets/ipv6.txt"
+        "mobile" -> "assets/mobile.txt"
+        else -> "assets/common.txt"
+    }
+
+    println("channels: $channels")
+
+    inputs.file(channels)
+    outputs.file("src/main/res/raw/channels.txt")
     doLast {
-        val net = project.findProperty("net") ?: ""
-        println("net: $net")
-
-        val channels = when (net) {
-            "ipv6" -> "assets/ipv6.txt"
-            "mobile" -> "assets/mobile.txt"
-            else -> "assets/common.txt"
-        }
-
-        println("channels: $channels")
-
         if (channels.isNotEmpty()) {
-            val f = file("src/main/res/raw/channels.txt")
-            f.writeText(file(channels).readText())
-            println(f.readText())
+            val sourceFile = file(channels)
+            val targetFile = file("src/main/res/raw/channels.txt")
+            targetFile.writeText(sourceFile.readText())
+            println(targetFile.readText())
         }
 
         val url = when (net) {
