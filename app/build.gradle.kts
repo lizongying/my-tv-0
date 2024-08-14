@@ -127,6 +127,10 @@ tasks.whenTaskAdded {
             }
         }
     }
+
+    if (name == "packageReleaseResources") {
+        dependsOn("modifySource")
+    }
 }
 
 dependencies {
