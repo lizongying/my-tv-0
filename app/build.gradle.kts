@@ -128,7 +128,12 @@ tasks.whenTaskAdded {
         }
     }
 
-    if (name == "packageReleaseResources") {
+    if (listOf(
+            "packageReleaseResources",
+            "mergeReleaseResources",
+            "generateReleaseResources",
+        ).contains(name)
+    ) {
         dependsOn("modifySource")
     }
 }
