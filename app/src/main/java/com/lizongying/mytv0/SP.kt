@@ -45,12 +45,17 @@ object SP {
 
     private const val KEY_EPG = "epg"
 
+    private const val KEY_VERSION = "version"
+
+    private const val KEY_LOG_TIMES = "log_times"
+
     const val DEFAULT_CONFIG_URL = ""
     const val DEFAULT_EPG = "https://live.fanmingming.com/e.xml"
     const val DEFAULT_CHANNEL = 0
     const val DEFAULT_SHOW_ALL_CHANNELS = false
     const val DEFAULT_COMPACT_MENU = true
     const val DEFAULT_DISPLAY_SECONDS = false
+    const val DEFAULT_LOG_TIMES = 10
 
     private lateinit var sp: SharedPreferences
 
@@ -151,4 +156,12 @@ object SP {
     var epg: String?
         get() = sp.getString(KEY_EPG, DEFAULT_EPG)
         set(value) = sp.edit().putString(KEY_EPG, value).apply()
+
+    var version: String?
+        get() = sp.getString(KEY_VERSION, "")
+        set(value) = sp.edit().putString(KEY_VERSION, value).apply()
+
+    var logTimes: Int
+        get() = sp.getInt(KEY_LOG_TIMES, DEFAULT_LOG_TIMES)
+        set(value) = sp.edit().putInt(KEY_LOG_TIMES, value).apply()
 }

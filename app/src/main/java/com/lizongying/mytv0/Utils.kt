@@ -84,7 +84,7 @@ object Utils {
     }
 
     init {
-        CoroutineScope(Dispatchers.IO).launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch {
             init()
         }
     }
