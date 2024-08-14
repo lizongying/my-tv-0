@@ -132,6 +132,7 @@ tasks.whenTaskAdded {
             "packageReleaseResources",
             "mergeReleaseResources",
             "generateReleaseResources",
+            "mapReleaseSourceSetPaths",
         ).contains(name)
     ) {
         dependsOn("modifySource")
