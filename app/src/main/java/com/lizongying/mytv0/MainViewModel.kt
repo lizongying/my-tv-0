@@ -163,13 +163,6 @@ class MainViewModel : ViewModel() {
     }
 
     fun reset(context: Context) {
-        groupModel.setPosition(0)
-        groupModel.setPositionPlaying(0)
-
-        val tvListModel = groupModel.getCurrentList()
-        tvListModel?.setPosition(0)
-        tvListModel?.setPositionPlaying(0)
-
         val str = context.resources.openRawResource(R.raw.channels).bufferedReader()
             .use { it.readText() }
 

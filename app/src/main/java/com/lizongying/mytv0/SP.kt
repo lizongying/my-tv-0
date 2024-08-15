@@ -56,6 +56,8 @@ object SP {
     const val DEFAULT_COMPACT_MENU = true
     const val DEFAULT_DISPLAY_SECONDS = false
     const val DEFAULT_LOG_TIMES = 10
+    const val DEFAULT_POSITION_GROUP = 1
+    const val DEFAULT_POSITION = 0
 
     private lateinit var sp: SharedPreferences
 
@@ -86,11 +88,11 @@ object SP {
         set(value) = sp.edit().putBoolean(KEY_BOOT_STARTUP, value).apply()
 
     var positionGroup: Int
-        get() = sp.getInt(KEY_POSITION_GROUP, 0)
+        get() = sp.getInt(KEY_POSITION_GROUP, DEFAULT_POSITION_GROUP)
         set(value) = sp.edit().putInt(KEY_POSITION_GROUP, value).apply()
 
     var position: Int
-        get() = sp.getInt(KEY_POSITION, 0)
+        get() = sp.getInt(KEY_POSITION, DEFAULT_POSITION)
         set(value) = sp.edit().putInt(KEY_POSITION, value).apply()
 
     var positionSub: Int

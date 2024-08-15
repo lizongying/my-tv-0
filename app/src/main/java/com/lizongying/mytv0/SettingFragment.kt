@@ -285,6 +285,15 @@ class SettingFragment : Fragment() {
         }
 
         binding.clear.setOnClickListener {
+            SP.positionGroup = SP.DEFAULT_POSITION_GROUP
+            viewModel.groupModel.setPosition(SP.DEFAULT_POSITION_GROUP)
+            viewModel.groupModel.setPositionPlaying(SP.DEFAULT_POSITION_GROUP)
+
+            SP.position = SP.DEFAULT_POSITION
+            val tvListModel = viewModel.groupModel.getCurrentList()
+            tvListModel?.setPosition(SP.DEFAULT_POSITION)
+            tvListModel?.setPositionPlaying(SP.DEFAULT_POSITION)
+
             SP.config = SP.DEFAULT_CONFIG_URL
             viewModel.reset(context)
             confirmConfig()
