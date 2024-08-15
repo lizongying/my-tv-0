@@ -257,9 +257,9 @@ class MainActivity : AppCompatActivity() {
                 if (tvModel.like.value != null && tvModel.tv.id != -1) {
                     val liked = tvModel.like.value as Boolean
                     if (liked) {
-                        viewModel.groupModel.getTVListModel(0)?.replaceTVModel(tvModel)
+                        viewModel.groupModel.getTVListModelNotFilter(0)?.replaceTVModel(tvModel)
                     } else {
-                        viewModel.groupModel.getTVListModel(0)?.removeTVModel(tvModel.tv.id)
+                        viewModel.groupModel.getTVListModelNotFilter(0)?.removeTVModel(tvModel.tv.id)
                     }
                     SP.setLike(tvModel.tv.id, liked)
                 }
@@ -404,7 +404,7 @@ class MainActivity : AppCompatActivity() {
     fun prev() {
         val prevGroup = viewModel.groupModel.positionValue
         val tvModel =
-            if (SP.defaultLike && viewModel.groupModel.isInLikeMode && viewModel.groupModel.getTVListModel(
+            if (SP.defaultLike && viewModel.groupModel.isInLikeMode && viewModel.groupModel.getTVListModelNotFilter(
                     0
                 ) != null
             ) {
@@ -429,7 +429,7 @@ class MainActivity : AppCompatActivity() {
     fun next() {
         val prevGroup = viewModel.groupModel.positionValue
         val tvModel =
-            if (SP.defaultLike && viewModel.groupModel.isInLikeMode && viewModel.groupModel.getTVListModel(
+            if (SP.defaultLike && viewModel.groupModel.isInLikeMode && viewModel.groupModel.getTVListModelNotFilter(
                     0
                 ) != null
             ) {

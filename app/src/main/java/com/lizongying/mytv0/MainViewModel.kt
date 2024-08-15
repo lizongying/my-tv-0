@@ -72,12 +72,8 @@ class MainViewModel : ViewModel() {
     }
 
     fun init(context: Context) {
-//        TVList.groupModel.addTVListModel(TVListModel("我的收藏", 0))
-//        TVList.groupModel.addTVListModel(TVListModel("全部頻道", 1))
-
         groupModel.addTVListModel(TVListModel("我的收藏", 0))
         groupModel.addTVListModel(TVListModel("全部頻道", 1))
-
 
         appDirectory = context.filesDir
         val file = File(appDirectory, FILE_NAME)
@@ -167,12 +163,9 @@ class MainViewModel : ViewModel() {
     }
 
     fun reset(context: Context) {
-//        TVList.groupModel.setPosition(0)
-//        TVList.groupModel.setPositionPlaying(0)
         groupModel.setPosition(0)
         groupModel.setPositionPlaying(0)
 
-//        val tvListModel = TVList.groupModel.getCurrentList()
         val tvListModel = groupModel.getCurrentList()
         tvListModel?.setPosition(0)
         tvListModel?.setPositionPlaying(0)
@@ -352,7 +345,6 @@ class MainViewModel : ViewModel() {
             }
         }
 
-//        TVList.groupModel.initTVGroup()
         groupModel.initTVGroup()
 
         val map: MutableMap<String, MutableList<TVModel>> = mutableMapOf()

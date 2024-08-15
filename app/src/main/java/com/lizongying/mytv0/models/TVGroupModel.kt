@@ -13,21 +13,21 @@ class TVGroupModel : ViewModel() {
     val tvGroup: LiveData<List<TVListModel>>
         get() = _tvGroup
     val tvGroupValue: List<TVListModel>
-        get() = _tvGroup.value!!
+        get() = _tvGroup.value ?: listOf()
 
     // Filtered
     private val _position = MutableLiveData<Int>()
     val position: LiveData<Int>
         get() = _position
     val positionValue: Int
-        get() = _position.value!!
+        get() = _position.value ?: 0
 
 
     private val _positionPlaying = MutableLiveData<Int>()
     val positionPlaying: LiveData<Int>
         get() = _positionPlaying
     val positionPlayingValue: Int
-        get() = _positionPlaying.value!!
+        get() = _positionPlaying.value ?: 0
 
     private val _change = MutableLiveData<Boolean>()
     val change: LiveData<Boolean>
@@ -86,11 +86,12 @@ class TVGroupModel : ViewModel() {
 
     fun clear() {
         if (SP.showAllChannels) {
-            _tvGroup.value = mutableListOf(getTVListModel(0)!!, getTVListModel(1)!!)
+            _tvGroup.value =
+                mutableListOf(getTVListModelNotFilter(0)!!, getTVListModelNotFilter(1)!!)
             setPosition(0)
-            getTVListModel(1)?.clear()
+            getTVListModelNotFilter(1)?.clear()
         } else {
-            _tvGroup.value = mutableListOf(getTVListModel(0)!!)
+            _tvGroup.value = mutableListOf(getTVListModelNotFilter(0)!!)
             setPosition(0)
         }
     }
@@ -166,7 +167,6 @@ class TVGroupModel : ViewModel() {
         }
 
         var tvListModel = getTVListModelNotFilter(positionValue)!!
-//        var tvListModel = getTVListModel()!!
         if (keep) {
             Log.i(TAG, "group position $positionValue")
             return tvListModel.getPrev()
@@ -203,7 +203,6 @@ class TVGroupModel : ViewModel() {
         }
 
         var tvListModel = getTVListModelNotFilter(positionValue)!!
-//        var tvListModel = getTVListModel()!!
         if (keep) {
             return tvListModel.getNext()
         }

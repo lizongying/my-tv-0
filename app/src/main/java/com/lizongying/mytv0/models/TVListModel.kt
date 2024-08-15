@@ -20,19 +20,19 @@ class TVListModel(private val name: String, private val groupIndex: Int) : ViewM
     val tvList: LiveData<List<TVModel>>
         get() = _tvList
     val tvListValue: List<TVModel>
-        get() = _tvList.value!!
+        get() = _tvList.value ?: listOf()
 
     private val _position = MutableLiveData<Int>()
     val position: LiveData<Int>
         get() = _position
     val positionValue: Int
-        get() = _position.value!!
+        get() = _position.value ?: 0
 
     private val _positionPlaying = MutableLiveData<Int>()
     val positionPlaying: LiveData<Int>
         get() = _positionPlaying
     val positionPlayingValue: Int
-        get() = _positionPlaying.value!!
+        get() = _positionPlaying.value ?: 0
 
     fun setPosition(position: Int) {
         Log.i(TAG, "list setPosition $position")

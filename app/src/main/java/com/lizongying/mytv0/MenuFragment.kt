@@ -256,7 +256,9 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
                 ) {
                     updateList(position)
                 }
-                listAdapter.toPosition(viewModel.groupModel.getTVListModelNotFilter(position)!!.positionPlayingValue)
+                viewModel.groupModel.getTVListModelNotFilter(position)?.let {
+                    listAdapter.toPosition(it.positionPlayingValue)
+                }
             }
             if (binding.group.isVisible) {
 //                groupAdapter.focusable(true)
