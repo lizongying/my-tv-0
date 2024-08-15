@@ -3,14 +3,12 @@ package com.lizongying.mytv0
 import android.content.ContentProvider
 import android.content.ContentValues
 import android.net.Uri
-import com.lizongying.mytv0.models.TVList
 
 internal class InitializerProvider : ContentProvider() {
 
     // Happens before Application#onCreate.It's fine to init something here
     override fun onCreate(): Boolean {
         SP.init(context!!)
-        TVList.init(context!!)
         return true
     }
 

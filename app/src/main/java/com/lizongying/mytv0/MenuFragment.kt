@@ -1,5 +1,6 @@
 package com.lizongying.mytv0
 
+import MainViewModel
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
@@ -10,9 +11,9 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.lizongying.mytv0.databinding.MenuBinding
-import com.lizongying.mytv0.models.TVList
 import com.lizongying.mytv0.models.TVListModel
 import com.lizongying.mytv0.models.TVModel
 
@@ -26,19 +27,29 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
     private var groupWidth = 0
     private var listWidth = 0
 
+    private lateinit var viewModel: MainViewModel
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val application = requireActivity().applicationContext as MyTVApplication
-        val context = requireContext()
-        _binding = MenuBinding.inflate(inflater, container, false)
 
-        Log.i(TAG, "TVList.groupModel ${TVList.groupModel}")
+        _binding = MenuBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val context = requireActivity()
+        val application = requireActivity().applicationContext as MyTVApplication
+        viewModel = ViewModelProvider(context)[MainViewModel::class.java]
+
+
+        Log.i(TAG, "groupModel ${viewModel.groupModel}")
         groupAdapter = GroupAdapter(
             context,
             binding.group,
-            TVList.groupModel,
+            viewModel.groupModel,
         )
         binding.group.adapter = groupAdapter
         binding.group.layoutManager =
@@ -51,15 +62,17 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
         }
         groupAdapter.setItemListener(this)
 
-        var listTVModel = TVList.groupModel.getTVListModelNotFilter(TVList.groupModel.positionValue)
+        var listTVModel =
+            viewModel.groupModel.getTVListModelNotFilter(viewModel.groupModel.positionValue)
 
-        Log.i(TAG, "listTVModel0 ${TVList.groupModel.positionValue} $listTVModel")
+        Log.i(TAG, "listTVModel0 ${viewModel.groupModel.positionValue} $listTVModel")
         if (listTVModel == null) {
-            TVList.groupModel.setPosition(0)
+            viewModel.groupModel.setPosition(0)
         }
 
-        listTVModel = TVList.groupModel.getTVListModelNotFilter(TVList.groupModel.positionValue)
-        Log.i(TAG, "listTVModel1 ${TVList.groupModel.positionValue} $listTVModel")
+        listTVModel =
+            viewModel.groupModel.getTVListModelNotFilter(viewModel.groupModel.positionValue)
+        Log.i(TAG, "listTVModel1 ${viewModel.groupModel.positionValue} $listTVModel")
         listAdapter = ListAdapter(
             context,
             binding.list,
@@ -80,23 +93,24 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
         binding.menu.setOnClickListener {
             hideSelf()
         }
-
-        return binding.root
+        (activity as MainActivity).ready(TAG)
     }
 
     fun update() {
         view?.post {
-            groupAdapter.update(TVList.groupModel)
+            groupAdapter.update(viewModel.groupModel)
 
-            var listTVModel = TVList.groupModel.getTVListModelNotFilter(TVList.groupModel.positionValue)
+            var listTVModel =
+                viewModel.groupModel.getTVListModelNotFilter(viewModel.groupModel.positionValue)
 
-            Log.i(TAG, "listTVModel3 ${TVList.groupModel.positionValue} $listTVModel")
+            Log.i(TAG, "listTVModel3 ${viewModel.groupModel.positionValue} $listTVModel")
             if (listTVModel == null) {
-                TVList.groupModel.setPosition(0)
+                viewModel.groupModel.setPosition(0)
             }
-            listTVModel = TVList.groupModel.getTVListModelNotFilter(TVList.groupModel.positionValue)
+            listTVModel =
+                viewModel.groupModel.getTVListModelNotFilter(viewModel.groupModel.positionValue)
 
-            Log.i(TAG, "listTVModel4 ${TVList.groupModel.positionValue} $listTVModel")
+            Log.i(TAG, "listTVModel4 ${viewModel.groupModel.positionValue} $listTVModel")
             if (listTVModel != null) {
                 (binding.list.adapter as ListAdapter).update(listTVModel)
             }
@@ -120,10 +134,10 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
     }
 
     fun updateList(position: Int) {
-        TVList.groupModel.setPosition(position)
+        viewModel.groupModel.setPosition(position)
         SP.positionGroup = position
 
-        TVList.groupModel.getTVListModelNotFilter(position)?.let {
+        viewModel.groupModel.getTVListModelNotFilter(position)?.let {
             (binding.list.adapter as ListAdapter).update(it)
         }
     }
@@ -154,10 +168,10 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
     }
 
     override fun onItemClicked(position: Int, type: String) {
-        TVList.groupModel.getTVListModel()?.setPosition(position)
-        TVList.groupModel.getCurrent()?.setReady()
-        TVList.groupModel.setPositionPlaying(TVList.groupModel.positionValue)
-        TVList.groupModel.getTVListModelNotFilter(TVList.groupModel.positionValue)?.let {
+        viewModel.groupModel.getTVListModel()?.setPosition(position)
+        viewModel.groupModel.getCurrent()?.setReady()
+        viewModel.groupModel.setPositionPlaying(viewModel.groupModel.positionValue)
+        viewModel.groupModel.getTVListModelNotFilter(viewModel.groupModel.positionValue)?.let {
             it.setPositionPlaying(it.positionValue)
         }
         (activity as MainActivity).hideMenuFragment()
@@ -174,8 +188,8 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
                 groupAdapter.focusable(false)
                 listAdapter.focusable(true)
 
-                if (TVList.groupModel.positionPlayingValue == TVList.groupModel.positionValue) {
-                    TVList.groupModel.getCurrentList()?.let {
+                if (viewModel.groupModel.positionPlayingValue == viewModel.groupModel.positionValue) {
+                    viewModel.groupModel.getCurrentList()?.let {
                         listAdapter.toPosition(it.positionPlayingValue)
                     }
                 } else {
@@ -201,7 +215,7 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
                 listAdapter.focusable(false)
                 listAdapter.clear()
                 Log.i(TAG, "group toPosition on left")
-                groupAdapter.scrollToPositionAndSelect(TVList.groupModel.positionValue)
+                groupAdapter.scrollToPositionAndSelect(viewModel.groupModel.positionValue)
                 return true
             }
 //            KeyEvent.KEYCODE_DPAD_RIGHT -> {
@@ -229,7 +243,7 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
 //                    listAdapter.focusable(true)
 //                }
 
-                if (TVList.groupModel.tvGroupValue.size < 2 || TVList.groupModel.getTVListModelNotFilter(
+                if (viewModel.groupModel.tvGroupValue.size < 2 || viewModel.groupModel.getTVListModelNotFilter(
                         1
                     )?.size() == 0
                 ) {
@@ -237,21 +251,21 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
                     return
                 }
 
-                val position = TVList.groupModel.positionPlayingValue
-                if (position != TVList.groupModel.positionValue
+                val position = viewModel.groupModel.positionPlayingValue
+                if (position != viewModel.groupModel.positionValue
                 ) {
                     updateList(position)
                 }
-                listAdapter.toPosition(TVList.groupModel.getTVListModelNotFilter(position)!!.positionPlayingValue)
+                listAdapter.toPosition(viewModel.groupModel.getTVListModelNotFilter(position)!!.positionPlayingValue)
             }
             if (binding.group.isVisible) {
 //                groupAdapter.focusable(true)
 //                listAdapter.focusable(false)
 
-                val position = TVList.groupModel.positionPlayingValue
-                Log.i(TAG, "group position $position/${TVList.groupModel.tvGroupValue.size}")
-                if (position != TVList.groupModel.positionValue) {
-                    TVList.groupModel.setPosition(position)
+                val position = viewModel.groupModel.positionPlayingValue
+                Log.i(TAG, "group position $position/${viewModel.groupModel.tvGroupValue.size}")
+                if (position != viewModel.groupModel.positionValue) {
+                    viewModel.groupModel.setPosition(position)
                 }
                 groupAdapter.scrollToPositionAndSelect(position)
             }

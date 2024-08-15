@@ -84,6 +84,7 @@ adb install my-tv-0.apk
 * 多源管理
 * 如果上次播放頻道不在收藏？
 * 當list為空，顯示group
+* 默認頻道菜單顯示
 
 ## 讚賞
 

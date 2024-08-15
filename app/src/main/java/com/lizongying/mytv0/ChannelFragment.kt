@@ -1,5 +1,6 @@
 package com.lizongying.mytv0
 
+import MainViewModel
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
@@ -8,8 +9,8 @@ import android.view.ViewGroup
 import androidx.core.view.marginEnd
 import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.lizongying.mytv0.databinding.ChannelBinding
-import com.lizongying.mytv0.models.TVList
 import com.lizongying.mytv0.models.TVModel
 
 class ChannelFragment : Fragment() {
@@ -20,6 +21,8 @@ class ChannelFragment : Fragment() {
     private val delay: Long = 5000
     private var channel = 0
     private var channelCount = 0
+
+    private lateinit var viewModel: MainViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,6 +50,12 @@ class ChannelFragment : Fragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val context = requireActivity()
+        viewModel = ViewModelProvider(context)[MainViewModel::class.java]
+    }
+
     fun show(tvViewModel: TVModel) {
         handler.removeCallbacks(hideRunnable)
         handler.removeCallbacks(playRunnable)
@@ -56,7 +65,7 @@ class ChannelFragment : Fragment() {
     }
 
     fun show(channel: String) {
-        if (TVList.groupModel.getCurrent()!!.tv.id > 10 && TVList.groupModel.getCurrent()!!.tv.id == this.channel - 1) {
+        if (viewModel.groupModel.getCurrent()!!.tv.id > 10 && viewModel.groupModel.getCurrent()!!.tv.id == this.channel - 1) {
             this.channel = 0
             channelCount = 0
         }

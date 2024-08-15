@@ -1,20 +1,21 @@
 package com.lizongying.mytv0
 
 
+import MainViewModel
 import android.content.Context
 import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import com.google.gson.Gson
-import com.lizongying.mytv0.models.TVList
 import fi.iki.elonen.NanoHTTPD
 import java.io.File
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 
 
-class SimpleServer(private val context: Context) : NanoHTTPD(PORT) {
+class SimpleServer(private val context: Context, private val viewModel: MainViewModel) :
+    NanoHTTPD(PORT) {
     private val handler = Handler(Looper.getMainLooper())
 
     init {
@@ -81,8 +82,8 @@ class SimpleServer(private val context: Context) : NanoHTTPD(PORT) {
         try {
             readBody(session)?.let {
                 handler.post {
-                    if (TVList.str2List(it)) {
-                        File(context.filesDir, TVList.FILE_NAME).writeText(it)
+                    if (viewModel.str2List(it)) {
+                        File(context.filesDir, viewModel.FILE_NAME).writeText(it)
                         SP.config = "file://"
                         R.string.channel_import_success.showToast()
                     } else {
@@ -112,7 +113,7 @@ class SimpleServer(private val context: Context) : NanoHTTPD(PORT) {
                     val uri = Uri.parse(url)
                     Log.i(TAG, "uri $uri")
                     handler.post {
-                        TVList.parseUri(uri)
+                        viewModel.parseUri(uri)
                     }
                 }
             }

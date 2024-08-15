@@ -18,11 +18,6 @@ import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.lizongying.mytv0.databinding.SettingBinding
-import com.lizongying.mytv0.models.TVList
-import com.lizongying.mytv0.models.TVList.updateEPG
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlin.math.max
 import kotlin.math.min
 
@@ -105,12 +100,6 @@ class SettingFragment : Fragment() {
 
         val switchShowAllChannels = _binding?.switchShowAllChannels
         switchShowAllChannels?.isChecked = SP.showAllChannels
-        switchShowAllChannels?.setOnCheckedChangeListener { _, isChecked ->
-            SP.showAllChannels = isChecked
-            TVList.groupModel.tvGroup.value?.let { TVList.groupModel.setTVListModelList(it) }
-            mainActivity.update()
-            mainActivity.settingActive()
-        }
 
         val switchCompactMenu = _binding?.switchCompactMenu
         switchCompactMenu?.isChecked = SP.compactMenu
@@ -288,6 +277,7 @@ class SettingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val context = requireActivity()
+        val mainActivity = (activity as MainActivity)
         viewModel = ViewModelProvider(context)[MainViewModel::class.java]
 
         binding.switchDisplaySeconds.setOnCheckedChangeListener { _, isChecked ->
@@ -296,19 +286,19 @@ class SettingFragment : Fragment() {
 
         binding.clear.setOnClickListener {
             SP.config = SP.DEFAULT_CONFIG_URL
-            TVList.reset(context)
+            viewModel.reset(context)
             confirmConfig()
 
             SP.channel = SP.DEFAULT_CHANNEL
             confirmChannel()
 
-            context.deleteFile(TVList.FILE_NAME)
+            context.deleteFile(viewModel.FILE_NAME)
             SP.deleteLike()
             SP.position = 0
-            val tvModel = TVList.groupModel.getPosition(0)
+            val tvModel = viewModel.groupModel.getPosition(0)
             tvModel?.setReady()
-            TVList.groupModel.setPositionPlaying(TVList.groupModel.positionValue)
-            TVList.groupModel.getTVListModelNotFilter(TVList.groupModel.positionValue)?.let {
+            viewModel.groupModel.setPositionPlaying(viewModel.groupModel.positionValue)
+            viewModel.groupModel.getTVListModelNotFilter(viewModel.groupModel.positionValue)?.let {
                 it.setPositionPlaying(it.positionValue)
             }
             SP.showAllChannels = SP.DEFAULT_SHOW_ALL_CHANNELS
@@ -317,13 +307,16 @@ class SettingFragment : Fragment() {
             viewModel.setDisplaySeconds(SP.DEFAULT_DISPLAY_SECONDS)
 
             SP.epg = SP.DEFAULT_EPG
-            if (!SP.epg.isNullOrEmpty()) {
-                CoroutineScope(Dispatchers.IO).launch {
-                    updateEPG()
-                }
-            }
+            viewModel.updateEPG()
 
             R.string.config_restored.showToast()
+        }
+
+        binding.switchShowAllChannels.setOnCheckedChangeListener { _, isChecked ->
+            SP.showAllChannels = isChecked
+            viewModel.groupModel.tvGroup.value?.let { viewModel.groupModel.setTVListModelList(it) }
+            mainActivity.update()
+            mainActivity.settingActive()
         }
     }
 
@@ -342,7 +335,7 @@ class SettingFragment : Fragment() {
             if (uri.scheme == "file") {
                 requestReadPermissions()
             } else {
-                TVList.parseUri(uri)
+                viewModel.parseUri(uri)
             }
         } else {
             R.string.invalid_config_address.showToast()
@@ -351,7 +344,8 @@ class SettingFragment : Fragment() {
     }
 
     private fun confirmChannel() {
-        SP.channel = min(max(SP.channel, 0), TVList.groupModel.getTVListModelNotFilter(1)!!.size())
+        SP.channel =
+            min(max(SP.channel, 0), viewModel.groupModel.getTVListModelNotFilter(1)!!.size())
 
         (activity as MainActivity).settingActive()
     }
@@ -434,7 +428,7 @@ class SettingFragment : Fragment() {
                 PERMISSIONS_REQUEST_CODE
             )
         } else {
-            TVList.parseUri(uri)
+            viewModel.parseUri(uri)
         }
     }
 
@@ -446,7 +440,7 @@ class SettingFragment : Fragment() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSION_READ_EXTERNAL_STORAGE_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                TVList.parseUri(uri)
+                viewModel.parseUri(uri)
             } else {
                 R.string.authorization_failed.showToast()
             }

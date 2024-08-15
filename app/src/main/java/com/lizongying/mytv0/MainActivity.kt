@@ -21,7 +21,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.lizongying.mytv0.models.TVList
 import java.util.Locale
 
 
@@ -98,6 +97,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        viewModel.init(this)
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
@@ -133,11 +133,11 @@ class MainActivity : AppCompatActivity() {
     fun ready(tag: String) {
         Log.i(TAG, "ready $tag")
         ok++
-        if (ok == 3) {
+        if (ok == 4) {
             Log.i(TAG, "watch")
-            TVList.groupModel.change.observe(this) { _ ->
+            viewModel.groupModel.change.observe(this) { _ ->
                 Log.i(TAG, "groupModel changed")
-                if (TVList.groupModel.tvGroup.value != null) {
+                if (viewModel.groupModel.tvGroup.value != null) {
                     watch()
                     Log.i(TAG, "menuFragment update")
                     menuFragment.update()
@@ -151,22 +151,22 @@ class MainActivity : AppCompatActivity() {
 //                "播放收藏频道".showToast()
 //            }
 
-
-            val prevGroup = TVList.groupModel.positionValue
-            Log.i(TAG, "SP.channel ${SP.channel}")
-            val tvModel = if (SP.channel > 0) {
-                val position = if (SP.channel < TVList.listModel.size) {
-                    // R.string.play_default_channel.showToast()
-                    SP.channel - 1
-
-                } else {
-                    // R.string.default_channel_out_of_range.showToast()
-                    SP.channel = 0
-                    0
-                }
-                TVList.groupModel.getPosition(position)
-            } else {
-                Log.i(TAG, "group ${TVList.groupModel.positionValue}")
+            viewModel.channelsOk.observe(this) { it ->
+                if (it) {
+                    val prevGroup = viewModel.groupModel.positionValue
+                    Log.i(TAG, "SP.channel ${SP.channel}")
+                    val tvModel = if (SP.channel > 0) {
+                        val position = if (SP.channel < viewModel.listModel.size) {
+                            // R.string.play_default_channel.showToast()
+                            SP.channel - 1
+                        } else {
+                            // R.string.default_channel_out_of_range.showToast()
+                            SP.channel = 0
+                            0
+                        }
+                        viewModel.groupModel.getPosition(position)
+                    } else {
+                        Log.i(TAG, "group ${viewModel.groupModel.positionValue}")
 //                if (SP.position < 0 || SP.position >= TVList.groupModel.getTVListModelNotFilter(1)!!
 //                        .size()
 //                ) {
@@ -176,33 +176,38 @@ class MainActivity : AppCompatActivity() {
 //                    // R.string.play_last_channel.showToast()
 //                    SP.position
 //                }
-                TVList.groupModel.getCurrent()
-            }
-            tvModel?.setReady()
-            Log.i(TAG, "ready tv ${tvModel!!.tv.name}")
-            TVList.groupModel.setPositionPlaying(TVList.groupModel.positionValue)
-            TVList.groupModel.getTVListModelNotFilter(TVList.groupModel.positionValue)?.let {
-                Log.i(TAG, "list name ${it.getName()}")
-                it.setPositionPlaying(it.positionValue)
-            }
+                        viewModel.groupModel.getCurrent()
+                    }
+                    tvModel?.setReady()
+                    viewModel.groupModel.setPositionPlaying(viewModel.groupModel.positionValue)
+                    viewModel.groupModel.getTVListModelNotFilter(viewModel.groupModel.positionValue)
+                        ?.let {
+                            Log.i(TAG, "list name ${it.getName()}")
+                            it.setPositionPlaying(it.positionValue)
+                        }
 
-            val currentGroup = TVList.groupModel.positionValue
-            if (currentGroup != prevGroup) {
-                Log.i(TAG, "group change")
-                menuFragment.updateList(currentGroup)
-            }
+                    val currentGroup = viewModel.groupModel.positionValue
+                    if (currentGroup != prevGroup) {
+                        Log.i(TAG, "group change")
+                        menuFragment.updateList(currentGroup)
+                    }
 
-            TVList.groupModel.isInLikeMode = SP.defaultLike && TVList.groupModel.positionValue == 0
-            if (TVList.groupModel.isInLikeMode) {
+                    viewModel.groupModel.isInLikeMode =
+                        SP.defaultLike && viewModel.groupModel.positionValue == 0
+                    if (viewModel.groupModel.isInLikeMode) {
 //                R.string.favorite_mode.showToast()
-            } else {
+                    } else {
 //                R.string.standard_mode.showToast()
+                    }
+
+                    // TODO group position
+                    viewModel.updateEPG()
+                }
             }
 
-            // TODO group position
-            viewModel.updateEPG()
+            server = SimpleServer(this, viewModel)
 
-            server = SimpleServer(this)
+            viewModel.updateConfig()
         }
     }
 
@@ -211,7 +216,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun watch() {
-        TVList.listModel.forEach { tvModel ->
+        viewModel.listModel.forEach { tvModel ->
             tvModel.errInfo.observe(this) { _ ->
 
                 if (tvModel.errInfo.value != null
@@ -252,9 +257,9 @@ class MainActivity : AppCompatActivity() {
                 if (tvModel.like.value != null && tvModel.tv.id != -1) {
                     val liked = tvModel.like.value as Boolean
                     if (liked) {
-                        TVList.groupModel.getTVListModel(0)?.replaceTVModel(tvModel)
+                        viewModel.groupModel.getTVListModel(0)?.replaceTVModel(tvModel)
                     } else {
-                        TVList.groupModel.getTVListModel(0)?.removeTVModel(tvModel.tv.id)
+                        viewModel.groupModel.getTVListModel(0)?.removeTVModel(tvModel.tv.id)
                     }
                     SP.setLike(tvModel.tv.id, liked)
                 }
@@ -366,7 +371,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onPlayEnd() {
-        val tvModel = TVList.groupModel.getCurrent()!!
+        val tvModel = viewModel.groupModel.getCurrent()!!
         if (SP.repeatInfo) {
             infoFragment.show(tvModel)
             if (SP.channelNum) {
@@ -376,18 +381,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun play(position: Int) {
-        if (position > -1 && position < TVList.groupModel.getTVListModelNotFilter(1)!!.size()) {
-            val prevGroup = TVList.groupModel.positionValue
-            val tvModel = TVList.groupModel.getPosition(position)
+        if (position > -1 && position < viewModel.groupModel.getTVListModelNotFilter(1)!!.size()) {
+            val prevGroup = viewModel.groupModel.positionValue
+            val tvModel = viewModel.groupModel.getPosition(position)
 
             tvModel!!.setReady()
             Log.i(TAG, "play tv ${tvModel.tv.name}")
-            TVList.groupModel.setPositionPlaying(TVList.groupModel.positionValue)
-            TVList.groupModel.getTVListModelNotFilter(TVList.groupModel.positionValue)?.let {
+            viewModel.groupModel.setPositionPlaying(viewModel.groupModel.positionValue)
+            viewModel.groupModel.getTVListModelNotFilter(viewModel.groupModel.positionValue)?.let {
                 it.setPositionPlaying(it.positionValue)
             }
 
-            val currentGroup = TVList.groupModel.positionValue
+            val currentGroup = viewModel.groupModel.positionValue
             if (currentGroup != prevGroup) {
                 menuFragment.updateList(currentGroup)
             }
@@ -397,50 +402,50 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun prev() {
-        val prevGroup = TVList.groupModel.positionValue
+        val prevGroup = viewModel.groupModel.positionValue
         val tvModel =
-            if (SP.defaultLike && TVList.groupModel.isInLikeMode && TVList.groupModel.getTVListModel(
+            if (SP.defaultLike && viewModel.groupModel.isInLikeMode && viewModel.groupModel.getTVListModel(
                     0
                 ) != null
             ) {
-                TVList.groupModel.getPrev(true)
+                viewModel.groupModel.getPrev(true)
             } else {
-                TVList.groupModel.getPrev()
+                viewModel.groupModel.getPrev()
             }
 
         tvModel!!.setReady()
         Log.i(TAG, "tv ${tvModel.tv.name}")
-        TVList.groupModel.setPositionPlaying(TVList.groupModel.positionValue)
-        TVList.groupModel.getTVListModelNotFilter(TVList.groupModel.positionValue)?.let {
+        viewModel.groupModel.setPositionPlaying(viewModel.groupModel.positionValue)
+        viewModel.groupModel.getTVListModelNotFilter(viewModel.groupModel.positionValue)?.let {
             it.setPositionPlaying(it.positionValue)
         }
 
-        val currentGroup = TVList.groupModel.positionValue
+        val currentGroup = viewModel.groupModel.positionValue
         if (currentGroup != prevGroup) {
             menuFragment.updateList(currentGroup)
         }
     }
 
     fun next() {
-        val prevGroup = TVList.groupModel.positionValue
+        val prevGroup = viewModel.groupModel.positionValue
         val tvModel =
-            if (SP.defaultLike && TVList.groupModel.isInLikeMode && TVList.groupModel.getTVListModel(
+            if (SP.defaultLike && viewModel.groupModel.isInLikeMode && viewModel.groupModel.getTVListModel(
                     0
                 ) != null
             ) {
-                TVList.groupModel.getNext(true)
+                viewModel.groupModel.getNext(true)
             } else {
-                TVList.groupModel.getNext()
+                viewModel.groupModel.getNext()
             }
 
         tvModel!!.setReady()
         Log.i(TAG, "tv ${tvModel.tv.name}")
-        TVList.groupModel.setPositionPlaying(TVList.groupModel.positionValue)
-        TVList.groupModel.getTVListModelNotFilter(TVList.groupModel.positionValue)?.let {
+        viewModel.groupModel.setPositionPlaying(viewModel.groupModel.positionValue)
+        viewModel.groupModel.getTVListModelNotFilter(viewModel.groupModel.positionValue)?.let {
             it.setPositionPlaying(it.positionValue)
         }
 
-        val currentGroup = TVList.groupModel.positionValue
+        val currentGroup = viewModel.groupModel.positionValue
         if (currentGroup != prevGroup) {
             menuFragment.updateList(currentGroup)
         }
