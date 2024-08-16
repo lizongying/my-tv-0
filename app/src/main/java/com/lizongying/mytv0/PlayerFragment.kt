@@ -187,7 +187,7 @@ class PlayerFragment : Fragment() {
             if (dataSource != null) {
                 setMediaSource(dataSource)
             } else {
-                setMediaItem(tvModel.mediaItem)
+                setMediaItem(tvModel.getMediaItem())
             }
 
             prepare()

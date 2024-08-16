@@ -19,7 +19,7 @@ class TVListModel(private val name: String, private val groupIndex: Int) : ViewM
     private val _tvList = MutableLiveData<List<TVModel>>()
     val tvList: LiveData<List<TVModel>>
         get() = _tvList
-    val tvListValue: List<TVModel>
+    private val tvListValue: List<TVModel>
         get() = _tvList.value ?: listOf()
 
     private val _position = MutableLiveData<Int>()
@@ -40,9 +40,13 @@ class TVListModel(private val name: String, private val groupIndex: Int) : ViewM
     }
 
     fun setPositionPlaying(position: Int) {
-        Log.i(TAG, "list setPositionPlaying $position")
         _positionPlaying.value = position
         SP.position = position
+    }
+
+    fun setPlaying() {
+        _positionPlaying.value = positionValue
+        SP.position = positionValue
     }
 
     private val _change = MutableLiveData<Boolean>()
@@ -112,7 +116,7 @@ class TVListModel(private val name: String, private val groupIndex: Int) : ViewM
     }
 
     fun getTVModel(): TVModel? {
-        return getTVModel(position.value as Int)
+        return getTVModel(positionValue)
     }
 
     fun getTVModel(idx: Int): TVModel? {

@@ -106,7 +106,20 @@ class TVModel(var tv: TV) : ViewModel() {
         get() = _videoIndex
 
     private var userAgent = ""
-    lateinit var mediaItem: MediaItem
+
+    // TODO Maybe _mediaItem has not been initialized when play
+    private lateinit var _mediaItem: MediaItem
+
+    fun getMediaItem(): MediaItem {
+        if (::_mediaItem.isInitialized) {
+            return _mediaItem
+        } else {
+            // TODO Maybe url is null
+            _mediaItem = MediaItem.fromUri(getVideoUrl()!!)
+            return _mediaItem
+        }
+    }
+
     private lateinit var httpDataSource: DefaultHttpDataSource.Factory
 
     init {
@@ -142,7 +155,7 @@ class TVModel(var tv: TV) : ViewModel() {
             }
         }
 
-        mediaItem = MediaItem.fromUri(uri.toString())
+        _mediaItem = MediaItem.fromUri(uri.toString())
 
         if (path.lowercase().endsWith(".m3u8")) {
             addSource(SourceType.HLS)
@@ -192,20 +205,23 @@ class TVModel(var tv: TV) : ViewModel() {
         if (sources.isEmpty()) {
             return null
         }
+        if (!::_mediaItem.isInitialized) {
+            return null
+        }
         sourceIndex = max(0, sourceIndex)
         sourceIndex = min(sourceIndex, sources.size - 1)
 
         return when (sources[sourceIndex]) {
-            SourceType.HLS -> HlsMediaSource.Factory(httpDataSource).createMediaSource(mediaItem)
+            SourceType.HLS -> HlsMediaSource.Factory(httpDataSource).createMediaSource(_mediaItem)
             SourceType.RTSP -> if (userAgent.isEmpty()) {
-                RtspMediaSource.Factory().createMediaSource(mediaItem)
+                RtspMediaSource.Factory().createMediaSource(_mediaItem)
             } else {
-                RtspMediaSource.Factory().setUserAgent(userAgent).createMediaSource(mediaItem)
+                RtspMediaSource.Factory().setUserAgent(userAgent).createMediaSource(_mediaItem)
             }
 
-            SourceType.DASH -> DashMediaSource.Factory(httpDataSource).createMediaSource(mediaItem)
+            SourceType.DASH -> DashMediaSource.Factory(httpDataSource).createMediaSource(_mediaItem)
             SourceType.PROGRESSIVE -> ProgressiveMediaSource.Factory(httpDataSource)
-                .createMediaSource(mediaItem)
+                .createMediaSource(_mediaItem)
 
             else -> null
         }

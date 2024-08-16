@@ -63,7 +63,7 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
         groupAdapter.setItemListener(this)
 
         var listTVModel =
-            viewModel.groupModel.getTVListModelNotFilter(viewModel.groupModel.positionValue)
+            viewModel.groupModel.getCurrentList()
 
         Log.i(TAG, "listTVModel0 ${viewModel.groupModel.positionValue} $listTVModel")
         if (listTVModel == null) {
@@ -71,7 +71,7 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
         }
 
         listTVModel =
-            viewModel.groupModel.getTVListModelNotFilter(viewModel.groupModel.positionValue)
+            viewModel.groupModel.getCurrentList()
         Log.i(TAG, "listTVModel1 ${viewModel.groupModel.positionValue} $listTVModel")
         listAdapter = ListAdapter(
             context,
@@ -101,14 +101,14 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
             groupAdapter.update(viewModel.groupModel)
 
             var listTVModel =
-                viewModel.groupModel.getTVListModelNotFilter(viewModel.groupModel.positionValue)
+                viewModel.groupModel.getCurrentList()
 
             Log.i(TAG, "listTVModel3 ${viewModel.groupModel.positionValue} $listTVModel")
             if (listTVModel == null) {
                 viewModel.groupModel.setPosition(0)
             }
             listTVModel =
-                viewModel.groupModel.getTVListModelNotFilter(viewModel.groupModel.positionValue)
+                viewModel.groupModel.getCurrentList()
 
             Log.i(TAG, "listTVModel4 ${viewModel.groupModel.positionValue} $listTVModel")
             if (listTVModel != null) {
@@ -168,11 +168,11 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
     }
 
     override fun onItemClicked(position: Int, type: String) {
-        viewModel.groupModel.getTVListModel()?.setPosition(position)
-        viewModel.groupModel.getCurrent()?.setReady()
-        viewModel.groupModel.setPositionPlaying(viewModel.groupModel.positionValue)
-        viewModel.groupModel.getTVListModelNotFilter(viewModel.groupModel.positionValue)?.let {
-            it.setPositionPlaying(it.positionValue)
+        viewModel.groupModel.setPlaying()
+        viewModel.groupModel.getCurrentList()?.let {
+            it.setPosition(position)
+            it.setPlaying()
+            it.getCurrent()?.setReady()
         }
         (activity as MainActivity).hideMenuFragment()
     }
@@ -224,7 +224,7 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
 //                listAdapter.focusable(false)
 //                listAdapter.clear()
 //                Log.i(TAG, "group toPosition on left")
-//                groupAdapter.toPosition(TVList.groupModel.position.value!!)
+//                groupAdapter.toPosition(TVList.groupModel.positionValue)
 //                return true
 //            }
         }

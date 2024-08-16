@@ -133,7 +133,7 @@ class MainActivity : AppCompatActivity() {
     fun ready(tag: String) {
         Log.i(TAG, "ready $tag")
         ok++
-        if (ok == 4) {
+        if (ok == 5) {
             Log.i(TAG, "watch")
             viewModel.groupModel.change.observe(this) { _ ->
                 Log.i(TAG, "groupModel changed")
@@ -179,11 +179,11 @@ class MainActivity : AppCompatActivity() {
                         viewModel.groupModel.getCurrent()
                     }
                     tvModel?.setReady()
-                    viewModel.groupModel.setPositionPlaying(viewModel.groupModel.positionValue)
-                    viewModel.groupModel.getTVListModelNotFilter(viewModel.groupModel.positionValue)
+                    viewModel.groupModel.setPlaying()
+                    viewModel.groupModel.getCurrentList()
                         ?.let {
                             Log.i(TAG, "list name ${it.getName()}")
-                            it.setPositionPlaying(it.positionValue)
+                            it.setPlaying()
                         }
 
                     val currentGroup = viewModel.groupModel.positionValue
@@ -220,7 +220,7 @@ class MainActivity : AppCompatActivity() {
             tvModel.errInfo.observe(this) { _ ->
 
                 if (tvModel.errInfo.value != null
-//                    && tvModel.tv.id == TVList.position.value
+//                    && tvModel.tv.id == TVList.positionValue
                 ) {
                     hideFragment(loadingFragment)
                     if (tvModel.errInfo.value == "") {
@@ -240,7 +240,7 @@ class MainActivity : AppCompatActivity() {
 
                 // not first time && channel is not changed
                 if (tvModel.ready.value != null
-//                    && tvModel.tv.id == TVList.position.value
+//                    && tvModel.tv.id == TVList.positionValue
                 ) {
                     Log.i(TAG, "loading ${tvModel.tv.title}")
                     hideFragment(errorFragment)
@@ -259,7 +259,8 @@ class MainActivity : AppCompatActivity() {
                     if (liked) {
                         viewModel.groupModel.getTVListModelNotFilter(0)?.replaceTVModel(tvModel)
                     } else {
-                        viewModel.groupModel.getTVListModelNotFilter(0)?.removeTVModel(tvModel.tv.id)
+                        viewModel.groupModel.getTVListModelNotFilter(0)
+                            ?.removeTVModel(tvModel.tv.id)
                     }
                     SP.setLike(tvModel.tv.id, liked)
                 }
@@ -385,12 +386,9 @@ class MainActivity : AppCompatActivity() {
             val prevGroup = viewModel.groupModel.positionValue
             val tvModel = viewModel.groupModel.getPosition(position)
 
-            tvModel!!.setReady()
-            Log.i(TAG, "play tv ${tvModel.tv.name}")
-            viewModel.groupModel.setPositionPlaying(viewModel.groupModel.positionValue)
-            viewModel.groupModel.getTVListModelNotFilter(viewModel.groupModel.positionValue)?.let {
-                it.setPositionPlaying(it.positionValue)
-            }
+            tvModel?.setReady()
+            viewModel.groupModel.setPlaying()
+            viewModel.groupModel.getCurrentList()?.setPlaying()
 
             val currentGroup = viewModel.groupModel.positionValue
             if (currentGroup != prevGroup) {
@@ -413,12 +411,9 @@ class MainActivity : AppCompatActivity() {
                 viewModel.groupModel.getPrev()
             }
 
-        tvModel!!.setReady()
-        Log.i(TAG, "tv ${tvModel.tv.name}")
-        viewModel.groupModel.setPositionPlaying(viewModel.groupModel.positionValue)
-        viewModel.groupModel.getTVListModelNotFilter(viewModel.groupModel.positionValue)?.let {
-            it.setPositionPlaying(it.positionValue)
-        }
+        tvModel?.setReady()
+        viewModel.groupModel.setPlaying()
+        viewModel.groupModel.getCurrentList()?.setPlaying()
 
         val currentGroup = viewModel.groupModel.positionValue
         if (currentGroup != prevGroup) {
@@ -438,12 +433,9 @@ class MainActivity : AppCompatActivity() {
                 viewModel.groupModel.getNext()
             }
 
-        tvModel!!.setReady()
-        Log.i(TAG, "tv ${tvModel.tv.name}")
-        viewModel.groupModel.setPositionPlaying(viewModel.groupModel.positionValue)
-        viewModel.groupModel.getTVListModelNotFilter(viewModel.groupModel.positionValue)?.let {
-            it.setPositionPlaying(it.positionValue)
-        }
+        tvModel?.setReady()
+        viewModel.groupModel.setPlaying()
+        viewModel.groupModel.getCurrentList()?.setPlaying()
 
         val currentGroup = viewModel.groupModel.positionValue
         if (currentGroup != prevGroup) {

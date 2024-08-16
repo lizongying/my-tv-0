@@ -44,9 +44,13 @@ class TVGroupModel : ViewModel() {
     }
 
     fun setPositionPlaying(position: Int) {
-        Log.i(TAG, "group setPositionPlaying $position")
         _positionPlaying.value = position
         SP.positionGroup = position
+    }
+
+    fun setPlaying() {
+        _positionPlaying.value = positionValue
+        SP.positionGroup = positionValue
     }
 
     fun setPrevPosition() {
@@ -97,7 +101,7 @@ class TVGroupModel : ViewModel() {
     }
 
     fun getTVListModel(): TVListModel? {
-        return getTVListModel(position.value as Int)
+        return getTVListModel(positionValue)
     }
 
     fun getTVListModel(idx: Int): TVListModel? {
@@ -148,7 +152,7 @@ class TVGroupModel : ViewModel() {
             return null
         }
 
-        return getTVListModelNotFilter(positionValue)?.getCurrent()
+        return getCurrentList()?.getCurrent()
     }
 
     fun getCurrentList(): TVListModel? {

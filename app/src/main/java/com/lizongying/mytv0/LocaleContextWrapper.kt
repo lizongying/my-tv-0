@@ -8,7 +8,7 @@ import java.util.Locale
 
 class LocaleContextWrapper(base: Context) : ContextWrapper(base) {
     companion object {
-        fun wrap(context: Context, newLocale: Locale): ContextWrapper {
+        fun wrap(context: Context, newLocale: Locale): Context {
             val resources = context.resources
             val configuration = resources.configuration
 

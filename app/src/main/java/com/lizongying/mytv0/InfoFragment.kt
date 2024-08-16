@@ -32,7 +32,6 @@ class InfoFragment : Fragment() {
     ): View {
         _binding = InfoBinding.inflate(inflater, container, false)
 
-
         val application = requireActivity().applicationContext as MyTVApplication
 
         binding.info.layoutParams.width = application.px2Px(binding.info.layoutParams.width)
@@ -65,6 +64,11 @@ class InfoFragment : Fragment() {
 
         _binding!!.root.visibility = View.GONE
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        (activity as MainActivity).ready(TAG)
     }
 
     fun show(tvViewModel: TVModel) {

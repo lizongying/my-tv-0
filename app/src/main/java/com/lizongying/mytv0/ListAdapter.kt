@@ -114,7 +114,7 @@ class ListAdapter(
                 viewHolder.focus(true)
                 focused = view
                 if (visiable) {
-                    if (position != listTVModel.position.value) {
+                    if (position != listTVModel.positionValue) {
                         listTVModel.setPosition(position)
                     }
                 } else {
