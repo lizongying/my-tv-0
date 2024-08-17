@@ -137,7 +137,7 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
         viewModel.groupModel.setPosition(position)
         SP.positionGroup = position
 
-        viewModel.groupModel.getTVListModelNotFilter(position)?.let {
+        viewModel.groupModel.getCurrentList()?.let {
             (binding.list.adapter as ListAdapter).update(it)
         }
     }
@@ -243,9 +243,7 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
 //                    listAdapter.focusable(true)
 //                }
 
-                if (viewModel.groupModel.tvGroupValue.size < 2 || viewModel.groupModel.getTVListModelNotFilter(
-                        1
-                    )?.size() == 0
+                if (viewModel.groupModel.tvGroupValue.size < 2 || viewModel.groupModel.getAllList()?.size() == 0
                 ) {
                     R.string.channel_not_exist.showToast()
                     return
@@ -256,7 +254,7 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
                 ) {
                     updateList(position)
                 }
-                viewModel.groupModel.getTVListModelNotFilter(position)?.let {
+                viewModel.groupModel.getCurrentList()?.let {
                     listAdapter.toPosition(it.positionPlayingValue)
                 }
             }

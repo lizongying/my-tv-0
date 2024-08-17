@@ -152,6 +152,9 @@ class SettingFragment : Fragment() {
             requireActivity().finishAffinity()
         }
 
+        val txtTextSize =
+            application.px2PxFont(binding.versionName.textSize)
+
         binding.content.layoutParams.width =
             application.px2Px(binding.content.layoutParams.width)
         binding.content.setPadding(
@@ -162,7 +165,7 @@ class SettingFragment : Fragment() {
         )
 
         binding.name.textSize = application.px2PxFont(binding.name.textSize)
-        binding.version.textSize = application.px2PxFont(binding.version.textSize)
+        binding.version.textSize = txtTextSize
         val layoutParamsVersion = binding.version.layoutParams as ViewGroup.MarginLayoutParams
         layoutParamsVersion.topMargin = application.px2Px(binding.version.marginTop)
         layoutParamsVersion.bottomMargin = application.px2Px(binding.version.marginBottom)
@@ -170,20 +173,11 @@ class SettingFragment : Fragment() {
 
         val btnWidth =
             application.px2Px(binding.confirmConfig.layoutParams.width)
-        val btnHeight =
-            application.px2Px(binding.confirmConfig.layoutParams.height)
-        val btnTextSize =
-            application.px2PxFont(binding.confirmConfig.textSize)
+
         val btnLayoutParams =
             binding.confirmConfig.layoutParams as ViewGroup.MarginLayoutParams
         btnLayoutParams.marginEnd = application.px2Px(binding.confirmConfig.marginEnd)
 
-        val txtWidth =
-            application.px2Px(binding.versionName.layoutParams.width)
-        val txtTextSize =
-            application.px2PxFont(binding.versionName.textSize)
-
-        binding.versionName.layoutParams.width = txtWidth
         binding.versionName.textSize = txtTextSize
 
         for (i in listOf(
@@ -195,8 +189,7 @@ class SettingFragment : Fragment() {
             binding.appreciate,
         )) {
             i.layoutParams.width = btnWidth
-            i.layoutParams.height = btnHeight
-            i.textSize = btnTextSize
+            i.textSize = txtTextSize
             i.layoutParams = btnLayoutParams
             i.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
@@ -352,17 +345,13 @@ class SettingFragment : Fragment() {
 
     private fun confirmChannel() {
         SP.channel =
-            min(max(SP.channel, 0), viewModel.groupModel.getTVListModelNotFilter(1)!!.size())
+            min(max(SP.channel, 0), viewModel.groupModel.getAllList()!!.size())
 
         (activity as MainActivity).settingActive()
     }
 
     fun setServer(server: String) {
         this.server = "http://$server"
-    }
-
-    fun setVersionName(versionName: String) {
-        binding.versionName.text = versionName
     }
 
     private fun hideSelf() {

@@ -167,7 +167,7 @@ class MainActivity : AppCompatActivity() {
                         viewModel.groupModel.getPosition(position)
                     } else {
                         Log.i(TAG, "group ${viewModel.groupModel.positionValue}")
-//                if (SP.position < 0 || SP.position >= TVList.groupModel.getTVListModelNotFilter(1)!!
+//                if (SP.position < 0 || SP.position >= TVList.groupModel.getAllList()!!
 //                        .size()
 //                ) {
 //                    // R.string.last_channel_out_of_range.showToast()
@@ -257,9 +257,9 @@ class MainActivity : AppCompatActivity() {
                 if (tvModel.like.value != null && tvModel.tv.id != -1) {
                     val liked = tvModel.like.value as Boolean
                     if (liked) {
-                        viewModel.groupModel.getTVListModelNotFilter(0)?.replaceTVModel(tvModel)
+                        viewModel.groupModel.getFavoritesList()?.replaceTVModel(tvModel)
                     } else {
-                        viewModel.groupModel.getTVListModelNotFilter(0)
+                        viewModel.groupModel.getFavoritesList()
                             ?.removeTVModel(tvModel.tv.id)
                     }
                     SP.setLike(tvModel.tv.id, liked)
@@ -382,7 +382,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun play(position: Int) {
-        if (position > -1 && position < viewModel.groupModel.getTVListModelNotFilter(1)!!.size()) {
+        if (position > -1 && position < viewModel.groupModel.getAllList()!!.size()) {
             val prevGroup = viewModel.groupModel.positionValue
             val tvModel = viewModel.groupModel.getPosition(position)
 
@@ -402,9 +402,7 @@ class MainActivity : AppCompatActivity() {
     fun prev() {
         val prevGroup = viewModel.groupModel.positionValue
         val tvModel =
-            if (SP.defaultLike && viewModel.groupModel.isInLikeMode && viewModel.groupModel.getTVListModelNotFilter(
-                    0
-                ) != null
+            if (SP.defaultLike && viewModel.groupModel.isInLikeMode && viewModel.groupModel.getFavoritesList() != null
             ) {
                 viewModel.groupModel.getPrev(true)
             } else {
@@ -424,9 +422,7 @@ class MainActivity : AppCompatActivity() {
     fun next() {
         val prevGroup = viewModel.groupModel.positionValue
         val tvModel =
-            if (SP.defaultLike && viewModel.groupModel.isInLikeMode && viewModel.groupModel.getTVListModelNotFilter(
-                    0
-                ) != null
+            if (SP.defaultLike && viewModel.groupModel.isInLikeMode && viewModel.groupModel.getFavoritesList() != null
             ) {
                 viewModel.groupModel.getNext(true)
             } else {

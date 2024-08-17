@@ -98,7 +98,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            >
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/check_version"
                 android:layout_width="100dp"

@@ -99,7 +99,10 @@ class ChannelFragment : Fragment() {
     }
 
     private val hideRunnable = Runnable {
-        binding.content.text = BLANK
+        if (_binding != null) {
+            binding.content.text = BLANK
+        }
+
         view?.visibility = View.GONE
         channel = 0
         channelCount = 0
