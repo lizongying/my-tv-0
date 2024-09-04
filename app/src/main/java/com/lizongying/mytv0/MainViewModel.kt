@@ -311,22 +311,25 @@ class MainViewModel : ViewModel() {
 
                             if (!tvMap.containsKey(group + title)) {
                                 tvMap[group + title] = listOf()
+                                tvMap[group + title] = tvMap[group + title]!! + group
                             }
                             tvMap[group + title] = tvMap[group + title]!! + uris
                         }
                     }
                 }
                 for ((title, uris) in tvMap) {
+                    val channel_group = uris.first();
+                    uris.drop(1);
                     val tv = TV(
                         -1,
                         "",
-                        title.removePrefix(group),
+                        title.removePrefix(channel_group),
                         "",
                         "",
                         "",
                         uris,
                         mapOf(),
-                        group,
+                        channel_group,
                         SourceType.UNKNOWN,
                         listOf(),
                     )
