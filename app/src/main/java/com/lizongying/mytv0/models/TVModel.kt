@@ -110,13 +110,16 @@ class TVModel(var tv: TV) : ViewModel() {
     // TODO Maybe _mediaItem has not been initialized when play
     private lateinit var _mediaItem: MediaItem
 
-    fun getMediaItem(): MediaItem {
+    fun getMediaItem(): MediaItem? {
         if (::_mediaItem.isInitialized) {
             return _mediaItem
         } else {
-            // TODO Maybe url is null
-            _mediaItem = MediaItem.fromUri(getVideoUrl()!!)
-            return _mediaItem
+            getVideoUrl()?.let {
+                _mediaItem = MediaItem.fromUri(it)
+                return _mediaItem
+            }
+
+            return null
         }
     }
 

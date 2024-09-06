@@ -21,8 +21,6 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
     init {
         try {
             start()
-            val host = PortUtil.lan()
-            (context as MainActivity).setServer("$host:$PORT")
         } catch (e: Exception) {
             e.printStackTrace()
         }

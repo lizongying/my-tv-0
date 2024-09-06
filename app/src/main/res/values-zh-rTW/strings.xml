@@ -24,6 +24,7 @@
     <string name="channel_format_error">頻道格式錯誤</string>
     <string name="channel_read_error">無法讀取頻道</string>
     <string name="channel_request_error">頻道請求錯誤</string>
+    <string name="play_error">播放錯誤</string>
     <string name="file_not_exist">文件不存在</string>
     <string name="channel_not_exist">頻道為空</string>
     <string name="config_restored">已恢復到默認配置</string>

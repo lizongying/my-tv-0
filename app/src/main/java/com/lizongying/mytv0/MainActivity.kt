@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
 
     private var server: SimpleServer? = null
 
-    lateinit var viewModel: MainViewModel
+    private lateinit var viewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -209,10 +209,6 @@ class MainActivity : AppCompatActivity() {
 
             viewModel.updateConfig()
         }
-    }
-
-    fun setServer(server: String) {
-        settingFragment.setServer(server)
     }
 
     private fun watch() {
@@ -724,8 +720,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun attachBaseContext(base: Context) {
-        //Locale.SIMPLIFIED_CHINESE
-        //Locale.TRADITIONAL_CHINESE
         val locale = Locale.TRADITIONAL_CHINESE
         val context = LocaleContextWrapper.wrap(base, locale)
         super.attachBaseContext(context)

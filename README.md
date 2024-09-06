@@ -75,7 +75,7 @@ adb install my-tv-0.apk
 
 ## TODO
 
-* 視頻解碼
+* 軟解
 * 支持回看
 * 詳細EPG
 * 淺色菜單

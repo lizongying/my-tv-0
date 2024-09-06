@@ -17,6 +17,7 @@ import androidx.core.view.marginEnd
 import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.lizongying.mytv0.SimpleServer.Companion.PORT
 import com.lizongying.mytv0.databinding.SettingBinding
 import kotlin.math.max
 import kotlin.math.min
@@ -31,7 +32,7 @@ class SettingFragment : Fragment() {
 
     private lateinit var updateManager: UpdateManager
 
-    private var server = ""
+    private var server = "http://${PortUtil.lan()}:$PORT"
 
     private lateinit var viewModel: MainViewModel
 
@@ -348,10 +349,6 @@ class SettingFragment : Fragment() {
             min(max(SP.channel, 0), viewModel.groupModel.getAllList()!!.size())
 
         (activity as MainActivity).settingActive()
-    }
-
-    fun setServer(server: String) {
-        this.server = "http://$server"
     }
 
     private fun hideSelf() {

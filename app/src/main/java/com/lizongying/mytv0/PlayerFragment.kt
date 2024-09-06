@@ -116,11 +116,7 @@ class PlayerFragment : Fragment() {
 
                     override fun onPlayerError(error: PlaybackException) {
                         super.onPlayerError(error)
-                        Log.i(
-                            TAG,
-                            "播放错误 ${error.errorCode}||| ${error.errorCodeName}||| ${error.message}||| $error"
-                        )
-                        tvModel?.setErrInfo("播放错误")
+                        tvModel?.setErrInfo(R.string.play_error.getString())
                         if (tvModel?.getSourceType() == SourceType.UNKNOWN) {
                             tvModel?.nextSource()
                         }
@@ -187,7 +183,19 @@ class PlayerFragment : Fragment() {
             if (dataSource != null) {
                 setMediaSource(dataSource)
             } else {
-                setMediaItem(tvModel.getMediaItem())
+                val mediaItem = tvModel.getMediaItem()
+                if (mediaItem == null) {
+                    tvModel.setErrInfo(R.string.play_error.getString())
+                    if (tvModel.getSourceType() == SourceType.UNKNOWN) {
+                        tvModel.nextSource()
+                    }
+                    if (tvModel.retryTimes < tvModel.retryMaxTimes) {
+                        tvModel.setReady()
+                        tvModel.retryTimes++
+                    }
+                    return
+                }
+                setMediaItem(mediaItem)
             }
 
             prepare()

@@ -6,6 +6,7 @@ import android.graphics.Paint
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -71,20 +72,27 @@ class InfoFragment : Fragment() {
         (activity as MainActivity).ready(TAG)
     }
 
-    fun show(tvViewModel: TVModel) {
-        val context = requireContext()
-        binding.title.text = tvViewModel.tv.title
+    fun show(tvModel: TVModel) {
+        // TODO make sure attached
+        if (!isAdded) {
+            Log.e(TAG, "Fragment not attached to a context.")
+            return
+        }
 
-        when (tvViewModel.tv.title) {
+        val context = requireContext()
+
+        binding.title.text = tvModel.tv.title
+
+        when (tvModel.tv.title) {
             else -> {
                 val width = Utils.dpToPx(100)
                 val height = Utils.dpToPx(60)
                 val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
                 val canvas = Canvas(bitmap)
 
-                val text = "${tvViewModel.tv.id + 1}"
+                val text = "${tvModel.tv.id + 1}"
                 var size = 100f
-                if (tvViewModel.tv.id > 999) {
+                if (tvModel.tv.id > 999) {
                     size = 90f
                 }
                 val paint = Paint().apply {
@@ -96,14 +104,14 @@ class InfoFragment : Fragment() {
                 val y = height / 2f - (paint.descent() + paint.ascent()) / 2
                 canvas.drawText(text, x, y, paint)
 
-                if (tvViewModel.tv.logo.isNullOrBlank()) {
+                if (tvModel.tv.logo.isNullOrBlank()) {
                     Glide.with(this)
                         .load(BitmapDrawable(context.resources, bitmap))
 //                        .centerInside()
                         .into(binding.logo)
                 } else {
                     Glide.with(this)
-                        .load(tvViewModel.tv.logo)
+                        .load(tvModel.tv.logo)
 //                        .placeholder(BitmapDrawable(context.resources, bitmap))
                         .error(BitmapDrawable(context.resources, bitmap))
 //                        .centerInside()
@@ -112,7 +120,7 @@ class InfoFragment : Fragment() {
             }
         }
 
-        val epg = tvViewModel.epg.value?.filter { it.beginTime < Utils.getDateTimestamp() }
+        val epg = tvModel.epg.value?.filter { it.beginTime < Utils.getDateTimestamp() }
         if (!epg.isNullOrEmpty()) {
             binding.desc.text = epg.last().title
         } else {
