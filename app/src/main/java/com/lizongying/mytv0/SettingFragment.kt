@@ -17,6 +17,8 @@ import androidx.core.view.marginEnd
 import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.lizongying.mytv0.ModalFragment.Companion.KEY_BITMAP
+import com.lizongying.mytv0.ModalFragment.Companion.KEY_TEXT
 import com.lizongying.mytv0.SimpleServer.Companion.PORT
 import com.lizongying.mytv0.databinding.SettingBinding
 import kotlin.math.max
@@ -118,7 +120,8 @@ class SettingFragment : Fragment() {
             val size = Utils.dpToPx(200)
             val img = QrCodeUtil().createQRCodeBitmap(server, size, size)
             val args = Bundle()
-            args.putParcelable("bitmap", img);
+            args.putString(KEY_TEXT, server)
+            args.putParcelable(KEY_BITMAP, img)
             imageModalFragment.arguments = args
 
             imageModalFragment.show(requireFragmentManager(), ModalFragment.TAG)

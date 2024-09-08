@@ -47,10 +47,13 @@ class ModalFragment : DialogFragment() {
             Glide.with(requireContext())
                 .load(bitmap)
                 .into(binding.modalImage)
+            binding.modalText.text = arguments?.getString(KEY_TEXT)
+            binding.modalText.visibility = View.VISIBLE
         } else {
             Glide.with(requireContext())
                 .load(arguments?.getInt(KEY_DRAWABLE_ID))
                 .into(binding.modalImage)
+            binding.modalText.visibility = View.GONE
         }
 
         handler.postDelayed(hideAppreciateModal, delayHideAppreciateModal)
@@ -71,6 +74,7 @@ class ModalFragment : DialogFragment() {
     companion object {
         const val KEY_DRAWABLE_ID = "drawable_id"
         const val KEY_BITMAP = "bitmap"
+        const val KEY_TEXT = "text"
         const val TAG = "ModalFragment"
     }
 }

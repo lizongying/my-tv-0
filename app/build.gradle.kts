@@ -15,7 +15,6 @@ android {
         targetSdk = 34
         versionCode = getVersionCode()
         versionName = getVersionName()
-        multiDexEnabled = true
     }
 
     buildFeatures {
@@ -24,7 +23,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
