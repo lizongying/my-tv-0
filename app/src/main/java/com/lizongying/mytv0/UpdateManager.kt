@@ -61,13 +61,13 @@ class UpdateManager(
 
     private fun startDownload(release: ReleaseResponse) {
         val apkName = "my-tv-0"
-        val apkFileName = "$apkName-${release.version_name}.apk"
+        val apkFileName = "$apkName-${release.version_name}${APK_SUFFIX}.apk"
         val v = release.version_name?.removePrefix("v")
         val url =
-            "${HttpClient.DOWNLOAD_HOST}${release.version_name}/$apkName.${v}.apk"
+            "${HttpClient.DOWNLOAD_HOST}${release.version_name}${APK_SUFFIX}/$apkName.${v}${APK_SUFFIX}.apk"
         Log.i(
             TAG,
-            "url ${Uri.parse("${HttpClient.DOWNLOAD_HOST}${release.version_name}/$apkName.${v}.apk")}"
+            "url ${url}"
         )
         var downloadDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
         if (downloadDir == null) {
@@ -185,6 +185,7 @@ class UpdateManager(
     companion object {
         private const val TAG = "UpdateManager"
         private const val BUFFER_SIZE = 8192
+        private const val APK_SUFFIX = "-kitkat"
     }
 
     override fun onConfirm() {
