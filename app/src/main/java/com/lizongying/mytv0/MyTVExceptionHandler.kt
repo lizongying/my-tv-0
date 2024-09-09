@@ -3,29 +3,34 @@ package com.lizongying.mytv0
 import android.content.Context
 import android.os.Build
 import android.util.Log
-import kotlinx.coroutines.CoroutineScope
+import com.lizongying.mytv0.requests.HttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.MediaType
+import okhttp3.Request
+import okhttp3.RequestBody
+import java.io.IOException
 import kotlin.system.exitProcess
 
-class MyTVExceptionHandler(val context: Context) : Thread.UncaughtExceptionHandler {
+class MyTVExceptionHandler(private val context: Context) : Thread.UncaughtExceptionHandler {
     override fun uncaughtException(t: Thread, e: Throwable) {
         val crashInfo =
-            "APP: ${context.appVersionName}, PRODUCT: ${Build.PRODUCT}, DEVICE: ${Build.DEVICE}, SUPPORTED_ABIS: ${Build.SUPPORTED_ABIS.joinToString()}, BOARD: ${Build.BOARD}, MANUFACTURER: ${Build.MANUFACTURER}, MODEL: ${Build.MODEL}, VERSION: ${Build.VERSION.SDK_INT}\nThread: ${t.name}\nException: ${e.message}\nStackTrace: ${
+            "APP: ${context.appVersionName}, PRODUCT: ${Build.PRODUCT}, DEVICE: ${Build.DEVICE}, SUPPORTED_ABIS: ${Build.CPU_ABI},${Build.CPU_ABI2}, BOARD: ${Build.BOARD}, MANUFACTURER: ${Build.MANUFACTURER}, MODEL: ${Build.MODEL}, VERSION: ${Build.VERSION.SDK_INT}\nThread: ${t.name}\nException: ${e.message}\nStackTrace: ${
                 Log.getStackTraceString(
                     e
                 )
             }\n"
 
-        CoroutineScope(Dispatchers.IO).launch {
-            saveCrashInfoToFile(crashInfo)
+        runBlocking {
+            launch(Dispatchers.IO) {
+                saveCrashInfoToFile(crashInfo)
 
-            withContext(Dispatchers.Main) {
-                android.os.Process.killProcess(android.os.Process.myPid())
-                exitProcess(1)
+                withContext(Dispatchers.Main) {
+                    android.os.Process.killProcess(android.os.Process.myPid())
+                    exitProcess(1)
+                }
             }
         }
     }
@@ -55,15 +60,21 @@ class MyTVExceptionHandler(val context: Context) : Thread.UncaughtExceptionHandl
 
     private suspend fun saveLog(crashInfo: String) {
         withContext(Dispatchers.IO) {
-            val client = okhttp3.OkHttpClient.Builder().build()
-            val request = okhttp3.Request.Builder()
+
+            val requestBody = RequestBody.create(MediaType.parse("text/plain"), crashInfo)
+            val request = Request.Builder()
                 .url("https://lyrics.run/my-tv-0/v1/log")
-                .method("POST", crashInfo.toRequestBody("text/plain".toMediaType()))
+                .post(requestBody)
                 .build()
             try {
-                client.newCall(request).execute()
-                Log.i(TAG, "log success")
-            } catch (e: Exception) {
+                HttpClient.okHttpClient.newCall(request).execute().use { response ->
+                    if (response.isSuccessful) {
+                        Log.i(TAG, "log success")
+                    } else {
+                        Log.e(TAG, "log failed: ${response.code()}")
+                    }
+                }
+            } catch (e: IOException) {
                 e.printStackTrace()
             }
         }

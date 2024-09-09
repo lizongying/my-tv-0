@@ -109,8 +109,8 @@ class TVListModel(private val name: String, private val groupIndex: Int) : ViewM
     fun initTVList() {
         _tvList.value = mutableListOf()
     }
-
-    fun clear() {
+    //API17+: clear() in ViewModel must rename!
+    fun clear2() {
         initTVList()
         setPosition(0)
     }
