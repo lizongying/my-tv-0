@@ -6,7 +6,7 @@ import android.os.Build
 import android.os.LocaleList
 import java.util.Locale
 
-class LocaleContextWrapper(base: Context) : ContextWrapper(base) {
+class LocaleContextWrapper private constructor(base: Context) : ContextWrapper(base) {
     companion object {
         fun wrap(context: Context, newLocale: Locale): Context {
             val resources = context.resources
@@ -28,7 +28,12 @@ class LocaleContextWrapper(base: Context) : ContextWrapper(base) {
                 context
             }
 
-            return LocaleContextWrapper(updatedContext)
+            //api17+ For KitKat and below, return the original context
+            return if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+                updatedContext
+            } else {
+                LocaleContextWrapper(updatedContext)
+            }
         }
     }
 }

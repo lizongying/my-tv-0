@@ -11,10 +11,11 @@ android {
 
     defaultConfig {
         applicationId = "com.lizongying.mytv0"
-        minSdk = 21
+        minSdk = 19
         targetSdk = 34
         versionCode = getVersionCode()
         versionName = getVersionName()
+        multiDexEnabled = true
     }
 
     buildFeatures {
@@ -23,7 +24,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = true
+            isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -147,7 +148,7 @@ dependencies {
     implementation(libs.media3.exoplayer.hls)
     implementation(libs.media3.exoplayer.dash)
     implementation(libs.media3.exoplayer.rtsp)
-    implementation(libs.media3.datasource.okhttp)
+    //implementation(libs.media3.datasource.okhttp)
 
     implementation(libs.nanohttpd)
     implementation(libs.gua64)
@@ -168,4 +169,6 @@ dependencies {
     implementation(libs.lifecycle.viewmodel)
 
     implementation(files("libs/lib-decoder-ffmpeg-release.aar"))
+
+    implementation(libs.conscrypt)
 }
