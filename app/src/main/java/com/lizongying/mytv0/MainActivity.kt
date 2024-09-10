@@ -134,7 +134,7 @@ class MainActivity : AppCompatActivity() {
         Log.i(TAG, "ready $tag")
         ok++
         if (ok == 5) {
-            Log.i(TAG, "watch")
+            Log.i(TAG, "all ready")
             viewModel.groupModel.change.observe(this) { _ ->
                 Log.i(TAG, "groupModel changed")
                 if (viewModel.groupModel.tvGroup.value != null) {

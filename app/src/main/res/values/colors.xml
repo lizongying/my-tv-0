@@ -1,8 +1,8 @@
 <resources>
     <color name="focus">#0096A6</color>
+    <color name="blur">#FF263238</color>
     <color name="black">#000</color>
     <color name="white">#FFF</color>
-    <color name="blur">#FF263238</color>
     <color name="title_blur">#FFEEEEEE</color>
     <color name="description_blur">#B3EEEEEE</color>
     <color name="track_checked_color">#400096A6</color>
