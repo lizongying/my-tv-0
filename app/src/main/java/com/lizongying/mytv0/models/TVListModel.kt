@@ -156,7 +156,7 @@ class TVListModel(private val name: String, private val groupIndex: Int) : ViewM
 
     init {
         _position.value = SP.position
-        Log.i(TAG, "SP.position ${SP.position}")
+        Log.i(TAG, "default position ${SP.position}")
     }
 
     fun size(): Int {

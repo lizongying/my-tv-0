@@ -1,4 +1,4 @@
-package com.lizongying.mytv0.models
+package com.lizongying.mytv0.data
 
 
 data class EPG(

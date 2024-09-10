@@ -1,6 +1,7 @@
 package com.lizongying.mytv0.models
 
 import android.util.Xml
+import com.lizongying.mytv0.data.EPG
 import org.xmlpull.v1.XmlPullParser
 import java.io.InputStream
 import java.text.SimpleDateFormat

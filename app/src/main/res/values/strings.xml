@@ -44,8 +44,8 @@
     <string name="default_proxy_set_failure">Failed to set proxy</string>
     <string name="default_epg_set_success">EPG set successfully</string>
     <string name="default_epg_set_failure">Failed to set EPG</string>
-    <string name="start_config_channel">Start Configuring Channel</string>
-    <string name="start_set_default_channel">Start Setting Default Channel</string>
+    <string name="start_config_channel">Start import channel</string>
+    <string name="start_set_default_channel">Start setting default channel</string>
     <string name="my_favorites">My Favorites</string>
     <string name="all_channels">All Channels</string>
     <string name="compact_menu">Compact Menu</string>
