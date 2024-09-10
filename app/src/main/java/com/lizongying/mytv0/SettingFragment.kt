@@ -1,6 +1,7 @@
 package com.lizongying.mytv0
 
 import MainViewModel
+import MainViewModel.Companion.FILE_NAME
 import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.drawable.ColorDrawable
@@ -120,7 +121,7 @@ class SettingFragment : Fragment() {
             val size = Utils.dpToPx(200)
             val img = QrCodeUtil().createQRCodeBitmap(server, size, size)
             val args = Bundle()
-            args.putString(KEY_TEXT, server)
+            args.putString(KEY_TEXT, server.removePrefix("http://"))
             args.putParcelable(KEY_BITMAP, img)
             imageModalFragment.arguments = args
 
@@ -282,6 +283,8 @@ class SettingFragment : Fragment() {
         }
 
         binding.clear.setOnClickListener {
+            SP.channelNum = SP.DEFAULT_CHANNEL_NUM
+
             SP.positionGroup = SP.DEFAULT_POSITION_GROUP
             viewModel.groupModel.setPosition(SP.DEFAULT_POSITION_GROUP)
             viewModel.groupModel.setPositionPlaying(SP.DEFAULT_POSITION_GROUP)
@@ -298,7 +301,7 @@ class SettingFragment : Fragment() {
             SP.channel = SP.DEFAULT_CHANNEL
             confirmChannel()
 
-            context.deleteFile(viewModel.FILE_NAME)
+            context.deleteFile(FILE_NAME)
             SP.deleteLike()
             SP.position = 0
             val tvModel = viewModel.groupModel.getPosition(0)

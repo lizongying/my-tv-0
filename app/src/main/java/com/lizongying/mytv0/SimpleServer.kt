@@ -2,12 +2,14 @@ package com.lizongying.mytv0
 
 
 import MainViewModel
+import MainViewModel.Companion.FILE_NAME
 import android.content.Context
 import android.net.Uri
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import com.google.gson.Gson
+import com.lizongying.mytv0.data.ReqSettings
+import com.lizongying.mytv0.data.RespSettings
 import fi.iki.elonen.NanoHTTPD
 import java.io.File
 import java.io.IOException
@@ -34,16 +36,9 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
             "/api/proxy" -> handleProxy(session)
             "/api/epg" -> handleEPG(session)
             "/api/channel" -> handleDefaultChannel(session)
-            else -> handleStaticContent(session)
+            else -> handleStaticContent()
         }
     }
-
-    data class RespSettings(
-        val channelUri: String,
-        val channelDefault: Int,
-        val proxy: String,
-        val epg: String,
-    )
 
     private fun handleSettings(): Response {
         val response: String
@@ -67,13 +62,6 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
         return newFixedLengthResponse(Response.Status.OK, "application/json", response)
     }
 
-    data class Req(
-        var uri: String? = "",
-        val proxy: String?,
-        val epg: String?,
-        val channel: Int?,
-    )
-
     private fun handleChannelsFromFile(session: IHTTPSession): Response {
         R.string.start_config_channel.showToast()
         val response = ""
@@ -81,7 +69,7 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
             readBody(session)?.let {
                 handler.post {
                     if (viewModel.str2List(it)) {
-                        File(context.filesDir, viewModel.FILE_NAME).writeText(it)
+                        File(context.filesDir, FILE_NAME).writeText(it)
                         SP.config = "file://"
                         R.string.channel_import_success.showToast()
                     } else {
@@ -105,11 +93,9 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
         val response = ""
         try {
             readBody(session)?.let {
-                val req = Gson().fromJson(it, Req::class.java)
+                val req = Gson().fromJson(it, ReqSettings::class.java)
                 if (req.uri != null) {
-                    val url = req.uri
-                    val uri = Uri.parse(url)
-                    Log.i(TAG, "uri $uri")
+                    val uri = Uri.parse(req.uri)
                     handler.post {
                         viewModel.parseUri(uri)
                     }
@@ -129,7 +115,7 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
         try {
             readBody(session)?.let {
                 handler.post {
-                    val req = Gson().fromJson(it, Req::class.java)
+                    val req = Gson().fromJson(it, ReqSettings::class.java)
                     if (req.proxy != null) {
                         SP.proxy = req.proxy
                         R.string.default_proxy_set_success.showToast()
@@ -154,7 +140,7 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
         try {
             readBody(session)?.let {
                 handler.post {
-                    val req = Gson().fromJson(it, Req::class.java)
+                    val req = Gson().fromJson(it, ReqSettings::class.java)
                     if (req.epg != null) {
                         SP.epg = req.epg
                         R.string.default_epg_set_success.showToast()
@@ -181,7 +167,7 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
         try {
             readBody(session)?.let {
                 handler.post {
-                    val req = Gson().fromJson(it, Req::class.java)
+                    val req = Gson().fromJson(it, ReqSettings::class.java)
                     if (req.channel != null && req.channel > -1) {
                         SP.channel = req.channel
                         R.string.default_channel_set_success.showToast()
@@ -207,7 +193,7 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
         return map["postData"]
     }
 
-    private fun handleStaticContent(session: IHTTPSession): Response {
+    private fun handleStaticContent(): Response {
         val html = loadHtmlFromResource(R.raw.index)
         return newFixedLengthResponse(Response.Status.OK, "text/html", html)
     }

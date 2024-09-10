@@ -50,6 +50,7 @@ object SP {
     private const val KEY_LOG_TIMES = "log_times"
 
     const val DEFAULT_CONFIG_URL = ""
+    const val DEFAULT_CHANNEL_NUM = false
     const val DEFAULT_EPG = "https://live.fanmingming.com/e.xml"
     const val DEFAULT_CHANNEL = 0
     const val DEFAULT_SHOW_ALL_CHANNELS = false
@@ -76,7 +77,7 @@ object SP {
         set(value) = sp.edit().putBoolean(KEY_CHANNEL_REVERSAL, value).apply()
 
     var channelNum: Boolean
-        get() = sp.getBoolean(KEY_CHANNEL_NUM, true)
+        get() = sp.getBoolean(KEY_CHANNEL_NUM, DEFAULT_CHANNEL_NUM)
         set(value) = sp.edit().putBoolean(KEY_CHANNEL_NUM, value).apply()
 
     var time: Boolean

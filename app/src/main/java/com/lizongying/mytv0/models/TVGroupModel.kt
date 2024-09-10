@@ -241,7 +241,7 @@ class TVGroupModel : ViewModel() {
 
     init {
         _position.value = SP.positionGroup
-        Log.i(TAG, "SP.positionGroup ${SP.positionGroup}")
+        Log.i(TAG, "default positionGroup ${SP.positionGroup}")
         isInLikeMode = SP.defaultLike && _position.value == 0
     }
 

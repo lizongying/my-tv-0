@@ -11,8 +11,8 @@ import com.lizongying.mytv0.R
 import com.lizongying.mytv0.SP
 import com.lizongying.mytv0.Utils.getDateFormat
 import com.lizongying.mytv0.models.EPGXmlParser
-import com.lizongying.mytv0.models.SourceType
-import com.lizongying.mytv0.models.TV
+import com.lizongying.mytv0.data.SourceType
+import com.lizongying.mytv0.data.TV
 import com.lizongying.mytv0.models.TVGroupModel
 import com.lizongying.mytv0.models.TVListModel
 import com.lizongying.mytv0.models.TVModel
@@ -27,7 +27,6 @@ import java.io.File
 
 
 class MainViewModel : ViewModel() {
-    val FILE_NAME = "channels.txt"
     private var timeFormat = if (SP.displaySeconds) "HH:mm:ss" else "HH:mm"
 
     private lateinit var appDirectory: File
@@ -137,6 +136,7 @@ class MainViewModel : ViewModel() {
                         if (str2List(str)) {
                             file.writeText(str)
                             SP.config = serverUrl
+                            _channelsOk.value = true
                             R.string.channel_import_success.showToast()
                         } else {
                             R.string.channel_import_error.showToast()
@@ -318,18 +318,18 @@ class MainViewModel : ViewModel() {
                     }
                 }
                 for ((title, uris) in tvMap) {
-                    val channel_group = uris.first();
+                    val channelGroup = uris.first();
                     uris.drop(1);
                     val tv = TV(
                         -1,
                         "",
-                        title.removePrefix(channel_group),
+                        title.removePrefix(channelGroup),
                         "",
                         "",
                         "",
                         uris,
                         mapOf(),
-                        channel_group,
+                        channelGroup,
                         SourceType.UNKNOWN,
                         listOf(),
                     )
@@ -381,5 +381,6 @@ class MainViewModel : ViewModel() {
 
     companion object {
         private const val TAG = "MainViewModel"
+        const val FILE_NAME = "channels.txt"
     }
 }

@@ -26,6 +26,7 @@
         label {
             display: inline-block;
             width: 100%;
+            margin-bottom: .5rem;
         }
 
         input {
@@ -104,7 +105,7 @@
             appName: '我的電視·〇',
             uriLabel: '視頻源地址',
             uploadFileLabel: '選擇視頻源文件後會自動上傳保存',
-            channelLabel: '默認播放頻道，從1開始',
+            channelLabel: '默認播放頻道，從1開始。0代表沒有設置',
             epgLabel: 'EPG',
             proxyLabel: '代理地址',
             confirm: '確認',
@@ -113,7 +114,7 @@
             appName: '我的电视·〇',
             uriLabel: '视频源地址',
             uploadFileLabel: '选择视频源文件后会自动上传保存',
-            channelLabel: '默认播放频道，从1开始',
+            channelLabel: '默认播放频道，从1开始。0代表沒有设置',
             epgLabel: 'EPG',
             proxyLabel: '代理地址',
             confirm: '确认',
@@ -202,6 +203,7 @@
         console.log(json);
         document.querySelector('#channel').value = json.channelDefault;
         document.querySelector('#uri').value = json.channelUri;
+        document.querySelector('#epg').value = json.epg;
         document.querySelector('#proxy').value = json.proxy;
     })()
 </script>
