@@ -2,7 +2,9 @@ package com.lizongying.mytv0
 
 import android.app.Application
 import android.content.Context
+import android.content.res.Configuration
 import android.content.res.Resources
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.DisplayMetrics
@@ -99,13 +101,5 @@ class MyTVApplication : Application() {
 
     fun sp2Px(sp: Float): Float {
         return (sp * ratio * scale).toFloat()
-    }
-
-    override fun attachBaseContext(base: Context) {
-        //Locale.SIMPLIFIED_CHINESE
-        //Locale.TRADITIONAL_CHINESE
-        val locale = Locale.TRADITIONAL_CHINESE
-        val context = LocaleContextWrapper.wrap(base, locale)
-        super.attachBaseContext(context)
     }
 }

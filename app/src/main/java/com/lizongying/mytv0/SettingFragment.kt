@@ -276,8 +276,6 @@ class SettingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.qrcode.requestFocus()
-
         val context = requireActivity()
         val mainActivity = (activity as MainActivity)
         viewModel = ViewModelProvider(context)[MainViewModel::class.java]
@@ -375,6 +373,7 @@ class SettingFragment : Fragment() {
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         if (!hidden) {
+            binding.qrcode.requestFocus()
         }
     }
 
