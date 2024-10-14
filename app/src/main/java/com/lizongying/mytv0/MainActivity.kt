@@ -136,10 +136,9 @@ class MainActivity : AppCompatActivity() {
         if (ok == 5) {
             Log.i(TAG, "all ready")
             viewModel.groupModel.change.observe(this) { _ ->
-                Log.i(TAG, "groupModel changed")
+                Log.i(TAG, "group changed")
                 if (viewModel.groupModel.tvGroup.value != null) {
                     watch()
-                    Log.i(TAG, "menuFragment update")
                     menuFragment.update()
                 }
             }
@@ -154,7 +153,6 @@ class MainActivity : AppCompatActivity() {
             viewModel.channelsOk.observe(this) { it ->
                 if (it) {
                     val prevGroup = viewModel.groupModel.positionValue
-                    Log.i(TAG, "SP.channel ${SP.channel}")
                     val tvModel = if (SP.channel > 0) {
                         val position = if (SP.channel < viewModel.listModel.size) {
                             // R.string.play_default_channel.showToast()
@@ -164,9 +162,9 @@ class MainActivity : AppCompatActivity() {
                             SP.channel = 0
                             0
                         }
+                        Log.i(TAG, "播放默認頻道")
                         viewModel.groupModel.getPosition(position)
                     } else {
-                        Log.i(TAG, "group ${viewModel.groupModel.positionValue}")
 //                if (SP.position < 0 || SP.position >= TVList.groupModel.getAllList()!!
 //                        .size()
 //                ) {
@@ -176,15 +174,16 @@ class MainActivity : AppCompatActivity() {
 //                    // R.string.play_last_channel.showToast()
 //                    SP.position
 //                }
+                        Log.i(TAG, "播放上次頻道")
                         viewModel.groupModel.getCurrent()
                     }
-                    tvModel?.setReady()
                     viewModel.groupModel.setPlaying()
                     viewModel.groupModel.getCurrentList()
                         ?.let {
-                            Log.i(TAG, "list name ${it.getName()}")
+                            Log.i(TAG, "當前組 ${it.getName()}")
                             it.setPlaying()
                         }
+                    tvModel?.setReady()
 
                     val currentGroup = viewModel.groupModel.positionValue
                     if (currentGroup != prevGroup) {
@@ -238,7 +237,7 @@ class MainActivity : AppCompatActivity() {
                 if (tvModel.ready.value != null
 //                    && tvModel.tv.id == TVList.positionValue
                 ) {
-                    Log.i(TAG, "loading ${tvModel.tv.title}")
+                    Log.i(TAG, "${tvModel.tv.title} 嘗試播放")
                     hideFragment(errorFragment)
                     showFragment(loadingFragment)
                     playerFragment.play(tvModel)

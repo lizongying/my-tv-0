@@ -35,7 +35,7 @@ class TVListModel(private val name: String, private val groupIndex: Int) : ViewM
         get() = _positionPlaying.value ?: 0
 
     fun setPosition(position: Int) {
-        Log.i(TAG, "list setPosition $position")
+        Log.i(TAG, "播放頻道 $position")
         _position.value = position
     }
 
@@ -156,7 +156,6 @@ class TVListModel(private val name: String, private val groupIndex: Int) : ViewM
 
     init {
         _position.value = SP.position
-        Log.i(TAG, "default position ${SP.position}")
     }
 
     fun size(): Int {

@@ -8,6 +8,7 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -274,6 +275,9 @@ class SettingFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.qrcode.requestFocus()
+
         val context = requireActivity()
         val mainActivity = (activity as MainActivity)
         viewModel = ViewModelProvider(context)[MainViewModel::class.java]
@@ -289,25 +293,30 @@ class SettingFragment : Fragment() {
             viewModel.groupModel.setPosition(SP.DEFAULT_POSITION_GROUP)
             viewModel.groupModel.setPositionPlaying(SP.DEFAULT_POSITION_GROUP)
 
-            SP.position = SP.DEFAULT_POSITION
-            val tvListModel = viewModel.groupModel.getCurrentList()
-            tvListModel?.setPosition(SP.DEFAULT_POSITION)
-            tvListModel?.setPositionPlaying(SP.DEFAULT_POSITION)
-
             SP.config = SP.DEFAULT_CONFIG_URL
+            Log.i(TAG, "config url: ${SP.config}")
             viewModel.reset(context)
             confirmConfig()
 
             SP.channel = SP.DEFAULT_CHANNEL
+            Log.i(TAG, "default channel: ${SP.channel}")
             confirmChannel()
 
-            context.deleteFile(FILE_NAME)
+//            context.deleteFile(FILE_NAME)
+
             SP.deleteLike()
-            SP.position = 0
-            val tvModel = viewModel.groupModel.getPosition(0)
-            tvModel?.setReady()
+            Log.i(TAG, "clear like")
+
+            SP.position = SP.DEFAULT_POSITION
+            Log.i(TAG, "list position: ${SP.position}")
+            val tvListModel = viewModel.groupModel.getCurrentList()
+            tvListModel?.setPosition(SP.DEFAULT_POSITION)
+            tvListModel?.setPositionPlaying(SP.DEFAULT_POSITION)
+
             viewModel.groupModel.setPlaying()
             viewModel.groupModel.getCurrentList()?.setPlaying()
+            viewModel.groupModel.getCurrent()?.setReady()
+
             SP.showAllChannels = SP.DEFAULT_SHOW_ALL_CHANNELS
             SP.compactMenu = SP.DEFAULT_COMPACT_MENU
 
@@ -328,13 +337,12 @@ class SettingFragment : Fragment() {
     }
 
     private fun confirmConfig() {
-        if (SP.config == null) {
+        if (SP.config.isNullOrEmpty()) {
+            Log.w(TAG, "SP.config is null or empty")
             return
         }
 
-        var url = SP.config!!
-        url = Utils.formatUrl(url)
-        uri = Uri.parse(url)
+        uri = Uri.parse(Utils.formatUrl(SP.config!!))
         if (uri.scheme == "") {
             uri = uri.buildUpon().scheme("http").build()
         }

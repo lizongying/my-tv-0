@@ -1,4 +1,4 @@
-package com.lizongying.mytv0.requests
+package com.lizongying.mytv0.data
 
 
 data class ReleaseResponse(

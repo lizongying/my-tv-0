@@ -16,7 +16,7 @@ import android.util.Log
 import androidx.fragment.app.FragmentActivity
 import com.lizongying.mytv0.requests.HttpClient
 import com.lizongying.mytv0.requests.ReleaseRequest
-import com.lizongying.mytv0.requests.ReleaseResponse
+import com.lizongying.mytv0.data.ReleaseResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

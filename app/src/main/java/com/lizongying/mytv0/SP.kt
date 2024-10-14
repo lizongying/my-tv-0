@@ -3,8 +3,11 @@ package com.lizongying.mytv0
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 
 object SP {
+    private const val TAG = "SP"
+
     // If Change channel with up and down in reversed order or not
     private const val KEY_CHANNEL_REVERSAL = "channel_reversal"
 
@@ -70,6 +73,10 @@ object SP {
             context.getString(R.string.app_name),
             Context.MODE_PRIVATE
         )
+
+        Log.i(TAG, "group position $positionGroup")
+        Log.i(TAG, "list position $position")
+        Log.i(TAG, "default channel $channel")
     }
 
     var channelReversal: Boolean

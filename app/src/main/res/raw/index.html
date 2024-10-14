@@ -29,7 +29,13 @@
             margin-bottom: .5rem;
         }
 
-        input {
+        textarea {
+            resize: none;
+            overflow: auto;
+            vertical-align: bottom;
+        }
+
+        input, textarea {
             color: #1a1a1a;
         }
 
@@ -37,18 +43,18 @@
             color: #EEEEEE;
         }
 
-        input[type="text"] {
+        input[type="text"], textarea {
             width: 20rem;
         }
 
-        input {
+        input, textarea {
             padding: 10px;
             border: none;
             border-radius: 4px;
             transition: box-shadow 0.3s ease-in-out;
         }
 
-        input:focus {
+        input:focus, textarea:focus {
             outline: none;
             border-color: #66afe9;
             box-shadow: 0 0 10px rgba(102, 175, 233, 0.6);
@@ -64,6 +70,14 @@
     <label for="uri" id="uri-label">視頻源地址，點擊確認後保存</label>
     <input type="text" id="uri"/>
     <input type="button" id="confirm-uri" value="確認" class="confirm"/>
+</div>
+
+<hr/>
+
+<div class="item">
+    <label for="plain-text" id="plain-text-label">視頻源文本，點擊確認後保存</label>
+    <textarea id="plain-text" rows="4"/></textarea>
+    <input type="button" id="confirm-plain-text" value="確認" class="confirm"/>
 </div>
 
 <hr/>
@@ -104,6 +118,7 @@
         TRADITIONAL_CHINESE: {
             appName: '我的電視·〇',
             uriLabel: '視頻源地址',
+            plainTextLabel: '視頻源文本',
             uploadFileLabel: '選擇視頻源文件後會自動上傳保存',
             channelLabel: '默認播放頻道，從1開始。0代表沒有設置',
             epgLabel: 'EPG',
@@ -113,6 +128,7 @@
         SIMPLIFIED_CHINESE: {
             appName: '我的电视·〇',
             uriLabel: '视频源地址',
+            plainTextLabel: '视频源文本',
             uploadFileLabel: '选择视频源文件后会自动上传保存',
             channelLabel: '默认播放频道，从1开始。0代表沒有设置',
             epgLabel: 'EPG',
@@ -127,6 +143,7 @@
     document.querySelector('#channel-label').innerText = t('channelLabel');
     document.querySelector('#upload-file-label').innerText = t('uploadFileLabel');
     document.querySelector('#uri-label').innerText = t('uriLabel');
+    document.querySelector('#plain-text-label').innerText = t('plainTextLabel');
     document.querySelector('#epg-label').innerText = t('epgLabel');
     document.querySelector('#proxy-label').innerText = t('proxyLabel');
     document.querySelectorAll('.confirm').forEach(
@@ -159,6 +176,13 @@
             save('/api/uri', JSON.stringify({
                 uri: uri
             }))
+        }
+    }
+
+    document.querySelector('#confirm-plain-text').onclick = () => {
+        const content = document.querySelector('#plain-text').value.trim();
+        if (content.length > 0) {
+            save('/api/channels', content)
         }
     }
 

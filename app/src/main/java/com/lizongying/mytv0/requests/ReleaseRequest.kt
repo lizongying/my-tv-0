@@ -1,5 +1,6 @@
 package com.lizongying.mytv0.requests
 
+import com.lizongying.mytv0.data.ReleaseResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Call

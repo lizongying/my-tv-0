@@ -60,6 +60,7 @@ class MainViewModel : ViewModel() {
             SP.config?.let {
                 if (it.startsWith("http")) {
                     viewModelScope.launch {
+                        Log.i(TAG, "updateConfig $it")
                         update(it)
                         SP.epg?.let { i ->
                             updateEPG(i)
@@ -165,7 +166,7 @@ class MainViewModel : ViewModel() {
     fun reset(context: Context) {
         val str = context.resources.openRawResource(R.raw.channels).bufferedReader()
             .use { it.readText() }
-
+        Log.i(TAG, "config file: $str")
         try {
             str2List(str)
         } catch (e: Exception) {
@@ -199,6 +200,7 @@ class MainViewModel : ViewModel() {
             }
         } else {
             CoroutineScope(Dispatchers.IO).launch {
+                Log.i(TAG, "uri $uri")
                 update(uri.toString())
             }
         }

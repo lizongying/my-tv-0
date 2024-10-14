@@ -44,31 +44,28 @@ android {
     }
 }
 
-fun getVersionCode(): Int {
+fun getTag(): String {
     return try {
         val process = Runtime.getRuntime().exec("git describe --tags --always")
         process.waitFor()
-        val arr = (process.inputStream.bufferedReader().use(BufferedReader::readText).trim()
-            .replace("v", "").replace(".", " ").replace("-", " ") + " 0").split(" ")
-        val versionCode =
-            arr[0].toInt() * 16777216 + arr[1].toInt() * 65536 + arr[2].toInt() * 256 + arr[3].toInt()
-        versionCode
-    } catch (ignored: Exception) {
+        process.inputStream.bufferedReader().use(BufferedReader::readText).trim().removePrefix("v")
+    } catch (_: Exception) {
+        ""
+    }
+}
+
+fun getVersionCode(): Int {
+    return try {
+        val arr = (getTag().replace(".", " ").replace("-", " ") + " 0").split(" ")
+        arr[0].toInt() * 16777216 + arr[1].toInt() * 65536 + arr[2].toInt() * 256 + arr[3].toInt()
+    } catch (_: Exception) {
         1
     }
 }
 
 fun getVersionName(): String {
-    return try {
-        val process = Runtime.getRuntime().exec("git describe --tags --always")
-        process.waitFor()
-        val versionName = process.inputStream.bufferedReader().use(BufferedReader::readText).trim()
-            .removePrefix("v")
-        versionName.ifEmpty {
-            "1.0.0"
-        }
-    } catch (ignored: Exception) {
-        "1.0.0"
+    return getTag().ifEmpty {
+        "0.0.0-1"
     }
 }
 
@@ -79,6 +76,7 @@ task("modifySource") {
     val channels = when (net) {
         "ipv6" -> "assets/ipv6.txt"
         "mobile" -> "assets/mobile.txt"
+        "" -> "assets/mobile.txt"
         else -> "assets/common.txt"
     }
 
@@ -97,6 +95,7 @@ task("modifySource") {
         val url = when (net) {
             "ipv6" -> "DEFAULT_CONFIG_URL = \"https://live.fanmingming.com/tv/m3u/ipv6.m3u\""
             "mobile" -> "DEFAULT_CONFIG_URL = \"https://live.fanmingming.com/tv/m3u/itv.m3u\""
+            "" -> "DEFAULT_CONFIG_URL = \"https://live.fanmingming.com/tv/m3u/itv.m3u\""
             else -> ""
         }
 
@@ -117,6 +116,7 @@ tasks.whenTaskAdded {
             val url = when (net) {
                 "ipv6" -> "DEFAULT_CONFIG_URL = \"https://live.fanmingming.com/tv/m3u/ipv6.m3u\""
                 "mobile" -> "DEFAULT_CONFIG_URL = \"https://live.fanmingming.com/tv/m3u/itv.m3u\""
+                "" -> "DEFAULT_CONFIG_URL = \"https://live.fanmingming.com/tv/m3u/itv.m3u\""
                 else -> ""
             }
 
