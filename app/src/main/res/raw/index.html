@@ -197,20 +197,16 @@
 
     document.querySelector('#confirm-proxy').onclick = () => {
         const proxy = document.querySelector('#proxy').value.trim();
-        if (proxy.length > 0) {
-            save('/api/proxy', JSON.stringify({
-                proxy: proxy
-            }))
-        }
+        save('/api/proxy', JSON.stringify({
+            proxy: proxy
+        }))
     }
 
     document.querySelector('#confirm-epg').onclick = () => {
         const epg = document.querySelector('#epg').value.trim();
-        if (epg.length > 0) {
-            save('/api/epg', JSON.stringify({
-                epg: epg
-            }))
-        }
+        save('/api/epg', JSON.stringify({
+            epg: epg
+        }))
     }
     const save = async (url, body) => {
         const response = await fetch(url, {

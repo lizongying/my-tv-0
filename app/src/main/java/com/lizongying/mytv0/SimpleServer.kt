@@ -7,6 +7,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import com.google.gson.Gson
 import com.lizongying.mytv0.data.ReqSettings
 import com.lizongying.mytv0.data.RespSettings
@@ -116,6 +117,7 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
             readBody(session)?.let {
                 handler.post {
                     val req = Gson().fromJson(it, ReqSettings::class.java)
+                    Log.i(TAG, "req $req")
                     if (req.proxy != null) {
                         SP.proxy = req.proxy
                         R.string.default_proxy_set_success.showToast()

@@ -115,7 +115,6 @@ object HttpClient {
                 .dns(DnsCache())
 
             if (SP.proxy != "") {
-                Log.i(TAG, "proxy ${SP.proxy}")
                 val uri = Uri.parse(SP.proxy)
                 val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(uri.host, uri.port))
                 builder.proxy(proxy)

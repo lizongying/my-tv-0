@@ -38,7 +38,7 @@ class TVGroupModel : ViewModel() {
     }
 
     fun setPosition(position: Int) {
-        Log.i(TAG, "group setPosition $position")
+        Log.i(TAG, "選擇組 $position")
         _position.value = position
     }
 

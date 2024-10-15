@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.dash.DashMediaSource
 import androidx.media3.exoplayer.hls.HlsMediaSource
@@ -127,7 +128,7 @@ class TVModel(var tv: TV) : ViewModel() {
         }
     }
 
-    private lateinit var httpDataSource: DefaultHttpDataSource.Factory
+    private lateinit var httpDataSource: DataSource.Factory
 
     init {
         _position.value = 0
@@ -149,11 +150,14 @@ class TVModel(var tv: TV) : ViewModel() {
         val path = uri.path ?: return
         val scheme = uri.scheme ?: return
 
-        httpDataSource = DefaultHttpDataSource.Factory()
-        httpDataSource.setKeepPostFor302Redirects(true)
-        httpDataSource.setAllowCrossProtocolRedirects(true)
+//        val okHttpDataSource = OkHttpDataSource.Factory(HttpClient.okHttpClient)
+//        httpDataSource = okHttpDataSource
+
+        val defaultHttpDataSource = DefaultHttpDataSource.Factory()
+        defaultHttpDataSource.setKeepPostFor302Redirects(true)
+        defaultHttpDataSource.setAllowCrossProtocolRedirects(true)
         tv.headers?.let {
-            httpDataSource.setDefaultRequestProperties(it)
+            defaultHttpDataSource.setDefaultRequestProperties(it)
             it.forEach { (key, value) ->
                 if (key.equals("user-agent", ignoreCase = true)) {
                     userAgent = value
@@ -161,6 +165,8 @@ class TVModel(var tv: TV) : ViewModel() {
                 }
             }
         }
+
+        httpDataSource = defaultHttpDataSource
 
         _mediaItem = MediaItem.fromUri(uri.toString())
 

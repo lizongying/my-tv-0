@@ -10,9 +10,9 @@ import com.google.gson.JsonSyntaxException
 import com.lizongying.mytv0.R
 import com.lizongying.mytv0.SP
 import com.lizongying.mytv0.Utils.getDateFormat
-import com.lizongying.mytv0.models.EPGXmlParser
 import com.lizongying.mytv0.data.SourceType
 import com.lizongying.mytv0.data.TV
+import com.lizongying.mytv0.models.EPGXmlParser
 import com.lizongying.mytv0.models.TVGroupModel
 import com.lizongying.mytv0.models.TVListModel
 import com.lizongying.mytv0.models.TVModel
@@ -115,8 +115,8 @@ class MainViewModel : ViewModel() {
                 }
             }
         } catch (e: Exception) {
-            e.printStackTrace()
-            R.string.epg_request_err.showToast()
+            Log.i(TAG, "EPG request error:", e)
+//            R.string.epg_request_err.showToast()
         }
     }
 

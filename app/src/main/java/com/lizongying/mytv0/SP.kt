@@ -77,6 +77,7 @@ object SP {
         Log.i(TAG, "group position $positionGroup")
         Log.i(TAG, "list position $position")
         Log.i(TAG, "default channel $channel")
+        Log.i(TAG, "proxy $proxy")
     }
 
     var channelReversal: Boolean

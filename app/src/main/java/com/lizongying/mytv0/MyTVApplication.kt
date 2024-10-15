@@ -102,4 +102,23 @@ class MyTVApplication : Application() {
     fun sp2Px(sp: Float): Float {
         return (sp * ratio * scale).toFloat()
     }
+
+    override fun attachBaseContext(base: Context) {
+        try {
+            val locale = Locale.TRADITIONAL_CHINESE
+            val config = Configuration()
+            config.setLocale(locale)
+            super.attachBaseContext(
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                    base.createConfigurationContext(config)
+                } else {
+                    val resources = base.resources
+                    resources.updateConfiguration(config, resources.displayMetrics)
+                    base
+                }
+            )
+        } catch (_: Exception) {
+            super.attachBaseContext(base)
+        }
+    }
 }
