@@ -2,7 +2,7 @@
 
 ### v1.3.7.18
 
-* 這是一個測試，嘗試解決一個ClassCastException
+* 解決EPG和proxy無法置空的問題
 
 ### v1.3.7.16
 
