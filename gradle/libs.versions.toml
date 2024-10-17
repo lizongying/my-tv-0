@@ -21,6 +21,8 @@ android-gradle-plugin = "8.3.2"
 kotlin-android = "2.0.0"
 appcompat = "1.6.1" #api17+: 1.6.1
 
+multidex = "2.0.1"
+
 conscrypt = "2.5.2" #api17+
 
 [libraries]
@@ -50,6 +52,8 @@ appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "a
 recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "core_ktx" }
 lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+
+multidex = { module = "androidx.multidex:multidex", version.ref = "multidex" }
 
 #api17+
 conscrypt = { module = "org.conscrypt:conscrypt-android", version.ref = "conscrypt" }

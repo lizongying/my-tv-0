@@ -86,13 +86,13 @@ class TVGroupModel : ViewModel() {
         )
         (_tvGroup.value as List<TVListModel>)[1].initTVList()
     }
-    //API17+: clear() in ViewModel must rename!
-    fun clear2() {
+
+    fun clearData() {
         if (SP.showAllChannels) {
             _tvGroup.value =
                 mutableListOf(getFavoritesList()!!, getAllList()!!)
             setPosition(0)
-            getAllList()?.clear2()
+            getAllList()?.clearData()
         } else {
             _tvGroup.value = mutableListOf(getFavoritesList()!!)
             setPosition(0)

@@ -170,5 +170,7 @@ dependencies {
 
     implementation(files("libs/lib-decoder-ffmpeg-release.aar"))
 
+    implementation(libs.multidex)
+
     implementation(libs.conscrypt)
 }
