@@ -87,12 +87,12 @@ class TVGroupModel : ViewModel() {
         (_tvGroup.value as List<TVListModel>)[1].initTVList()
     }
 
-    fun clear() {
+    fun clearData() {
         if (SP.showAllChannels) {
             _tvGroup.value =
                 mutableListOf(getFavoritesList()!!, getAllList()!!)
             setPosition(0)
-            getAllList()?.clear()
+            getAllList()?.clearData()
         } else {
             _tvGroup.value = mutableListOf(getFavoritesList()!!)
             setPosition(0)

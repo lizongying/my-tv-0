@@ -110,7 +110,7 @@ class TVListModel(private val name: String, private val groupIndex: Int) : ViewM
         _tvList.value = mutableListOf()
     }
 
-    fun clear() {
+    fun clearData() {
         initTVList()
         setPosition(0)
     }

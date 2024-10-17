@@ -111,12 +111,11 @@ object Utils {
 
     suspend fun getISP(): ISP {
         return withContext(Dispatchers.IO) {
-            val client = okhttp3.OkHttpClient.Builder().build()
             val request = okhttp3.Request.Builder()
                 .url("https://api.myip.la/json")
                 .build()
             try {
-                client.newCall(request).execute().use { response ->
+                HttpClient.okHttpClient.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) return@withContext UNKNOWN
                     val string = response.body?.string()
                     val isp = Gson().fromJson(string, IpInfo::class.java).location.isp_domain
