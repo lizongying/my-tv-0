@@ -42,7 +42,7 @@ jobs:
           body_path: history.md
 
       - name: Run build with Gradle wrapper
-        run: ./gradlew clean && ./gradlew assembleRelease
+        run: ./gradlew clean && ./gradlew assembleRelease -Pnet=common
 
       - name: Sign app APK
         id: sign_app

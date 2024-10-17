@@ -38,7 +38,7 @@ class TVGroupModel : ViewModel() {
     }
 
     fun setPosition(position: Int) {
-        Log.i(TAG, "group setPosition $position")
+        Log.i(TAG, "選擇組 $position")
         _position.value = position
     }
 
@@ -241,7 +241,6 @@ class TVGroupModel : ViewModel() {
 
     init {
         _position.value = SP.positionGroup
-        Log.i(TAG, "default positionGroup ${SP.positionGroup}")
         isInLikeMode = SP.defaultLike && _position.value == 0
     }
 

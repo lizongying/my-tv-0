@@ -15,8 +15,6 @@ import javax.net.ssl.SSLContext
 
 object HttpClient {
     const val TAG = "HttpClient"
-    //private const val HOST = "https://www.gitlink.org.cn/lizongying/my-tv-0/raw/"
-    //const val DOWNLOAD_HOST = "https://www.gitlink.org.cn/lizongying/my-tv-0/releases/download/"
     private const val HOST = "https://mirror.ghproxy.com/raw.githubusercontent.com/lizongying/my-tv-0/"
     const val DOWNLOAD_HOST = "https://mirror.ghproxy.com/github.com/lizongying/my-tv-0/releases/download/"
 

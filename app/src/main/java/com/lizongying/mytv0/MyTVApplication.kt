@@ -1,6 +1,7 @@
 package com.lizongying.mytv0
 
 import android.content.Context
+import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Handler
 import android.os.Looper
@@ -102,10 +103,21 @@ class MyTVApplication : MultiDexApplication() {
     }
 
     override fun attachBaseContext(base: Context) {
-        //Locale.SIMPLIFIED_CHINESE
-        //Locale.TRADITIONAL_CHINESE
-        val locale = Locale.TRADITIONAL_CHINESE
-        val context = LocaleContextWrapper.wrap(base, locale)
-        super.attachBaseContext(context)
+        try {
+            val locale = Locale.TRADITIONAL_CHINESE
+            val config = Configuration()
+            config.setLocale(locale)
+            super.attachBaseContext(
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                    base.createConfigurationContext(config)
+                } else {
+                    val resources = base.resources
+                    resources.updateConfiguration(config, resources.displayMetrics)
+                    base
+                }
+            )
+        } catch (_: Exception) {
+            super.attachBaseContext(base)
+        }
     }
 }

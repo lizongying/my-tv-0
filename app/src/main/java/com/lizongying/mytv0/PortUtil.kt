@@ -1,28 +1,9 @@
 package com.lizongying.mytv0
 
-import java.io.IOException
 import java.net.Inet4Address
 import java.net.NetworkInterface
-import java.net.ServerSocket
 
 object PortUtil {
-
-    fun findFreePort(): Int {
-        return try {
-            ServerSocket(34567).use { socket ->
-                socket.localPort
-            }
-        } catch (e: IOException) {
-            try {
-                ServerSocket(0).use { socket ->
-                    socket.localPort
-                }
-            } catch (e: IOException) {
-                e.printStackTrace()
-                -1 // Return -1 to indicate an error
-            }
-        }
-    }
 
     fun lan(): String? {
         val networkInterfaces = NetworkInterface.getNetworkInterfaces()
