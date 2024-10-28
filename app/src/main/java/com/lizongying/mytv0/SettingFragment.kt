@@ -1,7 +1,6 @@
 package com.lizongying.mytv0
 
 import MainViewModel
-import MainViewModel.Companion.FILE_NAME
 import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.drawable.ColorDrawable
@@ -372,7 +371,7 @@ class SettingFragment : Fragment() {
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
-        if (!hidden) {
+        if (_binding != null && !hidden) {
             binding.qrcode.requestFocus()
         }
     }
