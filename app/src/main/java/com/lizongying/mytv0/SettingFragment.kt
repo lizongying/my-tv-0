@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.lizongying.mytv0.ModalFragment.Companion.KEY_BITMAP
 import com.lizongying.mytv0.ModalFragment.Companion.KEY_TEXT
 import com.lizongying.mytv0.SimpleServer.Companion.PORT
+import com.lizongying.mytv0.Utils.getDateTimestamp
 import com.lizongying.mytv0.databinding.SettingBinding
 import kotlin.math.max
 import kotlin.math.min
@@ -120,7 +121,7 @@ class SettingFragment : Fragment() {
         binding.qrcode.setOnClickListener {
             val imageModalFragment = ModalFragment()
             val size = Utils.dpToPx(200)
-            val img = QrCodeUtil().createQRCodeBitmap(server, size, size)
+            val img = QrCodeUtil().createQRCodeBitmap("$server?${getDateTimestamp()}", size, size)
             val args = Bundle()
             args.putString(KEY_TEXT, server.removePrefix("http://"))
             args.putParcelable(KEY_BITMAP, img)
@@ -293,14 +294,13 @@ class SettingFragment : Fragment() {
 
             SP.config = SP.DEFAULT_CONFIG_URL
             Log.i(TAG, "config url: ${SP.config}")
+            context.deleteFile(FILE_NAME)
             viewModel.reset(context)
             confirmConfig()
 
             SP.channel = SP.DEFAULT_CHANNEL
             Log.i(TAG, "default channel: ${SP.channel}")
             confirmChannel()
-
-//            context.deleteFile(FILE_NAME)
 
             SP.deleteLike()
             Log.i(TAG, "clear like")
@@ -372,7 +372,7 @@ class SettingFragment : Fragment() {
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
-        if (!hidden) {
+        if (_binding != null && !hidden) {
             binding.qrcode.requestFocus()
         }
     }

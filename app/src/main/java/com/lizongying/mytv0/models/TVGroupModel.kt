@@ -169,9 +169,6 @@ class TVGroupModel : ViewModel() {
     // get & set
     // keep: In the current list loop
     fun getPrev(keep: Boolean = false): TVModel? {
-
-        Log.i(TAG, "keep $keep")
-
         // No item
         if (tvGroupValue.size < 2 || tvGroupValue[1].size() == 0) {
             return null
@@ -206,8 +203,6 @@ class TVGroupModel : ViewModel() {
 
     // get & set
     fun getNext(keep: Boolean = false): TVModel? {
-        Log.i(TAG, "keep $keep")
-
         // No item
         if (tvGroupValue.size < 2 || tvGroupValue[1].size() == 0) {
             return null

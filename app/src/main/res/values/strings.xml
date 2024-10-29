@@ -5,11 +5,11 @@
     <string name="check_version">Check for Updates</string>
     <string name="title_boot_startup">Boot Startup</string>
     <string name="appreciate">Appreciate Author</string>
-    <string name="channels">Apply Configuration</string>
+    <string name="channels">Update Configuration</string>
     <string name="channel">Default Channel</string>
     <string name="title_repeat_info">Show Video Info During Loop Playback</string>
     <string name="title_time">Show Time</string>
-    <string name="title_config_auto_load">Auto Update Video Source on App Startup</string>
+    <string name="title_config_auto_load">Update Video Source on App Startup</string>
     <string name="exit">Exit Application</string>
     <string name="default_channel">Default Channel Number</string>
     <string name="clear">Restore Default</string>

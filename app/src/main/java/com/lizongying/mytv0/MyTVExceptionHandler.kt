@@ -11,7 +11,6 @@ import kotlinx.coroutines.withContext
 import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.RequestBody
-import java.io.IOException
 import kotlin.system.exitProcess
 
 class MyTVExceptionHandler(private val context: Context) : Thread.UncaughtExceptionHandler {
@@ -60,7 +59,6 @@ class MyTVExceptionHandler(private val context: Context) : Thread.UncaughtExcept
 
     private suspend fun saveLog(crashInfo: String) {
         withContext(Dispatchers.IO) {
-
             val requestBody = RequestBody.create(MediaType.parse("text/plain"), crashInfo)
             val request = Request.Builder()
                 .url("https://lyrics.run/my-tv-0/v1/log")
@@ -74,7 +72,7 @@ class MyTVExceptionHandler(private val context: Context) : Thread.UncaughtExcept
                         Log.e(TAG, "log failed: ${response.code()}")
                     }
                 }
-            } catch (e: IOException) {
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
