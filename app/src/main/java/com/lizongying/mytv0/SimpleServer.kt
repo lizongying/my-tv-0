@@ -43,8 +43,19 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
     private fun handleSettings(): Response {
         val response: String
         try {
+            val file = File(context.filesDir, FILE_NAME)
+            var str = if (file.exists()) {
+                file.readText()
+            } else {
+                ""
+            }
+            if (str.isEmpty()) {
+                str = context.resources.openRawResource(R.raw.channels).bufferedReader()
+                    .use { it.readText() }
+            }
             val respSettings = RespSettings(
                 channelUri = SP.config ?: "",
+                channelText = str,
                 channelDefault = SP.channel,
                 proxy = SP.proxy ?: "",
                 epg = SP.epg ?: "",
@@ -68,13 +79,7 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
         try {
             readBody(session)?.let {
                 handler.post {
-                    if (viewModel.str2List(it)) {
-                        File(context.filesDir, FILE_NAME).writeText(it)
-                        SP.config = "file://"
-                        R.string.channel_import_success.showToast()
-                    } else {
-                        R.string.channel_import_error.showToast()
-                    }
+                    viewModel.tryStr2List(it, null, "")
                 }
             }
         } catch (e: Exception) {

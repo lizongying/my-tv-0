@@ -43,15 +43,12 @@
             color: #EEEEEE;
         }
 
-        input[type="text"], textarea {
-            width: 20rem;
-        }
-
         input, textarea {
-            padding: 10px;
+            padding: .6rem;
             border: none;
             border-radius: 4px;
             transition: box-shadow 0.3s ease-in-out;
+            vertical-align: bottom;
         }
 
         input:focus, textarea:focus {
@@ -59,56 +56,86 @@
             border-color: #66afe9;
             box-shadow: 0 0 10px rgba(102, 175, 233, 0.6);
         }
+
+        .container {
+            display: flex;
+            flex-direction: row;
+        }
+
+        input[type="text"], textarea {
+            flex: 1;
+            box-sizing: border-box;
+        }
+
+        input[type="text"], input[type="file"], input[type="button"] {
+            height: 2.6rem;
+        }
+
+        input[type="button"] {
+            margin-left: .6rem;
+        }
     </style>
 </head>
 <body>
 <h1 class="title">我的電視·〇</h1>
-
+<h4>視頻源可以设置地址/文本/文件其中之一</h4>
 <hr/>
 
 <div class="item">
     <label for="uri" id="uri-label">視頻源地址，點擊確認後保存</label>
-    <input type="text" id="uri"/>
-    <input type="button" id="confirm-uri" value="確認" class="confirm"/>
+    <div class="container">
+        <input type="text" id="uri"/>
+        <input type="button" id="confirm-uri" value="確認" class="confirm"/>
+    </div>
 </div>
 
 <hr/>
 
 <div class="item">
     <label for="plain-text" id="plain-text-label">視頻源文本，點擊確認後保存</label>
-    <textarea id="plain-text" rows="4"/></textarea>
-    <input type="button" id="confirm-plain-text" value="確認" class="confirm"/>
+    <div class="container">
+        <textarea id="plain-text" rows="4"/></textarea>
+        <input type="button" id="confirm-plain-text" value="確認" class="confirm"/>
+    </div>
 </div>
 
 <hr/>
 
 <div class="item">
-    <label for="upload-file" id="upload-file-label">選擇視頻文件後會自動保存上傳</label>
-    <input type="file" id="upload-file" multiple/>
+    <label for="upload-file" id="upload-file-label">視頻源文件，選擇後會自動保存上傳</label>
+    <div class="container">
+        <input type="file" id="upload-file" multiple/>
+    </div>
 </div>
 
 <hr/>
 
 <div class="item">
-    <label for="channel" id="channel-label">默認播放頻道號，從1開始。0代表沒有設置</label>
-    <input type="text" id="channel"/>
-    <input type="button" id="confirm-channel" value="確認" class="confirm"/>
+    <label for="channel" id="channel-label">默認播放頻道號，從1開始。0代表默認設置</label>
+    <div class="container">
+        <input type="text" id="channel"/>
+        <input type="button" id="confirm-channel" value="確認" class="confirm"/>
+    </div>
 </div>
 
 <hr/>
 
 <div class="item">
     <label for="proxy" id="epg-label">EPG</label>
-    <input type="text" id="epg"/>
-    <input type="button" id="confirm-epg" value="確認" class="confirm"/>
+    <div class="container">
+        <input type="text" id="epg"/>
+        <input type="button" id="confirm-epg" value="確認" class="confirm"/>
+    </div>
 </div>
 
 <hr/>
 
 <div class="item">
     <label for="proxy" id="proxy-label">代理地址</label>
-    <input type="text" id="proxy"/>
-    <input type="button" id="confirm-proxy" value="確認" class="confirm"/>
+    <div class="container">
+        <input type="text" id="proxy"/>
+        <input type="button" id="confirm-proxy" value="確認" class="confirm"/>
+    </div>
 </div>
 
 <hr/>
@@ -119,8 +146,8 @@
             appName: '我的電視·〇',
             uriLabel: '視頻源地址',
             plainTextLabel: '視頻源文本',
-            uploadFileLabel: '選擇視頻源文件後會自動上傳保存',
-            channelLabel: '默認播放頻道，從1開始。0代表沒有設置',
+            uploadFileLabel: '視頻源文件，選擇後會自動上傳保存',
+            channelLabel: '默認播放頻道，從1開始。0代表默认設置',
             epgLabel: 'EPG',
             proxyLabel: '代理地址',
             confirm: '確認',
@@ -129,8 +156,8 @@
             appName: '我的电视·〇',
             uriLabel: '视频源地址',
             plainTextLabel: '视频源文本',
-            uploadFileLabel: '选择视频源文件后会自动上传保存',
-            channelLabel: '默认播放频道，从1开始。0代表沒有设置',
+            uploadFileLabel: '视频源文件，选择后会自动上传保存',
+            channelLabel: '默认播放频道，从1开始。0代表默認设置',
             epgLabel: 'EPG',
             proxyLabel: '代理地址',
             confirm: '确认',
@@ -223,6 +250,7 @@
         console.log(json);
         document.querySelector('#channel').value = json.channelDefault;
         document.querySelector('#uri').value = json.channelUri;
+        document.querySelector('#plain-text').value = json.channelText;
         document.querySelector('#epg').value = json.epg;
         document.querySelector('#proxy').value = json.proxy;
     })()

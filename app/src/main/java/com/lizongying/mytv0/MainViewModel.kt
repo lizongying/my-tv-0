@@ -32,7 +32,9 @@ class MainViewModel : ViewModel() {
     private lateinit var appDirectory: File
     var listModel: List<TVModel> = listOf()
     val groupModel = TVGroupModel()
-
+    private var cacheFile: File? = null
+    private var cacheConfig = ""
+    private var initialized = false
 
     private val _channelsOk = MutableLiveData<Boolean>()
     val channelsOk: LiveData<Boolean>
@@ -71,26 +73,42 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    private fun getCache(): String {
+        return if (cacheFile!!.exists()) {
+            cacheFile!!.readText()
+        } else {
+            ""
+        }
+    }
+
     fun init(context: Context) {
         groupModel.addTVListModel(TVListModel("我的收藏", 0))
         groupModel.addTVListModel(TVListModel("全部頻道", 1))
 
         appDirectory = context.filesDir
-        val file = File(appDirectory, FILE_NAME)
-        val str = if (file.exists()) {
-            file.readText()
-        } else {
-            context.resources.openRawResource(R.raw.channels).bufferedReader()
+        cacheFile = File(appDirectory, FILE_NAME)
+        if (!cacheFile!!.exists()) {
+            cacheFile!!.createNewFile()
+        }
+
+        cacheConfig = getCache()
+        Log.i(TAG, "cacheConfig $cacheConfig")
+
+        if (cacheConfig.isEmpty()) {
+            cacheConfig = context.resources.openRawResource(R.raw.channels).bufferedReader()
                 .use { it.readText() }
+            Log.i(TAG, "cacheConfig $cacheConfig")
         }
 
         try {
-            str2List(str)
+            str2List(cacheConfig)
         } catch (e: Exception) {
             e.printStackTrace()
-            file.deleteOnExit()
+            cacheFile!!.deleteOnExit()
             R.string.channel_read_error.showToast()
         }
+
+        initialized = true
 
         _channelsOk.value = true
     }
@@ -128,20 +146,9 @@ class MainViewModel : ViewModel() {
                 val response = HttpClient.okHttpClient.newCall(request).execute()
 
                 if (response.isSuccessful) {
-                    val file = File(appDirectory, FILE_NAME)
-                    if (!file.exists()) {
-                        file.createNewFile()
-                    }
-                    val str = response.body!!.string()
+                    val str = response.body?.string() ?: ""
                     withContext(Dispatchers.Main) {
-                        if (str2List(str)) {
-                            file.writeText(str)
-                            SP.config = serverUrl
-                            _channelsOk.value = true
-                            R.string.channel_import_success.showToast()
-                        } else {
-                            R.string.channel_import_error.showToast()
-                        }
+                        tryStr2List(str, null, serverUrl)
                     }
                 } else {
                     Log.e(TAG, "Request status ${response.code}")
@@ -186,18 +193,7 @@ class MainViewModel : ViewModel() {
                 return
             }
 
-            try {
-                if (str2List(str)) {
-                    SP.config = uri.toString()
-                    R.string.channel_import_success.showToast()
-                } else {
-                    R.string.channel_import_error.showToast()
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                file.deleteOnExit()
-                R.string.channel_read_error.showToast()
-            }
+            tryStr2List(str, file, uri.toString())
         } else {
             CoroutineScope(Dispatchers.IO).launch {
                 update(uri.toString())
@@ -205,13 +201,37 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun str2List(str: String): Boolean {
+    fun tryStr2List(str: String, file: File?, url: String) {
+        try {
+            if (str2List(str)) {
+                cacheFile!!.writeText(str)
+                cacheConfig = str
+                SP.config = url
+                _channelsOk.value = true
+                R.string.channel_import_success.showToast()
+            } else {
+                R.string.channel_import_error.showToast()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            file?.deleteOnExit()
+            R.string.channel_read_error.showToast()
+        }
+    }
+
+    private fun str2List(str: String): Boolean {
         var string = str
+        if (initialized && string == cacheConfig) {
+            return false
+        }
         val g = Gua()
         if (g.verify(str)) {
             string = g.decode(str)
         }
-        if (string.isBlank()) {
+        if (string.isEmpty()) {
+            return false
+        }
+        if (initialized && string == cacheConfig) {
             return false
         }
 

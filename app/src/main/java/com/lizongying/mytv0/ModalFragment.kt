@@ -1,6 +1,8 @@
 package com.lizongying.mytv0
 
+import android.content.Intent
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -47,8 +49,14 @@ class ModalFragment : DialogFragment() {
             Glide.with(requireContext())
                 .load(bitmap)
                 .into(binding.modalImage)
-            binding.modalText.text = arguments?.getString(KEY_TEXT)
+            val text = arguments?.getString(KEY_TEXT)
+            binding.modalText.text = text
             binding.modalText.visibility = View.VISIBLE
+            binding.modal.setOnClickListener {
+                val url = "http://$text"
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                startActivity(intent)
+            }
         } else {
             Glide.with(requireContext())
                 .load(arguments?.getInt(KEY_DRAWABLE_ID))
