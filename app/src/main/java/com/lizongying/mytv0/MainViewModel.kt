@@ -92,13 +92,13 @@ class MainViewModel : ViewModel() {
         }
 
         cacheConfig = getCache()
-        Log.i(TAG, "cacheConfig $cacheConfig")
 
         if (cacheConfig.isEmpty()) {
             cacheConfig = context.resources.openRawResource(R.raw.channels).bufferedReader()
                 .use { it.readText() }
-            Log.i(TAG, "cacheConfig $cacheConfig")
         }
+
+        Log.i(TAG, "cacheConfig $cacheConfig")
 
         try {
             str2List(cacheConfig)

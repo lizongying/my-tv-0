@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace = "com.lizongying.mytv0"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.lizongying.mytv0"
         minSdk = 21
-        targetSdk = 34
+        targetSdk = 35
         versionCode = getVersionCode()
         versionName = getVersionName()
     }
@@ -148,6 +148,7 @@ dependencies {
     implementation(libs.media3.exoplayer.dash)
     implementation(libs.media3.exoplayer.rtsp)
     implementation(libs.media3.datasource.okhttp)
+    implementation(libs.media3.datasource.rtmp)
 
     implementation(libs.nanohttpd)
     implementation(libs.gua64)

@@ -9,6 +9,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DefaultHttpDataSource
+import androidx.media3.datasource.rtmp.RtmpDataSource
 import androidx.media3.exoplayer.dash.DashMediaSource
 import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.rtsp.RtspMediaSource
@@ -176,6 +177,9 @@ class TVModel(var tv: TV) : ViewModel() {
             addSource(SourceType.DASH)
         } else if (scheme.lowercase() == "rtsp") {
             addSource(SourceType.RTSP)
+        } else if (scheme.lowercase() == "rtmp") {
+            // rtmp://ns8.indexforce.com/home/mystream
+            addSource(SourceType.RTMP)
         } else {
 //            addSource(SourceType.UNKNOWN)
 //            addSource(SourceType.PROGRESSIVE)
@@ -192,6 +196,7 @@ class TVModel(var tv: TV) : ViewModel() {
             SourceType.PROGRESSIVE,
             SourceType.HLS,
             SourceType.RTSP,
+            SourceType.RTMP,
             SourceType.DASH,
             SourceType.UNKNOWN
         )) {
@@ -230,6 +235,12 @@ class TVModel(var tv: TV) : ViewModel() {
                 RtspMediaSource.Factory().createMediaSource(_mediaItem)
             } else {
                 RtspMediaSource.Factory().setUserAgent(userAgent).createMediaSource(_mediaItem)
+            }
+
+            SourceType.RTMP -> {
+                val rtmpDataSource = RtmpDataSource.Factory()
+                ProgressiveMediaSource.Factory(rtmpDataSource)
+                    .createMediaSource(_mediaItem)
             }
 
             SourceType.DASH -> DashMediaSource.Factory(httpDataSource).createMediaSource(_mediaItem)

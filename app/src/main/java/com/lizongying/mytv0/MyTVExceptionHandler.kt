@@ -3,9 +3,10 @@ package com.lizongying.mytv0
 import android.content.Context
 import android.os.Build
 import android.util.Log
-import kotlinx.coroutines.CoroutineScope
+import com.lizongying.mytv0.requests.HttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -20,12 +21,14 @@ class MyTVExceptionHandler(val context: Context) : Thread.UncaughtExceptionHandl
                 )
             }\n"
 
-        CoroutineScope(Dispatchers.IO).launch {
-            saveCrashInfoToFile(crashInfo)
+        runBlocking {
+            launch {
+                saveCrashInfoToFile(crashInfo)
 
-            withContext(Dispatchers.Main) {
-                android.os.Process.killProcess(android.os.Process.myPid())
-                exitProcess(1)
+                withContext(Dispatchers.Main) {
+                    android.os.Process.killProcess(android.os.Process.myPid())
+                    exitProcess(1)
+                }
             }
         }
     }
@@ -55,14 +58,18 @@ class MyTVExceptionHandler(val context: Context) : Thread.UncaughtExceptionHandl
 
     private suspend fun saveLog(crashInfo: String) {
         withContext(Dispatchers.IO) {
-            val client = okhttp3.OkHttpClient.Builder().build()
             val request = okhttp3.Request.Builder()
                 .url("https://lyrics.run/my-tv-0/v1/log")
                 .method("POST", crashInfo.toRequestBody("text/plain".toMediaType()))
                 .build()
             try {
-                client.newCall(request).execute()
-                Log.i(TAG, "log success")
+                HttpClient.okHttpClient.newCall(request).execute().use { response ->
+                    if (response.isSuccessful) {
+                        Log.i(TAG, "log success")
+                    } else {
+                        Log.e(TAG, "log failed: ${response.code}")
+                    }
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
