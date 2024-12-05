@@ -1,7 +1,7 @@
 package com.lizongying.mytv0
 
 import MainViewModel
-import MainViewModel.Companion.FILE_NAME
+import MainViewModel.Companion.CACHE_FILE_NAME
 import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.drawable.ColorDrawable
@@ -137,7 +137,10 @@ class SettingFragment : Fragment() {
         }
 
         binding.confirmConfig.setOnClickListener {
-            confirmConfig()
+            val sourcesFragment = SourcesFragment()
+
+            sourcesFragment.show(requireFragmentManager(), SourcesFragment.TAG)
+            mainActivity.settingActive()
         }
 
         binding.appreciate.setOnClickListener {
@@ -294,7 +297,7 @@ class SettingFragment : Fragment() {
 
             SP.config = SP.DEFAULT_CONFIG_URL
             Log.i(TAG, "config url: ${SP.config}")
-            context.deleteFile(FILE_NAME)
+            context.deleteFile(CACHE_FILE_NAME)
             viewModel.reset(context)
             confirmConfig()
 

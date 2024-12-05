@@ -17,3 +17,4 @@ local.properties
 files
 .kotlin/
 app/release/
+.README.md

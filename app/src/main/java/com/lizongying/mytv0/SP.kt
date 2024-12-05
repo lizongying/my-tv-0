@@ -52,6 +52,10 @@ object SP {
 
     private const val KEY_LOG_TIMES = "log_times"
 
+    private const val KEY_SOURCES = "sources"
+
+    private const val KEY_SOURCE_ID = "source_id"
+
     const val DEFAULT_CONFIG_URL = ""
     const val DEFAULT_CHANNEL_NUM = false
     const val DEFAULT_EPG = "https://live.fanmingming.com/e.xml"
@@ -175,4 +179,12 @@ object SP {
     var logTimes: Int
         get() = sp.getInt(KEY_LOG_TIMES, DEFAULT_LOG_TIMES)
         set(value) = sp.edit().putInt(KEY_LOG_TIMES, value).apply()
+
+    var sources: String?
+        get() = sp.getString(KEY_SOURCES, "")
+        set(value) = sp.edit().putString(KEY_SOURCES, value).apply()
+
+    var sourceId: String?
+        get() = sp.getString(KEY_SOURCE_ID, "")
+        set(value) = sp.edit().putString(KEY_SOURCE_ID, value).apply()
 }

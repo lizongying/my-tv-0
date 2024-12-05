@@ -42,7 +42,7 @@ jobs:
           body_path: history.md
 
       - name: Run build with Gradle wrapper
-        run: ./gradlew clean && ./gradlew assembleRelease -Pnet=common
+        run: ./gradlew clean && ./gradlew assembleRelease
 
       - name: Sign app APK
         id: sign_app
@@ -70,70 +70,6 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{ steps.sign_app.outputs.signedReleaseFile }}
-          asset_name: ${{ env.asset_name }}
-          asset_content_type: application/vnd.android.package-archive
-
-      - name: Run build with Gradle wrapper mobile
-        run: ./gradlew clean && ./gradlew assembleRelease -Pnet=mobile
-
-      - name: Sign app APK mobile
-        id: sign_app_mobile
-        uses: r0adkll/sign-android-release@v1
-        with:
-          releaseDirectory: app/build/outputs/apk/release
-          alias: ${{ secrets.ALIAS }}
-          signingKeyBase64: ${{ secrets.KEYSTORE }}
-          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
-          keyPassword: ${{ secrets.ALIAS_PASSWORD }}
-        env:
-          # override default build-tools version (29.0.3) -- optional
-          BUILD_TOOLS_VERSION: "34.0.0"
-
-      - name: Set Asset Name mobile
-        id: set_asset_name_mobile
-        run: |
-          VERSION_WITHOUT_V=$(echo '${{ github.ref_name }}' | sed 's/^v//')
-          echo "asset_name=my-tv-0.${VERSION_WITHOUT_V}.china-mobile.apk" >> $GITHUB_ENV
-
-      - name: Upload Release Asset mobile
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ steps.sign_app_mobile.outputs.signedReleaseFile }}
-          asset_name: ${{ env.asset_name }}
-          asset_content_type: application/vnd.android.package-archive
-
-      - name: Run build with Gradle wrapper ipv6
-        run: ./gradlew clean && ./gradlew assembleRelease -Pnet=ipv6
-
-      - name: Sign app APK ipv6
-        id: sign_app_ipv6
-        uses: r0adkll/sign-android-release@v1
-        with:
-          releaseDirectory: app/build/outputs/apk/release
-          alias: ${{ secrets.ALIAS }}
-          signingKeyBase64: ${{ secrets.KEYSTORE }}
-          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
-          keyPassword: ${{ secrets.ALIAS_PASSWORD }}
-        env:
-          # override default build-tools version (29.0.3) -- optional
-          BUILD_TOOLS_VERSION: "34.0.0"
-
-      - name: Set Asset Name ipv6
-        id: set_asset_name_ipv6
-        run: |
-          VERSION_WITHOUT_V=$(echo '${{ github.ref_name }}' | sed 's/^v//')
-          echo "asset_name=my-tv-0.${VERSION_WITHOUT_V}.ipv6.apk" >> $GITHUB_ENV
-
-      - name: Upload Release Asset ipv6
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ steps.sign_app_ipv6.outputs.signedReleaseFile }}
           asset_name: ${{ env.asset_name }}
           asset_content_type: application/vnd.android.package-archive
 

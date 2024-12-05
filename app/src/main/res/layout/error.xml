@@ -15,7 +15,7 @@
 
         <ImageView
             android:id="@+id/logo"
-            android:src="@drawable/sad_cloud"
+            android:src="@drawable/baseline_sentiment_dissatisfied_24"
             android:layout_width="50dp"
             android:layout_height="50dp" />
 
