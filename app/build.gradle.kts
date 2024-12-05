@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace = "com.lizongying.mytv0"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.lizongying.mytv0"
         minSdk = 19
-        targetSdk = 34
+        targetSdk = 35
         versionCode = getVersionCode()
         versionName = getVersionName()
         multiDexEnabled = true
@@ -70,75 +70,6 @@ fun getVersionName(): String {
     }
 }
 
-task("modifySource") {
-    val net = project.findProperty("net") ?: ""
-    println("net: $net")
-
-    val channels = when (net) {
-        "ipv6" -> "assets/ipv6.txt"
-        "mobile" -> "assets/mobile.txt"
-        "" -> "assets/mobile.txt"
-        else -> "assets/common.txt"
-    }
-
-    println("channels: $channels")
-
-    inputs.file(channels)
-    outputs.file("src/main/res/raw/channels.txt")
-    doLast {
-        if (channels.isNotEmpty()) {
-            val sourceFile = file(channels)
-            val targetFile = file("src/main/res/raw/channels.txt")
-            targetFile.writeText(sourceFile.readText())
-            println(targetFile.readText())
-        }
-
-        val url = when (net) {
-            "ipv6" -> "DEFAULT_CONFIG_URL = \"https://live.fanmingming.com/tv/m3u/ipv6.m3u\""
-            "mobile" -> "DEFAULT_CONFIG_URL = \"https://live.fanmingming.com/tv/m3u/itv.m3u\""
-            "" -> "DEFAULT_CONFIG_URL = \"https://live.fanmingming.com/tv/m3u/itv.m3u\""
-            else -> ""
-        }
-
-        if (url.isNotEmpty()) {
-            val f = file("src/main/java/com/lizongying/mytv0/SP.kt")
-            f.writeText(f.readText().replace("DEFAULT_CONFIG_URL = \"\"", url))
-        }
-    }
-}
-
-tasks.whenTaskAdded {
-    if (name == "assembleRelease") {
-        dependsOn("modifySource")
-        doLast {
-            val net = project.findProperty("net") ?: ""
-            println("net: $net")
-
-            val url = when (net) {
-                "ipv6" -> "DEFAULT_CONFIG_URL = \"https://live.fanmingming.com/tv/m3u/ipv6.m3u\""
-                "mobile" -> "DEFAULT_CONFIG_URL = \"https://live.fanmingming.com/tv/m3u/itv.m3u\""
-                "" -> "DEFAULT_CONFIG_URL = \"https://live.fanmingming.com/tv/m3u/itv.m3u\""
-                else -> ""
-            }
-
-            if (url.isNotEmpty()) {
-                val f = file("src/main/java/com/lizongying/mytv0/SP.kt")
-                f.writeText(f.readText().replace(url, "DEFAULT_CONFIG_URL = \"\""))
-            }
-        }
-    }
-
-    if (listOf(
-            "packageReleaseResources",
-            "mergeReleaseResources",
-            "generateReleaseResources",
-            "mapReleaseSourceSetPaths",
-        ).contains(name)
-    ) {
-        dependsOn("modifySource")
-    }
-}
-
 dependencies {
     // For AGP 7.4+
     coreLibraryDesugaring(libs.desugar.jdk.libs)
@@ -149,6 +80,7 @@ dependencies {
     implementation(libs.media3.exoplayer.dash)
     implementation(libs.media3.exoplayer.rtsp)
     //implementation(libs.media3.datasource.okhttp)
+    implementation(libs.media3.datasource.rtmp)
 
     implementation(libs.nanohttpd)
     implementation(libs.gua64)

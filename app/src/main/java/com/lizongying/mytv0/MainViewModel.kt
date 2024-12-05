@@ -10,9 +10,11 @@ import com.google.gson.JsonSyntaxException
 import com.lizongying.mytv0.R
 import com.lizongying.mytv0.SP
 import com.lizongying.mytv0.Utils.getDateFormat
+import com.lizongying.mytv0.data.Source
 import com.lizongying.mytv0.data.SourceType
 import com.lizongying.mytv0.data.TV
 import com.lizongying.mytv0.models.EPGXmlParser
+import com.lizongying.mytv0.models.Sources
 import com.lizongying.mytv0.models.TVGroupModel
 import com.lizongying.mytv0.models.TVListModel
 import com.lizongying.mytv0.models.TVModel
@@ -35,6 +37,8 @@ class MainViewModel : ViewModel() {
     private var cacheFile: File? = null
     private var cacheConfig = ""
     private var initialized = false
+
+    val sources = Sources()
 
     private val _channelsOk = MutableLiveData<Boolean>()
     val channelsOk: LiveData<Boolean>
@@ -86,19 +90,19 @@ class MainViewModel : ViewModel() {
         groupModel.addTVListModel(TVListModel("全部頻道", 1))
 
         appDirectory = context.filesDir
-        cacheFile = File(appDirectory, FILE_NAME)
+        cacheFile = File(appDirectory, CACHE_FILE_NAME)
         if (!cacheFile!!.exists()) {
             cacheFile!!.createNewFile()
         }
 
         cacheConfig = getCache()
-        Log.i(TAG, "cacheConfig $cacheConfig")
 
         if (cacheConfig.isEmpty()) {
             cacheConfig = context.resources.openRawResource(R.raw.channels).bufferedReader()
                 .use { it.readText() }
-            Log.i(TAG, "cacheConfig $cacheConfig")
         }
+
+        Log.i(TAG, "cacheConfig $cacheConfig")
 
         try {
             str2List(cacheConfig)
@@ -206,7 +210,14 @@ class MainViewModel : ViewModel() {
             if (str2List(str)) {
                 cacheFile!!.writeText(str)
                 cacheConfig = str
-                SP.config = url
+                if (url.isNotEmpty()) {
+                    SP.config = url
+                    sources.addSource(
+                        Source(
+                            uri = url
+                        )
+                    )
+                }
                 _channelsOk.value = true
                 R.string.channel_import_success.showToast()
             } else {
@@ -222,16 +233,21 @@ class MainViewModel : ViewModel() {
     private fun str2List(str: String): Boolean {
         var string = str
         if (initialized && string == cacheConfig) {
+            Log.w(TAG, "same config")
             return false
         }
+
         val g = Gua()
         if (g.verify(str)) {
             string = g.decode(str)
         }
         if (string.isEmpty()) {
+            Log.w(TAG, "config is empty")
             return false
         }
+
         if (initialized && string == cacheConfig) {
+            Log.w(TAG, "same config")
             return false
         }
 
@@ -402,6 +418,6 @@ class MainViewModel : ViewModel() {
 
     companion object {
         private const val TAG = "MainViewModel"
-        const val FILE_NAME = "channels.txt"
+        const val CACHE_FILE_NAME = "channels.txt"
     }
 }

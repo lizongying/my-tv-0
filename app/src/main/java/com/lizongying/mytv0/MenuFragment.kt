@@ -41,7 +41,7 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val context = requireActivity()
-        val application = requireActivity().applicationContext as MyTVApplication
+        val application = context.applicationContext as MyTVApplication
         viewModel = ViewModelProvider(context)[MainViewModel::class.java]
 
         Log.i(TAG, "group size ${viewModel.groupModel.size()}")

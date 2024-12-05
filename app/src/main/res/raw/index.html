@@ -74,14 +74,22 @@
         input[type="button"] {
             margin-left: .6rem;
         }
+
+        input[readonly] {
+            background-color: grey;
+        }
+
+        .history {
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
 <h1 class="title">我的電視·〇</h1>
-<h4>視頻源可以设置地址/文本/文件其中之一</h4>
+<h4>視頻源可以设置為地址/文本/文件其中之一</h4>
 <hr/>
 
-<div class="item">
+<div class="item" id="source">
     <label for="uri" id="uri-label">視頻源地址，點擊確認後保存</label>
     <div class="container">
         <input type="text" id="uri"/>
@@ -151,6 +159,7 @@
             epgLabel: 'EPG',
             proxyLabel: '代理地址',
             confirm: '確認',
+            remove: '刪除',
         },
         SIMPLIFIED_CHINESE: {
             appName: '我的电视·〇',
@@ -161,6 +170,7 @@
             epgLabel: 'EPG',
             proxyLabel: '代理地址',
             confirm: '确认',
+            remove: '删除',
         }
     };
     const t = (key) => lang['TRADITIONAL_CHINESE'][key];
@@ -176,6 +186,8 @@
     document.querySelectorAll('.confirm').forEach(
         i => i.value = t('confirm')
     );
+
+    const source = document.querySelector('#source');
 
     const uploadFile = document.querySelector('#upload-file');
 
@@ -203,6 +215,10 @@
             save('/api/uri', JSON.stringify({
                 uri: uri
             }))
+
+            let htmlString = `<div class="container history"><input type="text" readonly value="${uri}" /><input type="button" value="删除" class="remove" data-source-id=""/></div>`;
+            let doc = new DOMParser().parseFromString(htmlString, 'text/html');
+            source.appendChild(doc.body.firstChild);
         }
     }
 
@@ -235,6 +251,7 @@
             epg: epg
         }))
     }
+
     const save = async (url, body) => {
         const response = await fetch(url, {
             method: 'POST',
@@ -253,6 +270,25 @@
         document.querySelector('#plain-text').value = json.channelText;
         document.querySelector('#epg').value = json.epg;
         document.querySelector('#proxy').value = json.proxy;
+
+        json.history.forEach(v => {
+            let htmlString = `<div class="container history"><input type="text" readonly value="${v.uri}" /><input type="button" value="删除" class="remove" data-source-id="${v.id}"/></div>`;
+            let doc = new DOMParser().parseFromString(htmlString, 'text/html');
+            source.appendChild(doc.body.firstChild);
+        })
+
+        const removes = document.querySelectorAll('.remove');
+        [...removes].forEach(remove => {
+            remove.value = t('remove');
+            remove.onclick = () => {
+                const sourceId = remove.dataset.sourceId.trim();
+                console.log('sourceId', sourceId);
+                save('/api/remove-source', JSON.stringify({
+                    sourceId: sourceId
+                }))
+                remove.parentElement.remove()
+            }
+        })
     })()
 </script>
 </html>

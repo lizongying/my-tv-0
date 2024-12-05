@@ -23,7 +23,7 @@ class MyTVExceptionHandler(private val context: Context) : Thread.UncaughtExcept
             }\n"
 
         runBlocking {
-            launch(Dispatchers.IO) {
+            launch {
                 saveCrashInfoToFile(crashInfo)
 
                 withContext(Dispatchers.Main) {

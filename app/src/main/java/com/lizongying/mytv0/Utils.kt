@@ -1,8 +1,10 @@
 package com.lizongying.mytv0
 
 import android.content.res.Resources
-import android.os.Build
+import android.util.Log
 import android.util.TypedValue
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.lizongying.mytv0.ISP.CHINA_MOBILE
 import com.lizongying.mytv0.ISP.CHINA_TELECOM
@@ -21,17 +23,7 @@ enum class ISP {
     UNKNOWN,
     CHINA_MOBILE,
     CHINA_UNICOM,
-    CHINA_TELECOM;
-
-    fun fromName(name: String): ISP {
-        val isp = when (name) {
-            "ChinaMobile" -> CHINA_MOBILE
-            "ChinaUnicom" -> CHINA_UNICOM
-            "ChinaTelecom" -> CHINA_TELECOM
-            else -> UNKNOWN
-        }
-        return isp
-    }
+    CHINA_TELECOM,
 }
 
 data class IpInfo(
@@ -51,7 +43,13 @@ data class Location(
 
 
 object Utils {
+    const val TAG = "Utils"
+
     private var between: Long = 0
+
+    private val _isp = MutableLiveData<ISP>()
+    val isp: LiveData<ISP>
+        get() = _isp
 
     fun getDateFormat(format: String): String {
         return SimpleDateFormat(
@@ -64,34 +62,28 @@ object Utils {
         return (System.currentTimeMillis() - between) / 1000
     }
 
-    suspend fun init() {
-        try {
-            val currentTimeMillis = getTimestampFromServer()
-            if (currentTimeMillis > 0) {
-                between = System.currentTimeMillis() - currentTimeMillis
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-//
-//        try {
-//            val isp = getISP()
-//            TVList.setISP(isp)
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//        }
-    }
-
     init {
         CoroutineScope(Dispatchers.IO).launch {
-            init()
+            try {
+                val currentTimeMillis = getTimestampFromServer()
+                Log.i(TAG, "currentTimeMillis $currentTimeMillis")
+                if (currentTimeMillis > 0) {
+                    between = System.currentTimeMillis() - currentTimeMillis
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            try {
+                withContext(Dispatchers.Main) {
+                    _isp.value = getISP()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
-    /**
-     * 从服务器获取时间戳
-     * @return Long 时间戳
-     */
     private suspend fun getTimestampFromServer(): Long {
         return withContext(Dispatchers.IO) {
             val request = okhttp3.Request.Builder()
@@ -109,7 +101,7 @@ object Utils {
         }
     }
 
-    suspend fun getISP(): ISP {
+    private suspend fun getISP(): ISP {
         return withContext(Dispatchers.IO) {
             val request = okhttp3.Request.Builder()
                 .url("https://api.myip.la/json")
@@ -144,8 +136,6 @@ object Utils {
             TypedValue.COMPLEX_UNIT_DIP, dp.toFloat(), Resources.getSystem().displayMetrics
         ).toInt()
     }
-
-    fun isTmallDevice() = Build.MANUFACTURER.equals("Tmall", ignoreCase = true)
 
     fun formatUrl(url: String): String {
         // Check if the URL already starts with "http://" or "https://"

@@ -213,6 +213,29 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
+            Utils.isp.observe(this) {
+                Log.i(TAG, "isp $it")
+//                val id = R.raw.mobile
+                val id = when (it) {
+                    ISP.CHINA_MOBILE -> R.raw.mobile
+                    else -> 0
+                }
+
+                if (id == 0) {
+                    return@observe
+                }
+
+                resources.openRawResource(id).bufferedReader()
+                    .use { i ->
+                        val channels = i.readText()
+                        if (channels.isNotEmpty()) {
+                            viewModel.tryStr2List(channels, null, "")
+                        } else {
+                            Log.w(TAG, "$it is empty")
+                        }
+                    }
+            }
+
             server = SimpleServer(this, viewModel)
 
             viewModel.updateConfig()

@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.lizongying.mytv0.ISP
 import com.lizongying.mytv0.SP
 
 class TVGroupModel : ViewModel() {
@@ -31,11 +30,6 @@ class TVGroupModel : ViewModel() {
     private val _change = MutableLiveData<Boolean>()
     val change: LiveData<Boolean>
         get() = _change
-
-    private var isp = ISP.UNKNOWN
-    fun setISP(isp: ISP) {
-        this.isp = isp
-    }
 
     fun setPosition(position: Int) {
         Log.i(TAG, "選擇組 $position")

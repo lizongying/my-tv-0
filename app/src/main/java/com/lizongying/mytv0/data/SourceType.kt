@@ -5,5 +5,7 @@ enum class SourceType {
     HLS,
     DASH,
     RTSP,
+    RTMP,
+    RTP,
     PROGRESSIVE,
 }
