@@ -116,16 +116,16 @@ class Sources {
             }
         }
 
-        if (!SP.config.isNullOrEmpty()) {
+        if (!SP.configUrl.isNullOrEmpty()) {
             addSource(
                 Source(
-                    uri = SP.config!!,
+                    uri = SP.configUrl!!,
                 )
             )
         }
 
         if (size() > 0) {
-            _checked.value = sourcesValue.indexOfFirst { it.uri == SP.config }
+            _checked.value = sourcesValue.indexOfFirst { it.uri == SP.configUrl }
 
             if (checkedValue > -1) {
                 setSourceChecked(checkedValue, true)

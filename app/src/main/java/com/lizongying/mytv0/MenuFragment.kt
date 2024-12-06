@@ -250,8 +250,14 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
 //                listAdapter.focusable(false)
 
                 val position = viewModel.groupModel.positionPlayingValue
-                Log.i(TAG, "group position $position/${viewModel.groupModel.tvGroupValue.size}")
-                if (position != viewModel.groupModel.positionValue) {
+                if (position >= viewModel.groupModel.tvGroupValue.size) {
+                    viewModel.groupModel.setPositionPlaying(viewModel.groupModel.defaultPosition())
+                }
+                Log.i(
+                    TAG,
+                    "group position ${viewModel.groupModel.positionPlayingValue}/${viewModel.groupModel.tvGroupValue.size - 1}"
+                )
+                if (viewModel.groupModel.positionPlayingValue != viewModel.groupModel.positionValue) {
                     viewModel.groupModel.setPosition(position)
                 }
                 groupAdapter.scrollToPositionAndSelect(position)

@@ -25,14 +25,13 @@ class TVGroupModel : ViewModel() {
     val positionPlaying: LiveData<Int>
         get() = _positionPlaying
     val positionPlayingValue: Int
-        get() = _positionPlaying.value ?: 0
+        get() = _positionPlaying.value ?: DEFAULT_POSITION_PLAYING
 
     private val _change = MutableLiveData<Boolean>()
     val change: LiveData<Boolean>
         get() = _change
 
     fun setPosition(position: Int) {
-        Log.i(TAG, "選擇組 $position")
         _position.value = position
     }
 
@@ -79,6 +78,11 @@ class TVGroupModel : ViewModel() {
             (_tvGroup.value as List<TVListModel>)[1]
         )
         (_tvGroup.value as List<TVListModel>)[1].initTVList()
+    }
+
+    fun initPosition() {
+        setPosition(defaultPosition())
+        setPositionPlaying(defaultPosition())
     }
 
     fun clearData() {
@@ -203,7 +207,8 @@ class TVGroupModel : ViewModel() {
             return null
         }
 
-        var tvListModel = getCurrentList()!!
+        var tvListModel = getCurrentList() ?: return null
+
         if (keep) {
             return tvListModel.getNext()
         }
@@ -229,6 +234,15 @@ class TVGroupModel : ViewModel() {
         return tvListModel.getNext()
     }
 
+    fun defaultPosition(): Int {
+        return if (SP.DEFAULT_SHOW_ALL_CHANNELS) {
+            if (tvGroupValue.size > 2) 2 else 1
+        } else {
+//            if (tvGroupValue.size > 2) 1 else 0
+            if (tvGroupValue.size > 2) 2 else 1
+        }
+    }
+
     init {
         _position.value = SP.positionGroup
         isInLikeMode = SP.defaultLike && _position.value == 0
@@ -246,5 +260,6 @@ class TVGroupModel : ViewModel() {
 
     companion object {
         const val TAG = "TVGroupModel"
+        const val DEFAULT_POSITION_PLAYING = -1
     }
 }

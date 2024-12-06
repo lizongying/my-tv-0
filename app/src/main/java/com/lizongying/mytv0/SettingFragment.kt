@@ -296,9 +296,15 @@ class SettingFragment : Fragment() {
             viewModel.groupModel.setPositionPlaying(SP.DEFAULT_POSITION_GROUP)
 
             SP.sources = SP.DEFAULT_SOURCES
+            SP.channelReversal = SP.DEFAULT_CHANNEL_REVERSAL
+            SP.time = SP.DEFAULT_TIME
+            SP.bootStartup = SP.DEFAULT_BOOT_STARTUP
+            SP.repeatInfo = SP.DEFAULT_REPEAT_INFO
+            SP.configAutoLoad = SP.DEFAULT_CONFIG_AUTO_LOAD
+            SP.proxy = SP.DEFAULT_PROXY
 
-            SP.config = SP.DEFAULT_CONFIG_URL
-            Log.i(TAG, "config url: ${SP.config}")
+            SP.configUrl = SP.DEFAULT_CONFIG_URL
+            Log.i(TAG, "config url: ${SP.configUrl}")
             context.deleteFile(CACHE_FILE_NAME)
             viewModel.reset(context)
             confirmConfig()
@@ -340,12 +346,12 @@ class SettingFragment : Fragment() {
     }
 
     private fun confirmConfig() {
-        if (SP.config.isNullOrEmpty()) {
-            Log.w(TAG, "SP.config is null or empty")
+        if (SP.configUrl.isNullOrEmpty()) {
+            Log.w(TAG, "SP.configUrl is null or empty")
             return
         }
 
-        uri = Uri.parse(Utils.formatUrl(SP.config!!))
+        uri = Uri.parse(Utils.formatUrl(SP.configUrl!!))
         if (uri.scheme == "") {
             uri = uri.buildUpon().scheme("http").build()
         }

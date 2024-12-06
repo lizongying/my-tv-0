@@ -74,13 +74,13 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
             }
 
             if (history.size == 0) {
-                if (!SP.config.isNullOrEmpty()) {
-                    history.add(Source(uri = SP.config!!))
+                if (!SP.configUrl.isNullOrEmpty()) {
+                    history.add(Source(uri = SP.configUrl!!))
                 }
             }
 
             val respSettings = RespSettings(
-                channelUri = SP.config ?: "",
+                channelUri = SP.configUrl ?: "",
                 channelText = str,
                 channelDefault = SP.channel,
                 proxy = SP.proxy ?: "",

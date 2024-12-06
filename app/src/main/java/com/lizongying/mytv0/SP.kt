@@ -32,7 +32,7 @@ object SP {
 
     private const val KEY_REPEAT_INFO = "repeat_info"
 
-    private const val KEY_CONFIG = "config"
+    private const val KEY_CONFIG_URL = "config"
 
     private const val KEY_CONFIG_AUTO_LOAD = "config_auto_load"
 
@@ -58,16 +58,22 @@ object SP {
 
     private const val KEY_SOURCES = "sources"
 
+    const val DEFAULT_CHANNEL_REVERSAL = false
     const val DEFAULT_CONFIG_URL = ""
     const val DEFAULT_CHANNEL_NUM = false
+    const val DEFAULT_TIME = true
+    const val DEFAULT_BOOT_STARTUP = false
+    const val DEFAULT_PROXY = ""
     const val DEFAULT_EPG = "https://live.fanmingming.com/e.xml"
     const val DEFAULT_CHANNEL = 0
-    const val DEFAULT_SHOW_ALL_CHANNELS = true
+    const val DEFAULT_SHOW_ALL_CHANNELS = false
     const val DEFAULT_COMPACT_MENU = true
     const val DEFAULT_DISPLAY_SECONDS = false
     const val DEFAULT_LOG_TIMES = 10
-    const val DEFAULT_POSITION_GROUP = 1
+    const val DEFAULT_POSITION_GROUP = 0 // favorite
     const val DEFAULT_POSITION = 0
+    const val DEFAULT_REPEAT_INFO = true
+    const val DEFAULT_CONFIG_AUTO_LOAD = false
     var DEFAULT_SOURCES = ""
 
     private lateinit var sp: SharedPreferences
@@ -101,7 +107,7 @@ object SP {
     }
 
     var channelReversal: Boolean
-        get() = sp.getBoolean(KEY_CHANNEL_REVERSAL, false)
+        get() = sp.getBoolean(KEY_CHANNEL_REVERSAL, DEFAULT_CHANNEL_REVERSAL)
         set(value) = sp.edit().putBoolean(KEY_CHANNEL_REVERSAL, value).apply()
 
     var channelNum: Boolean
@@ -109,11 +115,11 @@ object SP {
         set(value) = sp.edit().putBoolean(KEY_CHANNEL_NUM, value).apply()
 
     var time: Boolean
-        get() = sp.getBoolean(KEY_TIME, true)
+        get() = sp.getBoolean(KEY_TIME, DEFAULT_TIME)
         set(value) = sp.edit().putBoolean(KEY_TIME, value).apply()
 
     var bootStartup: Boolean
-        get() = sp.getBoolean(KEY_BOOT_STARTUP, false)
+        get() = sp.getBoolean(KEY_BOOT_STARTUP, DEFAULT_BOOT_STARTUP)
         set(value) = sp.edit().putBoolean(KEY_BOOT_STARTUP, value).apply()
 
     var positionGroup: Int
@@ -129,15 +135,15 @@ object SP {
         set(value) = sp.edit().putInt(KEY_POSITION_SUB, value).apply()
 
     var repeatInfo: Boolean
-        get() = sp.getBoolean(KEY_REPEAT_INFO, true)
+        get() = sp.getBoolean(KEY_REPEAT_INFO, DEFAULT_REPEAT_INFO)
         set(value) = sp.edit().putBoolean(KEY_REPEAT_INFO, value).apply()
 
-    var config: String?
-        get() = sp.getString(KEY_CONFIG, DEFAULT_CONFIG_URL)
-        set(value) = sp.edit().putString(KEY_CONFIG, value).apply()
+    var configUrl: String?
+        get() = sp.getString(KEY_CONFIG_URL, DEFAULT_CONFIG_URL)
+        set(value) = sp.edit().putString(KEY_CONFIG_URL, value).apply()
 
     var configAutoLoad: Boolean
-        get() = sp.getBoolean(KEY_CONFIG_AUTO_LOAD, false)
+        get() = sp.getBoolean(KEY_CONFIG_AUTO_LOAD, DEFAULT_CONFIG_AUTO_LOAD)
         set(value) = sp.edit().putBoolean(KEY_CONFIG_AUTO_LOAD, value).apply()
 
     var channel: Int
@@ -181,7 +187,7 @@ object SP {
     }
 
     var proxy: String?
-        get() = sp.getString(KEY_PROXY, "")
+        get() = sp.getString(KEY_PROXY, DEFAULT_PROXY)
         set(value) = sp.edit().putString(KEY_PROXY, value).apply()
 
     var epg: String?

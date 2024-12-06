@@ -62,7 +62,7 @@ class MainViewModel : ViewModel() {
 
     fun updateConfig() {
         if (SP.configAutoLoad) {
-            SP.config?.let {
+            SP.configUrl?.let {
                 if (it.startsWith("http")) {
                     viewModelScope.launch {
                         Log.i(TAG, "updateConfig $it")
@@ -243,7 +243,7 @@ class MainViewModel : ViewModel() {
                 cacheFile!!.writeText(str)
                 cacheChannels = str
                 if (url.isNotEmpty()) {
-                    SP.config = url
+                    SP.configUrl = url
                     sources.addSource(
                         Source(
                             uri = url
@@ -425,7 +425,7 @@ class MainViewModel : ViewModel() {
         var groupIndex = 2
         var id = 0
         for ((k, v) in map) {
-            val listTVModel = TVListModel(k, groupIndex)
+            val listTVModel = TVListModel(k.ifEmpty { "未知" }, groupIndex)
             for ((listIndex, v1) in v.withIndex()) {
                 v1.tv.id = id
                 v1.setLike(SP.getLike(id))
@@ -444,6 +444,7 @@ class MainViewModel : ViewModel() {
         // 全部频道
         (groupModel.tvGroup.value as List<TVListModel>)[1].setTVListModel(listModel)
 
+        groupModel.initPosition()
         groupModel.setChange()
 
         return true
