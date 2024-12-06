@@ -106,7 +106,7 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
         try {
             readBody(session)?.let {
                 handler.post {
-                    viewModel.tryStr2List(it, null, "")
+                    viewModel.tryStr2Channels(it, null, "")
                 }
             }
         } catch (e: Exception) {
@@ -129,7 +129,7 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
                 if (req.uri != null) {
                     val uri = Uri.parse(req.uri)
                     handler.post {
-                        viewModel.parseUri(uri)
+                        viewModel.importFromUri(uri)
                     }
                 }
             }

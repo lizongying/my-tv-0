@@ -16,6 +16,7 @@
 
 注意：
 
+* 遇到問題可以先考慮重啟/恢復默認/清除數據/重新安裝等方式自助解決
 * 視頻源可以設置為本地文件，格式如：file:///mnt/sdcard/tmp/channels.m3u
   /channels.m3u
 

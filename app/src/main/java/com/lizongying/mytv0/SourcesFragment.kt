@@ -5,7 +5,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +12,6 @@ import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.lizongying.mytv0.data.Source
 import com.lizongying.mytv0.databinding.SourcesBinding
 
 
@@ -65,14 +63,16 @@ class SourcesFragment : DialogFragment(), SourcesAdapter.ItemListener {
 
         handler.postDelayed(hideFragment, delayHideFragment)
 
-        viewModel.sources.removed.observe(this) { p ->
-            Log.i(TAG, "sources changed")
-            sourcesAdapter.removed(p.first)
+        viewModel.sources.removed.observe(this) { items ->
+            sourcesAdapter.removed(items.first)
         }
 
-        viewModel.sources.added.observe(this) { p ->
-            Log.i(TAG, "sources changed")
-            sourcesAdapter.added(p.first)
+        viewModel.sources.added.observe(this) { items ->
+            sourcesAdapter.added(items.first)
+        }
+
+        viewModel.sources.changed.observe(this) { _ ->
+            sourcesAdapter.changed()
         }
     }
 
@@ -88,26 +88,25 @@ class SourcesFragment : DialogFragment(), SourcesAdapter.ItemListener {
         handler.removeCallbacksAndMessages(null)
     }
 
-    companion object {
-        const val TAG = "SourcesFragment"
-    }
-
-    override fun onItemFocusChange(source: Source, hasFocus: Boolean) {
-//        TODO("Not yet implemented")
+    override fun onItemFocusChange(position: Int, hasFocus: Boolean, tag: String) {
     }
 
     override fun onItemClicked(position: Int, tag: String) {
         viewModel.sources.getSource(position)?.let {
             val uri = Uri.parse(it.uri)
             handler.post {
-                viewModel.parseUri(uri)
+                viewModel.importFromUri(uri)
             }
         }
     }
 
-    override fun onKey(listAdapter: SourcesAdapter, keyCode: Int): Boolean {
+    override fun onKey(keyCode: Int, tag: String): Boolean {
         handler.removeCallbacks(hideFragment)
         handler.postDelayed(hideFragment, delayHideFragment)
         return false
+    }
+
+    companion object {
+        const val TAG = "SourcesFragment"
     }
 }

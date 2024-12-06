@@ -4,6 +4,9 @@ package com.lizongying.mytv0
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.lizongying.mytv0.data.Source
 
 object SP {
     private const val TAG = "SP"
@@ -54,18 +57,68 @@ object SP {
 
     private const val KEY_SOURCES = "sources"
 
-    private const val KEY_SOURCE_ID = "source_id"
-
     const val DEFAULT_CONFIG_URL = ""
     const val DEFAULT_CHANNEL_NUM = false
     const val DEFAULT_EPG = "https://live.fanmingming.com/e.xml"
     const val DEFAULT_CHANNEL = 0
-    const val DEFAULT_SHOW_ALL_CHANNELS = false
+    const val DEFAULT_SHOW_ALL_CHANNELS = true
     const val DEFAULT_COMPACT_MENU = true
     const val DEFAULT_DISPLAY_SECONDS = false
     const val DEFAULT_LOG_TIMES = 10
     const val DEFAULT_POSITION_GROUP = 1
     const val DEFAULT_POSITION = 0
+    val DEFAULT_SOURCES = Gson().toJson(listOf(
+        "https://live.fanmingming.com/tv/m3u/ipv6.m3u",
+        "https://live.fanmingming.com/tv/m3u/itv.m3u",
+        "https://live.fanmingming.com/tv/m3u/index.m3u",
+
+        "https://iptv-org.github.io/iptv/index.m3u",
+
+        // https://github.com/Guovin/iptv-api
+        "https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/result.m3u",
+
+        // https://github.com/joevess/IPTV
+        "https://raw.githubusercontent.com/joevess/IPTV/main/sources/iptv_sources.m3u",
+        "https://raw.githubusercontent.com/joevess/IPTV/main/sources/home_sources.m3u",
+        "https://raw.githubusercontent.com/joevess/IPTV/main/iptv.m3u8",
+        "https://raw.githubusercontent.com/joevess/IPTV/main/home.m3u8",
+
+        // https://github.com/zbefine/iptv
+        "https://raw.githubusercontent.com/zbefine/iptv/main/iptv.m3u",
+
+        // https://github.com/YanG-1989/m3u
+        "https://raw.githubusercontent.com/YanG-1989/m3u/main/Gather.m3u",
+
+        // https://github.com/YueChan/Live
+        "https://raw.githubusercontent.com/YueChan/Live/main/APTV.m3u",
+        "https://raw.githubusercontent.com/YueChan/Live/main/Global.m3u",
+        "https://raw.githubusercontent.com/YueChan/Live/main/IPTV.m3u",
+
+        "https://freetv.fun/test_channels_new.m3u",
+
+        // https://github.com/SPX372928/MyIPTV
+        "https://raw.githubusercontent.com/SPX372928/MyIPTV/master/%E9%BB%91%E9%BE%99%E6%B1%9FPLTV%E7%A7%BB%E5%8A%A8CDN%E7%89%88.txt",
+
+        // https://github.com/vbskycn/iptv
+        "https://live.zbds.top/tv/iptv6.m3u",
+        "https://ghp.ci/raw.githubusercontent.com/vbskycn/iptv/refs/heads/master/tv/iptv4.m3u",
+
+        // https://github.com/yuanzl77/IPTV
+        "http://175.178.251.183:6689/live.m3u",
+
+        // https://github.com/BurningC4/Chinese-IPTV
+        "https://raw.githubusercontent.com/BurningC4/Chinese-IPTV/master/TV-IPV4.m3u",
+
+        // https://github.com/Moexin/IPTV
+        "https://raw.githubusercontent.com/Moexin/IPTV/Files/CCTV.m3u",
+        "https://raw.githubusercontent.com/Moexin/IPTV/Files/CNTV.m3u",
+        "https://raw.githubusercontent.com/Moexin/IPTV/Files/IPTV.m3u",
+    ).map {
+        Source(
+            uri = it
+        )
+    }, object : TypeToken<List<Source>>() {}.type
+    ) ?: ""
 
     private lateinit var sp: SharedPreferences
 
@@ -181,10 +234,6 @@ object SP {
         set(value) = sp.edit().putInt(KEY_LOG_TIMES, value).apply()
 
     var sources: String?
-        get() = sp.getString(KEY_SOURCES, "")
+        get() = sp.getString(KEY_SOURCES, DEFAULT_SOURCES)
         set(value) = sp.edit().putString(KEY_SOURCES, value).apply()
-
-    var sourceId: String?
-        get() = sp.getString(KEY_SOURCE_ID, "")
-        set(value) = sp.edit().putString(KEY_SOURCE_ID, value).apply()
 }

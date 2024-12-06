@@ -221,7 +221,7 @@ class MainActivity : AppCompatActivity() {
                     .use { i ->
                         val channels = i.readText()
                         if (channels.isNotEmpty()) {
-                            viewModel.tryStr2List(channels, null, "")
+                            viewModel.tryStr2Channels(channels, null, "")
                         } else {
                             Log.w(TAG, "$it is empty")
                         }

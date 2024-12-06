@@ -295,6 +295,8 @@ class SettingFragment : Fragment() {
             viewModel.groupModel.setPosition(SP.DEFAULT_POSITION_GROUP)
             viewModel.groupModel.setPositionPlaying(SP.DEFAULT_POSITION_GROUP)
 
+            SP.sources = SP.DEFAULT_SOURCES
+
             SP.config = SP.DEFAULT_CONFIG_URL
             Log.i(TAG, "config url: ${SP.config}")
             context.deleteFile(CACHE_FILE_NAME)
@@ -351,7 +353,7 @@ class SettingFragment : Fragment() {
             if (uri.scheme == "file") {
                 requestReadPermissions()
             } else {
-                viewModel.parseUri(uri)
+                viewModel.importFromUri(uri)
             }
         } else {
             R.string.invalid_config_address.showToast()
@@ -437,7 +439,7 @@ class SettingFragment : Fragment() {
                 PERMISSIONS_REQUEST_CODE
             )
         } else {
-            viewModel.parseUri(uri)
+            viewModel.importFromUri(uri)
         }
     }
 
@@ -449,7 +451,7 @@ class SettingFragment : Fragment() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSION_READ_EXTERNAL_STORAGE_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                viewModel.parseUri(uri)
+                viewModel.importFromUri(uri)
             } else {
                 R.string.authorization_failed.showToast()
             }

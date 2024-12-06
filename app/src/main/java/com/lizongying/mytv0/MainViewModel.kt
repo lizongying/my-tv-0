@@ -21,7 +21,6 @@ import com.lizongying.mytv0.models.TVModel
 import com.lizongying.mytv0.requests.HttpClient
 import com.lizongying.mytv0.showToast
 import io.github.lizongying.Gua
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -35,7 +34,7 @@ class MainViewModel : ViewModel() {
     var listModel: List<TVModel> = listOf()
     val groupModel = TVGroupModel()
     private var cacheFile: File? = null
-    private var cacheConfig = ""
+    private var cacheChannels = ""
     private var initialized = false
 
     val sources = Sources()
@@ -67,7 +66,7 @@ class MainViewModel : ViewModel() {
                 if (it.startsWith("http")) {
                     viewModelScope.launch {
                         Log.i(TAG, "updateConfig $it")
-                        update(it)
+                        importFromUrl(it)
                         SP.epg?.let { i ->
                             updateEPG(i)
                         }
@@ -95,17 +94,17 @@ class MainViewModel : ViewModel() {
             cacheFile!!.createNewFile()
         }
 
-        cacheConfig = getCache()
+        cacheChannels = getCache()
 
-        if (cacheConfig.isEmpty()) {
-            cacheConfig = context.resources.openRawResource(R.raw.channels).bufferedReader()
+        if (cacheChannels.isEmpty()) {
+            cacheChannels = context.resources.openRawResource(R.raw.channels).bufferedReader()
                 .use { it.readText() }
         }
 
-        Log.i(TAG, "cacheConfig $cacheConfig")
+        Log.i(TAG, "cacheChannels $cacheChannels")
 
         try {
-            str2List(cacheConfig)
+            str2Channels(cacheChannels)
         } catch (e: Exception) {
             e.printStackTrace()
             cacheFile!!.deleteOnExit()
@@ -142,35 +141,68 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    suspend fun update(serverUrl: String) {
+    private suspend fun importFromUrl(serverUrl: String) {
         Log.i(TAG, "request $serverUrl")
-        try {
-            withContext(Dispatchers.IO) {
-                val request = okhttp3.Request.Builder().url(serverUrl).build()
-                val response = HttpClient.okHttpClient.newCall(request).execute()
-
-                if (response.isSuccessful) {
-                    val str = response.body?.string() ?: ""
-                    withContext(Dispatchers.Main) {
-                        tryStr2List(str, null, serverUrl)
-                    }
-                } else {
-                    Log.e(TAG, "Request status ${response.code}")
-                    R.string.channel_status_error.showToast()
+        val urls =
+            if (serverUrl.startsWith("https://raw.githubusercontent.com") || serverUrl.startsWith("https://github.com")) {
+                listOf(
+                    "https://ghp.ci/",
+                    "https://gh.llkk.cc/",
+                    "https://github.moeyy.xyz/",
+                    "https://mirror.ghproxy.com/",
+                    "https://ghproxy.cn/",
+                    "https://ghproxy.net/",
+                    "https://ghproxy.click/",
+                    "https://ghproxy.com/",
+                    "https://github.moeyy.cn/",
+                    "https://gh-proxy.llyke.com/",
+                ).map {
+                    Pair("$it$serverUrl", serverUrl)
                 }
+            } else {
+                listOf(Pair(serverUrl, serverUrl))
             }
-        } catch (e: JsonSyntaxException) {
-            e.printStackTrace()
-            Log.e("JSON Parse Error", e.toString())
-            R.string.channel_format_error.showToast()
-        } catch (e: NullPointerException) {
-            e.printStackTrace()
-            Log.e("Null Pointer Error", e.toString())
-            R.string.channel_read_error.showToast()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Log.e(TAG, "Request error $e")
-            R.string.channel_request_error.showToast()
+
+        var err = 0
+        var shouldBreak = false
+        for ((a, b) in urls) {
+            try {
+                withContext(Dispatchers.IO) {
+                    val request = okhttp3.Request.Builder().url(a).build()
+                    val response = HttpClient.okHttpClient.newCall(request).execute()
+
+                    if (response.isSuccessful) {
+                        val str = response.body?.string() ?: ""
+                        withContext(Dispatchers.Main) {
+                            tryStr2Channels(str, null, b)
+                        }
+                        err = 0
+                        shouldBreak = true
+                    } else {
+                        Log.e(TAG, "Request status ${response.code}")
+                        err = R.string.channel_status_error
+                    }
+                }
+            } catch (e: JsonSyntaxException) {
+                e.printStackTrace()
+                Log.e(TAG, "JSON Parse Error", e)
+                err = R.string.channel_format_error
+                shouldBreak = true
+            } catch (e: NullPointerException) {
+                e.printStackTrace()
+                Log.e(TAG, "Null Pointer Error", e)
+                err = R.string.channel_read_error
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.e(TAG, "Request error $e")
+                err = R.string.channel_request_error
+            }
+
+            if (shouldBreak) break
+        }
+
+        if (err != 0) {
+            err.showToast()
         }
     }
 
@@ -179,14 +211,14 @@ class MainViewModel : ViewModel() {
             .use { it.readText() }
 
         try {
-            str2List(str)
+            str2Channels(str)
         } catch (e: Exception) {
             e.printStackTrace()
             R.string.channel_read_error.showToast()
         }
     }
 
-    fun parseUri(uri: Uri) {
+    fun importFromUri(uri: Uri) {
         if (uri.scheme == "file") {
             val file = uri.toFile()
             Log.i(TAG, "file $file")
@@ -197,19 +229,19 @@ class MainViewModel : ViewModel() {
                 return
             }
 
-            tryStr2List(str, file, uri.toString())
+            tryStr2Channels(str, file, uri.toString())
         } else {
-            CoroutineScope(Dispatchers.IO).launch {
-                update(uri.toString())
+            viewModelScope.launch {
+                importFromUrl(uri.toString())
             }
         }
     }
 
-    fun tryStr2List(str: String, file: File?, url: String) {
+    fun tryStr2Channels(str: String, file: File?, url: String) {
         try {
-            if (str2List(str)) {
+            if (str2Channels(str)) {
                 cacheFile!!.writeText(str)
-                cacheConfig = str
+                cacheChannels = str
                 if (url.isNotEmpty()) {
                     SP.config = url
                     sources.addSource(
@@ -230,10 +262,10 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    private fun str2List(str: String): Boolean {
+    private fun str2Channels(str: String): Boolean {
         var string = str
-        if (initialized && string == cacheConfig) {
-            Log.w(TAG, "same config")
+        if (initialized && string == cacheChannels) {
+            Log.w(TAG, "same channels")
             return false
         }
 
@@ -241,13 +273,14 @@ class MainViewModel : ViewModel() {
         if (g.verify(str)) {
             string = g.decode(str)
         }
+
         if (string.isEmpty()) {
-            Log.w(TAG, "config is empty")
+            Log.w(TAG, "channels is empty")
             return false
         }
 
-        if (initialized && string == cacheConfig) {
-            Log.w(TAG, "same config")
+        if (initialized && string == cacheChannels) {
+            Log.w(TAG, "same channels")
             return false
         }
 

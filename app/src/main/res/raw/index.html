@@ -82,6 +82,10 @@
         .history {
             margin-top: 10px;
         }
+
+        .history>input[type="text"] {
+            color: #EEEEEE;
+        }
     </style>
 </head>
 <body>
@@ -89,12 +93,13 @@
 <h4>視頻源可以设置為地址/文本/文件其中之一</h4>
 <hr/>
 
-<div class="item" id="source">
+<div class="item">
     <label for="uri" id="uri-label">視頻源地址，點擊確認後保存</label>
     <div class="container">
         <input type="text" id="uri"/>
         <input type="button" id="confirm-uri" value="確認" class="confirm"/>
     </div>
+    <div id="source"></div>
 </div>
 
 <hr/>
@@ -218,7 +223,12 @@
 
             let htmlString = `<div class="container history"><input type="text" readonly value="${uri}" /><input type="button" value="删除" class="remove" data-source-id=""/></div>`;
             let doc = new DOMParser().parseFromString(htmlString, 'text/html');
-            source.appendChild(doc.body.firstChild);
+            const firstChild = source.firstChild;
+            if (firstChild) {
+                source.insertBefore(doc.body.firstChild, firstChild);
+            } else {
+                source.appendChild(doc.body.firstChild);
+            }
         }
     }
 

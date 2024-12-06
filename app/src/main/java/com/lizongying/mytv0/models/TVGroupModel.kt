@@ -168,7 +168,8 @@ class TVGroupModel : ViewModel() {
             return null
         }
 
-        var tvListModel = getCurrentList()!!
+        var tvListModel = getCurrentList() ?: return null
+
         if (keep) {
             Log.i(TAG, "group position $positionValue")
             return tvListModel.getPrev()
