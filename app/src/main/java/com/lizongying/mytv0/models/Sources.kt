@@ -10,6 +10,7 @@ import com.lizongying.mytv0.data.Source
 class Sources {
     private val type = object : TypeToken<List<Source>>() {}.type
     var version = 0
+    private val gson = Gson()
 
     private val _removed = MutableLiveData<Pair<Int, Int>>()
     val removed: LiveData<Pair<Int, Int>>
@@ -37,7 +38,6 @@ class Sources {
 
     fun setChecked(position: Int) {
         _checked.value = position
-        SP.config = getSource(position)!!.uri
     }
 
     fun setSourceChecked(position: Int, checked: Boolean): Boolean {
@@ -56,7 +56,7 @@ class Sources {
 
     private fun setSources(sources: List<Source>) {
         _sources.value = sources
-        SP.sources = Gson().toJson(sources, type) ?: ""
+        SP.sources = gson.toJson(sources, type) ?: ""
     }
 
     fun addSource(source: Source) {
@@ -69,7 +69,7 @@ class Sources {
             _sources.value = sourcesValue.toMutableList().apply {
                 add(0, source)
             }
-            SP.sources = Gson().toJson(sourcesValue, type) ?: ""
+            SP.sources = gson.toJson(sourcesValue, type) ?: ""
 
             _added.value = Pair(sourcesValue.size - 1, version)
             version++
@@ -86,7 +86,7 @@ class Sources {
             _sources.value = sourcesValue.toMutableList().apply {
                 removeAt(index)
             }
-            SP.sources = Gson().toJson(sourcesValue, type) ?: ""
+            SP.sources = gson.toJson(sourcesValue, type) ?: ""
 
             _removed.value = Pair(index, version)
             version++
@@ -108,7 +108,7 @@ class Sources {
     fun init() {
         if (!SP.sources.isNullOrEmpty()) {
             try {
-                val sources: List<Source> = Gson().fromJson(SP.sources!!, type)
+                val sources: List<Source> = gson.fromJson(SP.sources!!, type)
                 setSources(sources)
             } catch (e: Exception) {
                 e.printStackTrace()
