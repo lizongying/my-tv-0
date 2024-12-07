@@ -235,12 +235,9 @@ class TVGroupModel : ViewModel() {
     }
 
     fun defaultPosition(): Int {
-        return if (SP.DEFAULT_SHOW_ALL_CHANNELS) {
-            if (tvGroupValue.size > 2) 2 else 1
-        } else {
-//            if (tvGroupValue.size > 2) 1 else 0
-            if (tvGroupValue.size > 2) 2 else 1
-        }
+        // 1 全部
+        // 2 第一組
+        return if (tvGroupValue.size > 2) 2 else 1
     }
 
     init {

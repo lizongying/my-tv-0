@@ -291,10 +291,6 @@ class SettingFragment : Fragment() {
         binding.clear.setOnClickListener {
             SP.channelNum = SP.DEFAULT_CHANNEL_NUM
 
-            SP.positionGroup = SP.DEFAULT_POSITION_GROUP
-            viewModel.groupModel.setPosition(SP.DEFAULT_POSITION_GROUP)
-            viewModel.groupModel.setPositionPlaying(SP.DEFAULT_POSITION_GROUP)
-
             SP.sources = SP.DEFAULT_SOURCES
             SP.channelReversal = SP.DEFAULT_CHANNEL_REVERSAL
             SP.time = SP.DEFAULT_TIME
@@ -315,6 +311,13 @@ class SettingFragment : Fragment() {
 
             SP.deleteLike()
             Log.i(TAG, "clear like")
+
+//            SP.positionGroup = SP.DEFAULT_POSITION_GROUP
+//            viewModel.groupModel.setPosition(SP.DEFAULT_POSITION_GROUP)
+//            viewModel.groupModel.setPositionPlaying(SP.DEFAULT_POSITION_GROUP)
+
+            SP.positionGroup = viewModel.groupModel.defaultPosition()
+            viewModel.groupModel.initPosition()
 
             SP.position = SP.DEFAULT_POSITION
             Log.i(TAG, "list position: ${SP.position}")

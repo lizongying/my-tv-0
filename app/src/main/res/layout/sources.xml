@@ -5,8 +5,23 @@
     android:id="@+id/sources"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:background="@color/description_blur"
     >
-
+        <TextView
+            android:id="@+id/content"
+            android:layout_width="600dp"
+            android:layout_height="400dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textColor="@color/blur"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            tools:text="暂无视频源"
+            android:visibility="gone"
+            android:text="@string/no_video_source"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/list"
             android:layout_width="600dp"

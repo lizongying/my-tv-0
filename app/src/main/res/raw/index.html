@@ -83,7 +83,7 @@
             margin-top: 10px;
         }
 
-        .history>input[type="text"] {
+        .history > input[type="text"] {
             color: #EEEEEE;
         }
     </style>
@@ -94,10 +94,10 @@
 <hr/>
 
 <div class="item">
-    <label for="uri" id="uri-label">視頻源地址，點擊確認後保存</label>
+    <label for="uri" id="uri-label">視頻源地址</label>
     <div class="container">
         <input type="text" id="uri"/>
-        <input type="button" id="confirm-uri" value="確認" class="confirm"/>
+        <input type="button" id="confirm-uri" value="新增" class="insert"/>
     </div>
     <div id="source"></div>
 </div>
@@ -105,7 +105,7 @@
 <hr/>
 
 <div class="item">
-    <label for="plain-text" id="plain-text-label">視頻源文本，點擊確認後保存</label>
+    <label for="plain-text" id="plain-text-label">視頻源文本</label>
     <div class="container">
         <textarea id="plain-text" rows="4"/></textarea>
         <input type="button" id="confirm-plain-text" value="確認" class="confirm"/>
@@ -115,7 +115,7 @@
 <hr/>
 
 <div class="item">
-    <label for="upload-file" id="upload-file-label">視頻源文件，選擇後會自動保存上傳</label>
+    <label for="upload-file" id="upload-file-label">視頻源文件，選擇後會自動上傳保存</label>
     <div class="container">
         <input type="file" id="upload-file" multiple/>
     </div>
@@ -157,6 +157,7 @@
     const lang = {
         TRADITIONAL_CHINESE: {
             appName: '我的電視·〇',
+            description: '視頻源可以设置為地址/文本/文件其中之一',
             uriLabel: '視頻源地址',
             plainTextLabel: '視頻源文本',
             uploadFileLabel: '視頻源文件，選擇後會自動上傳保存',
@@ -165,9 +166,11 @@
             proxyLabel: '代理地址',
             confirm: '確認',
             remove: '刪除',
+            insert: '新增',
         },
         SIMPLIFIED_CHINESE: {
             appName: '我的电视·〇',
+            description: '视频源可以设置为地址/文本/文件其中之一',
             uriLabel: '视频源地址',
             plainTextLabel: '视频源文本',
             uploadFileLabel: '视频源文件，选择后会自动上传保存',
@@ -176,20 +179,24 @@
             proxyLabel: '代理地址',
             confirm: '确认',
             remove: '删除',
+            insert: '新增',
         }
     };
     const t = (key) => lang['TRADITIONAL_CHINESE'][key];
-    document.querySelector('title').innerText = t('appName');
     document.querySelector('h1').innerText = t('appName');
-    document.querySelector('title').innerText = t('appName');
-    document.querySelector('#channel-label').innerText = t('channelLabel');
-    document.querySelector('#upload-file-label').innerText = t('uploadFileLabel');
+    document.querySelector('h4').innerText = t('description');
     document.querySelector('#uri-label').innerText = t('uriLabel');
     document.querySelector('#plain-text-label').innerText = t('plainTextLabel');
+    document.querySelector('#upload-file-label').innerText = t('uploadFileLabel');
+    document.querySelector('#channel-label').innerText = t('channelLabel');
     document.querySelector('#epg-label').innerText = t('epgLabel');
     document.querySelector('#proxy-label').innerText = t('proxyLabel');
+    document.querySelector('#confirm-uri').innerText = t('insert');
     document.querySelectorAll('.confirm').forEach(
         i => i.value = t('confirm')
+    );
+    document.querySelectorAll('.insert').forEach(
+        i => i.value = t('insert')
     );
 
     const source = document.querySelector('#source');
@@ -217,11 +224,13 @@
     document.querySelector('#confirm-uri').onclick = () => {
         const uri = document.querySelector('#uri').value.trim();
         if (uri.length > 0) {
+            const uuid = uuidV4()
             save('/api/uri', JSON.stringify({
-                uri: uri
+                id: uuid,
+                uri: uri,
             }))
 
-            let htmlString = `<div class="container history"><input type="text" readonly value="${uri}" /><input type="button" value="删除" class="remove" data-source-id=""/></div>`;
+            let htmlString = `<div class="container history"><input type="text" readonly value="${uri}" /><input type="button" value="删除" class="remove" data-source-id="${uuid}"/></div>`;
             let doc = new DOMParser().parseFromString(htmlString, 'text/html');
             const firstChild = source.firstChild;
             if (firstChild) {
@@ -229,6 +238,8 @@
             } else {
                 source.appendChild(doc.body.firstChild);
             }
+
+            handleRemove()
         }
     }
 
@@ -271,6 +282,27 @@
         console.log(json);
     }
 
+    const handleRemove = () => {
+        const removes = document.querySelectorAll('.remove');
+        [...removes].forEach(remove => {
+            remove.value = t('remove');
+            remove.onclick = () => {
+                const sourceId = remove.dataset.sourceId.trim();
+                console.log('sourceId', sourceId);
+                save('/api/remove-source', JSON.stringify({
+                    sourceId: sourceId
+                }))
+                remove.parentElement.remove()
+            }
+        })
+    }
+
+    const uuidV4 = () => {
+        return ([1e7] + '-' + 1e3 + '-' + 4e3 + '-' + 8e3 + '-' + 1e11).replace(/[018]/g, c =>
+            (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+        );
+    }
+
     (async () => {
         const response = await fetch('/api/settings');
         const json = await response.json();
@@ -287,18 +319,7 @@
             source.appendChild(doc.body.firstChild);
         })
 
-        const removes = document.querySelectorAll('.remove');
-        [...removes].forEach(remove => {
-            remove.value = t('remove');
-            remove.onclick = () => {
-                const sourceId = remove.dataset.sourceId.trim();
-                console.log('sourceId', sourceId);
-                save('/api/remove-source', JSON.stringify({
-                    sourceId: sourceId
-                }))
-                remove.parentElement.remove()
-            }
-        })
+        handleRemove()
     })()
 </script>
 </html>

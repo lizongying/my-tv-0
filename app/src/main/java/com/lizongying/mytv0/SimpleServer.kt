@@ -11,6 +11,7 @@ import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.lizongying.mytv0.data.ReqSettings
+import com.lizongying.mytv0.data.ReqSourceAdd
 import com.lizongying.mytv0.data.ReqSources
 import com.lizongying.mytv0.data.RespSettings
 import com.lizongying.mytv0.data.Source
@@ -62,20 +63,14 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
 
             var history = mutableListOf<Source>()
 
-            SP.sources?.let {
-                if (it.isEmpty()) {
-                    Log.i(Sources.TAG, "sources is empty")
-                    return@let
-                }
-
-                val type = object : TypeToken<List<Source>>() {}.type
-                val sources: List<Source> = Gson().fromJson(it, type)
-                history = sources.toMutableList()
-            }
-
-            if (history.size == 0) {
-                if (!SP.configUrl.isNullOrEmpty()) {
-                    history.add(Source(uri = SP.configUrl!!))
+            if (!SP.sources.isNullOrEmpty()) {
+                try {
+                    val type = object : TypeToken<List<Source>>() {}.type
+                    val sources: List<Source> = Gson().fromJson(SP.sources!!, type)
+                    history = sources.toMutableList()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    SP.sources = SP.DEFAULT_SOURCES
                 }
             }
 
@@ -125,12 +120,10 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
         val response = ""
         try {
             readBody(session)?.let {
-                val req = Gson().fromJson(it, ReqSettings::class.java)
-                if (req.uri != null) {
-                    val uri = Uri.parse(req.uri)
-                    handler.post {
-                        viewModel.importFromUri(uri)
-                    }
+                val req = Gson().fromJson(it, ReqSourceAdd::class.java)
+                val uri = Uri.parse(req.uri)
+                handler.post {
+                    viewModel.importFromUri(uri, req.id)
                 }
             }
         } catch (e: IOException) {

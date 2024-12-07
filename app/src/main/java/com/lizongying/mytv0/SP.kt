@@ -70,7 +70,9 @@ object SP {
     const val DEFAULT_COMPACT_MENU = true
     const val DEFAULT_DISPLAY_SECONDS = false
     const val DEFAULT_LOG_TIMES = 10
-    const val DEFAULT_POSITION_GROUP = 0 // favorite
+
+    // 0 favorite; 1 all
+    const val DEFAULT_POSITION_GROUP = 1
     const val DEFAULT_POSITION = 0
     const val DEFAULT_REPEAT_INFO = true
     const val DEFAULT_CONFIG_AUTO_LOAD = false

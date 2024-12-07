@@ -117,34 +117,45 @@ class MainViewModel : ViewModel() {
     }
 
     private suspend fun updateEPG(epg: String) {
-        try {
-            withContext(Dispatchers.IO) {
-                val request = okhttp3.Request.Builder().url(epg).build()
-                val response = HttpClient.okHttpClient.newCall(request).execute()
+        var shouldBreak = false
+        for (i in 0..2) {
+            try {
+                withContext(Dispatchers.IO) {
+                    val request = okhttp3.Request.Builder().url(epg).build()
+                    val response = HttpClient.okHttpClient.newCall(request).execute()
 
-                if (response.isSuccessful) {
-                    val res = EPGXmlParser().parse(response.body!!.byteStream())
+                    if (response.isSuccessful) {
+                        val res = EPGXmlParser().parse(response.body!!.byteStream())
 
-                    withContext(Dispatchers.Main) {
-                        for (m in listModel) {
-                            res[m.tv.name]?.let { m.setEpg(it) }
+                        withContext(Dispatchers.Main) {
+                            for (m in listModel) {
+                                res[m.tv.name]?.let { m.setEpg(it) }
+                            }
                         }
+
+                        shouldBreak = true
+                    } else {
+                        Log.e(TAG, "EPG ${response.code}")
                     }
-                } else {
-                    Log.e(TAG, "EPG ${response.code}")
-                    R.string.epg_status_err.showToast()
                 }
-            }
-        } catch (e: Exception) {
-            Log.i(TAG, "EPG request error:", e)
+            } catch (e: Exception) {
+                Log.i(TAG, "EPG request error:", e)
 //            R.string.epg_request_err.showToast()
+            }
+
+            if (shouldBreak) {
+                break
+            }
+        }
+
+        if (!shouldBreak) {
+            R.string.epg_status_err.showToast()
         }
     }
 
-    private suspend fun importFromUrl(serverUrl: String) {
-        Log.i(TAG, "request $serverUrl")
+    private suspend fun importFromUrl(url: String, id: String = "") {
         val urls =
-            if (serverUrl.startsWith("https://raw.githubusercontent.com") || serverUrl.startsWith("https://github.com")) {
+            if (url.startsWith("https://raw.githubusercontent.com") || url.startsWith("https://github.com")) {
                 listOf(
                     "https://ghp.ci/",
                     "https://gh.llkk.cc/",
@@ -156,16 +167,19 @@ class MainViewModel : ViewModel() {
                     "https://ghproxy.com/",
                     "https://github.moeyy.cn/",
                     "https://gh-proxy.llyke.com/",
+                    "https://www.ghproxy.cc/",
+                    "https://cf.ghproxy.cc/"
                 ).map {
-                    Pair("$it$serverUrl", serverUrl)
+                    Pair("$it$url", url)
                 }
             } else {
-                listOf(Pair(serverUrl, serverUrl))
+                listOf(Pair(url, url))
             }
 
         var err = 0
         var shouldBreak = false
         for ((a, b) in urls) {
+            Log.i(TAG, "request $a")
             try {
                 withContext(Dispatchers.IO) {
                     val request = okhttp3.Request.Builder().url(a).build()
@@ -174,7 +188,7 @@ class MainViewModel : ViewModel() {
                     if (response.isSuccessful) {
                         val str = response.body?.string() ?: ""
                         withContext(Dispatchers.Main) {
-                            tryStr2Channels(str, null, b)
+                            tryStr2Channels(str, null, b, id)
                         }
                         err = 0
                         shouldBreak = true
@@ -218,7 +232,7 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun importFromUri(uri: Uri) {
+    fun importFromUri(uri: Uri, id: String = "") {
         if (uri.scheme == "file") {
             val file = uri.toFile()
             Log.i(TAG, "file $file")
@@ -229,25 +243,27 @@ class MainViewModel : ViewModel() {
                 return
             }
 
-            tryStr2Channels(str, file, uri.toString())
+            tryStr2Channels(str, file, uri.toString(), id)
         } else {
             viewModelScope.launch {
-                importFromUrl(uri.toString())
+                importFromUrl(uri.toString(), id)
             }
         }
     }
 
-    fun tryStr2Channels(str: String, file: File?, url: String) {
+    fun tryStr2Channels(str: String, file: File?, url: String, id: String = "") {
         try {
             if (str2Channels(str)) {
                 cacheFile!!.writeText(str)
                 cacheChannels = str
                 if (url.isNotEmpty()) {
                     SP.configUrl = url
+                    val source = Source(
+                        id = id,
+                        uri = url
+                    )
                     sources.addSource(
-                        Source(
-                            uri = url
-                        )
+                        source
                     )
                 }
                 _channelsOk.value = true
@@ -266,7 +282,7 @@ class MainViewModel : ViewModel() {
         var string = str
         if (initialized && string == cacheChannels) {
             Log.w(TAG, "same channels")
-            return false
+            return true
         }
 
         val g = Gua()
@@ -281,7 +297,7 @@ class MainViewModel : ViewModel() {
 
         if (initialized && string == cacheChannels) {
             Log.w(TAG, "same channels")
-            return false
+            return true
         }
 
         val list: List<TV>

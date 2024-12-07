@@ -1,5 +1,6 @@
 package com.lizongying.mytv0.models
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
@@ -114,14 +115,6 @@ class Sources {
                 e.printStackTrace()
                 SP.sources = SP.DEFAULT_SOURCES
             }
-        }
-
-        if (!SP.configUrl.isNullOrEmpty()) {
-            addSource(
-                Source(
-                    uri = SP.configUrl!!,
-                )
-            )
         }
 
         if (size() > 0) {

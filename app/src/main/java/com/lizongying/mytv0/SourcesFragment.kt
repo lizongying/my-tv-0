@@ -65,6 +65,7 @@ class SourcesFragment : DialogFragment(), SourcesAdapter.ItemListener {
 
         viewModel.sources.removed.observe(this) { items ->
             sourcesAdapter.removed(items.first)
+            checkEmpty()
         }
 
         viewModel.sources.added.observe(this) { items ->
@@ -73,7 +74,10 @@ class SourcesFragment : DialogFragment(), SourcesAdapter.ItemListener {
 
         viewModel.sources.changed.observe(this) { _ ->
             sourcesAdapter.changed()
+            checkEmpty()
         }
+
+        checkEmpty()
     }
 
     private val hideFragment = Runnable {
@@ -104,6 +108,14 @@ class SourcesFragment : DialogFragment(), SourcesAdapter.ItemListener {
         handler.removeCallbacks(hideFragment)
         handler.postDelayed(hideFragment, delayHideFragment)
         return false
+    }
+
+    private fun checkEmpty() {
+        if (viewModel.sources.size() == 0) {
+            binding.content.visibility = View.VISIBLE
+        } else {
+            binding.content.visibility = View.GONE
+        }
     }
 
     companion object {
