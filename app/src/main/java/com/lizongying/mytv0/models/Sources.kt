@@ -10,8 +10,8 @@ import com.lizongying.mytv0.data.Source
 
 class Sources {
     private val type = object : TypeToken<List<Source>>() {}.type
-    var version = 0
     private val gson = Gson()
+    var version = 0
 
     private val _removed = MutableLiveData<Pair<Int, Int>>()
     val removed: LiveData<Pair<Int, Int>>
@@ -61,10 +61,6 @@ class Sources {
     }
 
     fun addSource(source: Source) {
-        if (_sources.value == null) {
-            _sources.value = mutableListOf(source)
-        }
-
         val index = sourcesValue.indexOfFirst { it.uri == source.uri }
         if (index == -1) {
             _sources.value = sourcesValue.toMutableList().apply {
@@ -77,9 +73,10 @@ class Sources {
         }
     }
 
-    fun removeSource(id: String) {
+    fun removeSource(id: String): Boolean {
         if (sourcesValue.isEmpty()) {
-            return
+            Log.i(TAG, "sources is empty")
+            return false
         }
 
         val index = sourcesValue.indexOfFirst { it.id == id }
@@ -91,7 +88,11 @@ class Sources {
 
             _removed.value = Pair(index, version)
             version++
+            return true
         }
+
+        Log.i(TAG, "sourceId is not exists")
+        return false
     }
 
     fun getSource(idx: Int): Source? {

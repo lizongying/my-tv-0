@@ -178,11 +178,11 @@ class MainActivity : AppCompatActivity() {
                         Log.i(TAG, "播放上次頻道")
                         viewModel.groupModel.getCurrent()
                     }
-                    viewModel.groupModel.setPlaying()
+                    viewModel.groupModel.setPositionPlaying()
                     viewModel.groupModel.getCurrentList()
                         ?.let {
                             Log.i(TAG, "當前組 ${it.getName()}")
-                            it.setPlaying()
+                            it.setPositionPlaying()
                         }
                     tvModel?.setReady()
 
@@ -406,8 +406,8 @@ class MainActivity : AppCompatActivity() {
             val tvModel = viewModel.groupModel.getPosition(position)
 
             tvModel?.setReady()
-            viewModel.groupModel.setPlaying()
-            viewModel.groupModel.getCurrentList()?.setPlaying()
+            viewModel.groupModel.setPositionPlaying()
+            viewModel.groupModel.getCurrentList()?.setPositionPlaying()
 
             val currentGroup = viewModel.groupModel.positionValue
             if (currentGroup != prevGroup) {
@@ -429,8 +429,8 @@ class MainActivity : AppCompatActivity() {
             }
 
         tvModel?.setReady()
-        viewModel.groupModel.setPlaying()
-        viewModel.groupModel.getCurrentList()?.setPlaying()
+        viewModel.groupModel.setPositionPlaying()
+        viewModel.groupModel.getCurrentList()?.setPositionPlaying()
 
         val currentGroup = viewModel.groupModel.positionValue
         if (currentGroup != prevGroup) {
@@ -449,8 +449,8 @@ class MainActivity : AppCompatActivity() {
             }
 
         tvModel?.setReady()
-        viewModel.groupModel.setPlaying()
-        viewModel.groupModel.getCurrentList()?.setPlaying()
+        viewModel.groupModel.setPositionPlaying()
+        viewModel.groupModel.getCurrentList()?.setPositionPlaying()
 
         val currentGroup = viewModel.groupModel.positionValue
         if (currentGroup != prevGroup) {

@@ -1,6 +1,7 @@
 package com.lizongying.mytv0
 
 import android.content.Context
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -214,8 +215,7 @@ class GroupAdapter(
         this.listener = listener
     }
 
-    fun update(tvGroupModel: TVGroupModel) {
-        this.tvGroupModel = tvGroupModel
+    fun changed() {
         recyclerView.post {
             notifyDataSetChanged()
         }

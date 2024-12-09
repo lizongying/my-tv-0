@@ -95,7 +95,8 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
 
     fun update() {
         view?.post {
-            groupAdapter.update(viewModel.groupModel)
+            Log.e(TAG, "changed")
+            groupAdapter.changed()
 
             getList()?.let {
                 (binding.list.adapter as ListAdapter).update(it)
@@ -154,10 +155,10 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
     }
 
     override fun onItemClicked(position: Int, type: String) {
-        viewModel.groupModel.setPlaying()
+        viewModel.groupModel.setPositionPlaying()
         viewModel.groupModel.getCurrentList()?.let {
             it.setPosition(position)
-            it.setPlaying()
+            it.setPositionPlaying()
             it.getCurrent()?.setReady()
         }
         (activity as MainActivity).hideMenuFragment()
@@ -200,7 +201,6 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
                 groupAdapter.focusable(true)
                 listAdapter.focusable(false)
                 listAdapter.clear()
-                Log.i(TAG, "group toPosition on left")
                 groupAdapter.scrollToPositionAndSelect(viewModel.groupModel.positionValue)
                 return true
             }

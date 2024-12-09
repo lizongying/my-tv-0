@@ -118,10 +118,10 @@ class MainViewModel : ViewModel() {
 
     private suspend fun updateEPG(epg: String) {
         var shouldBreak = false
+        val request = okhttp3.Request.Builder().url(epg).build()
         for (i in 0..2) {
             try {
                 withContext(Dispatchers.IO) {
-                    val request = okhttp3.Request.Builder().url(epg).build()
                     val response = HttpClient.okHttpClient.newCall(request).execute()
 
                     if (response.isSuccessful) {
@@ -129,11 +129,25 @@ class MainViewModel : ViewModel() {
 
                         withContext(Dispatchers.Main) {
                             for (m in listModel) {
-                                res[m.tv.name]?.let { m.setEpg(it) }
+                                val name = m.tv.name.ifEmpty { m.tv.title }.lowercase()
+                                if (name.isEmpty()) {
+                                    continue
+                                }
+
+                                for ((a, b) in res) {
+                                    if (name.contains(a, ignoreCase = true)) {
+                                        m.setEpg(b)
+                                        if (m.tv.logo.isEmpty()) {
+                                            m.tv.logo = "https://live.fanmingming.com/tv/$a.png"
+                                        }
+                                        break
+                                    }
+                                }
                             }
                         }
 
                         shouldBreak = true
+                        Log.i(TAG, "EPG success")
                     } else {
                         Log.e(TAG, "EPG ${response.code}")
                     }
@@ -149,7 +163,7 @@ class MainViewModel : ViewModel() {
         }
 
         if (!shouldBreak) {
-            R.string.epg_status_err.showToast()
+//            R.string.epg_status_err.showToast()
         }
     }
 
@@ -458,7 +472,7 @@ class MainViewModel : ViewModel() {
         listModel = listModelNew
 
         // 全部频道
-        (groupModel.tvGroup.value as List<TVListModel>)[1].setTVListModel(listModel)
+        groupModel.tvGroupValue[1].setTVListModel(listModel)
 
         groupModel.initPosition()
         groupModel.setChange()

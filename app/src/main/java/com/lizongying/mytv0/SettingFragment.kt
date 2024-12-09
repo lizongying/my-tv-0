@@ -19,10 +19,8 @@ import androidx.core.view.marginEnd
 import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.lizongying.mytv0.ModalFragment.Companion.KEY_BITMAP
-import com.lizongying.mytv0.ModalFragment.Companion.KEY_TEXT
+import com.lizongying.mytv0.ModalFragment.Companion.KEY_URL
 import com.lizongying.mytv0.SimpleServer.Companion.PORT
-import com.lizongying.mytv0.Utils.getDateTimestamp
 import com.lizongying.mytv0.databinding.SettingBinding
 import kotlin.math.max
 import kotlin.math.min
@@ -120,11 +118,8 @@ class SettingFragment : Fragment() {
 
         binding.qrcode.setOnClickListener {
             val imageModalFragment = ModalFragment()
-            val size = Utils.dpToPx(200)
-            val img = QrCodeUtil().createQRCodeBitmap("$server?${getDateTimestamp()}", size, size)
             val args = Bundle()
-            args.putString(KEY_TEXT, server.removePrefix("http://"))
-            args.putParcelable(KEY_BITMAP, img)
+            args.putString(KEY_URL, server)
             imageModalFragment.arguments = args
 
             imageModalFragment.show(requireFragmentManager(), ModalFragment.TAG)
@@ -292,6 +287,9 @@ class SettingFragment : Fragment() {
             SP.channelNum = SP.DEFAULT_CHANNEL_NUM
 
             SP.sources = SP.DEFAULT_SOURCES
+            Log.i(TAG, "DEFAULT_SOURCES ${SP.DEFAULT_SOURCES}")
+            viewModel.sources.init()
+
             SP.channelReversal = SP.DEFAULT_CHANNEL_REVERSAL
             SP.time = SP.DEFAULT_TIME
             SP.bootStartup = SP.DEFAULT_BOOT_STARTUP
@@ -325,8 +323,8 @@ class SettingFragment : Fragment() {
             tvListModel?.setPosition(SP.DEFAULT_POSITION)
             tvListModel?.setPositionPlaying(SP.DEFAULT_POSITION)
 
-            viewModel.groupModel.setPlaying()
-            viewModel.groupModel.getCurrentList()?.setPlaying()
+            viewModel.groupModel.setPositionPlaying()
+            viewModel.groupModel.getCurrentList()?.setPositionPlaying()
             viewModel.groupModel.getCurrent()?.setReady()
 
             SP.showAllChannels = SP.DEFAULT_SHOW_ALL_CHANNELS
@@ -342,8 +340,8 @@ class SettingFragment : Fragment() {
 
         binding.switchShowAllChannels.setOnCheckedChangeListener { _, isChecked ->
             SP.showAllChannels = isChecked
-            viewModel.groupModel.tvGroup.value?.let { viewModel.groupModel.setTVListModelList(it) }
-            mainActivity.update()
+            viewModel.groupModel.setChange()
+
             mainActivity.settingActive()
         }
     }

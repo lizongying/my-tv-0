@@ -7,6 +7,20 @@ import androidx.lifecycle.ViewModel
 import com.lizongying.mytv0.SP
 
 class TVListModel(private val name: String, private val groupIndex: Int) : ViewModel() {
+    var version = 0
+
+    private val _removed = MutableLiveData<Pair<Int, Int>>()
+    val removed: LiveData<Pair<Int, Int>>
+        get() = _removed
+
+    private val _added = MutableLiveData<Pair<Int, Int>>()
+    val added: LiveData<Pair<Int, Int>>
+        get() = _added
+
+    private val _changed = MutableLiveData<Pair<Int, Int>>()
+    val changed: LiveData<Pair<Int, Int>>
+        get() = _changed
+
     fun getName(): String {
         return name
     }
@@ -28,25 +42,23 @@ class TVListModel(private val name: String, private val groupIndex: Int) : ViewM
     val positionValue: Int
         get() = _position.value ?: 0
 
+    fun setPosition(position: Int) {
+        _position.value = position
+    }
+
     private val _positionPlaying = MutableLiveData<Int>()
     val positionPlaying: LiveData<Int>
         get() = _positionPlaying
     val positionPlayingValue: Int
         get() = _positionPlaying.value ?: 0
 
-    fun setPosition(position: Int) {
-//        Log.i(TAG, "選擇頻道 $position")
-        _position.value = position
-    }
-
     fun setPositionPlaying(position: Int) {
         _positionPlaying.value = position
         SP.position = position
     }
 
-    fun setPlaying() {
-        _positionPlaying.value = positionValue
-        SP.position = positionValue
+    fun setPositionPlaying() {
+        setPositionPlaying(positionValue)
     }
 
     private val _change = MutableLiveData<Boolean>()
@@ -62,57 +74,44 @@ class TVListModel(private val name: String, private val groupIndex: Int) : ViewM
     }
 
     fun addTVModel(tvModel: TVModel) {
-        if (_tvList.value == null) {
-            _tvList.value = mutableListOf(tvModel)
-            return
+        _tvList.value = tvListValue.toMutableList().apply {
+            add(tvModel)
         }
 
-        val newList = _tvList.value!!.toMutableList()
-        newList.add(tvModel)
-        _tvList.value = newList
+        _added.value = Pair(tvListValue.size - 1, version)
+        version++
     }
 
     fun removeTVModel(id: Int) {
-        if (_tvList.value == null) {
+        if (tvListValue.isEmpty()) {
             return
         }
-        val newList = _tvList.value!!.toMutableList()
-        val iterator = newList.iterator()
-        while (iterator.hasNext()) {
-            if (iterator.next().tv.id == id) {
-                iterator.remove()
+
+        val index = tvListValue.indexOfFirst { it.tv.id == id }
+        if (index != -1) {
+            _tvList.value = tvListValue.toMutableList().apply {
+                removeAt(index)
             }
+
+            _removed.value = Pair(index, version)
+            version++
         }
-        _tvList.value = newList
     }
 
     fun replaceTVModel(tvModel: TVModel) {
         if (_tvList.value == null) {
             _tvList.value = mutableListOf(tvModel)
-            return
         }
 
-        val newList = _tvList.value!!.toMutableList()
-        var exists = false
-        val iterator = newList.iterator()
-        while (iterator.hasNext()) {
-            if (iterator.next().tv.id == tvModel.tv.id) {
-                exists = true
+        val index = tvListValue.indexOfFirst { it.tv.id == tvModel.tv.id }
+        if (index == -1) {
+            _tvList.value = tvListValue.toMutableList().apply {
+                add(tvModel)
             }
-        }
-        if (!exists) {
-            newList.add(tvModel)
-            _tvList.value = newList
-        }
-    }
 
-    fun initTVList() {
-        _tvList.value = mutableListOf()
-    }
-
-    fun clearData() {
-        initTVList()
-        setPosition(0)
+            _added.value = Pair(tvListValue.size - 1, version)
+            version++
+        }
     }
 
     fun getTVModel(): TVModel? {
@@ -120,9 +119,10 @@ class TVListModel(private val name: String, private val groupIndex: Int) : ViewM
     }
 
     fun getTVModel(idx: Int): TVModel? {
-        if (idx >= size()) {
+        if (idx < 0 || idx >= size()) {
             return null
         }
+
         setPosition(idx)
         return tvListValue[idx]
     }
@@ -131,6 +131,7 @@ class TVListModel(private val name: String, private val groupIndex: Int) : ViewM
         if (positionValue < 0 || positionValue >= size()) {
             return getTVModel(0)
         }
+
         return getTVModel(positionValue)
     }
 
@@ -139,7 +140,8 @@ class TVListModel(private val name: String, private val groupIndex: Int) : ViewM
             return null
         }
 
-        val p = (size() + positionValue - 1) % size()
+        val p = (size() + positionPlayingValue - 1) % size()
+        setPositionPlaying(p)
         setPosition(p)
         return tvListValue[p]
     }
@@ -149,9 +151,14 @@ class TVListModel(private val name: String, private val groupIndex: Int) : ViewM
             return null
         }
 
-        val p = (positionValue + 1) % size()
+        val p = (positionPlayingValue + 1) % size()
+        setPositionPlaying(p)
         setPosition(p)
         return tvListValue[p]
+    }
+
+    fun initTVList() {
+        _tvList.value = mutableListOf()
     }
 
     init {
@@ -159,10 +166,6 @@ class TVListModel(private val name: String, private val groupIndex: Int) : ViewM
     }
 
     fun size(): Int {
-        if (_tvList.value == null) {
-            return 0
-        }
-
         return tvListValue.size
     }
 

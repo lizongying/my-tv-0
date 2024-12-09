@@ -15,7 +15,6 @@ import com.lizongying.mytv0.data.ReqSourceAdd
 import com.lizongying.mytv0.data.ReqSources
 import com.lizongying.mytv0.data.RespSettings
 import com.lizongying.mytv0.data.Source
-import com.lizongying.mytv0.models.Sources
 import fi.iki.elonen.NanoHTTPD
 import java.io.File
 import java.io.IOException
@@ -220,8 +219,14 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
                     val req = Gson().fromJson(it, ReqSources::class.java)
                     Log.i(TAG, "req $req")
                     if (req.sourceId.isNotEmpty()) {
-                        viewModel.sources.removeSource(req.sourceId)
+                        val res = viewModel.sources.removeSource(req.sourceId)
+                        if (res) {
+                            Log.i(TAG, "remove source success ${req.sourceId}")
+                        } else {
+                            Log.i(TAG, "remove source failure ${req.sourceId}")
+                        }
                     } else {
+                        Log.i(TAG, "remove source failure, sourceId is empty")
                     }
                 }
             }
