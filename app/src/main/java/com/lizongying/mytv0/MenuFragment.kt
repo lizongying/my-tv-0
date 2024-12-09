@@ -85,6 +85,11 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
     }
 
     private fun getList(): TVListModel? {
+        if (!this::viewModel.isInitialized) {
+            Log.e(TAG, "viewModel is not initialized")
+            return null
+        }
+
         // 如果不存在當前組，則切換到收藏組
         if (viewModel.groupModel.getCurrentList() == null) {
             viewModel.groupModel.setPosition(0)
@@ -95,7 +100,7 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
 
     fun update() {
         view?.post {
-            groupAdapter.update(viewModel.groupModel)
+            groupAdapter.changed()
 
             getList()?.let {
                 (binding.list.adapter as ListAdapter).update(it)
@@ -120,6 +125,11 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
     }
 
     fun updateList(position: Int) {
+        if (!this::viewModel.isInitialized) {
+            Log.e(TAG, "viewModel is not initialized")
+            return
+        }
+
         viewModel.groupModel.setPosition(position)
         SP.positionGroup = position
 
@@ -154,10 +164,15 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
     }
 
     override fun onItemClicked(position: Int, type: String) {
-        viewModel.groupModel.setPlaying()
+        if (!this::viewModel.isInitialized) {
+            Log.e(TAG, "viewModel is not initialized")
+            return
+        }
+
+        viewModel.groupModel.setPositionPlaying()
         viewModel.groupModel.getCurrentList()?.let {
             it.setPosition(position)
-            it.setPlaying()
+            it.setPositionPlaying()
             it.getCurrent()?.setReady()
         }
         (activity as MainActivity).hideMenuFragment()
@@ -200,7 +215,6 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
                 groupAdapter.focusable(true)
                 listAdapter.focusable(false)
                 listAdapter.clear()
-                Log.i(TAG, "group toPosition on left")
                 groupAdapter.scrollToPositionAndSelect(viewModel.groupModel.positionValue)
                 return true
             }
@@ -249,8 +263,14 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
 //                listAdapter.focusable(false)
 
                 val position = viewModel.groupModel.positionPlayingValue
-                Log.i(TAG, "group position $position/${viewModel.groupModel.tvGroupValue.size}")
-                if (position != viewModel.groupModel.positionValue) {
+                if (position >= viewModel.groupModel.tvGroupValue.size) {
+                    viewModel.groupModel.setPositionPlaying(viewModel.groupModel.defaultPosition())
+                }
+                Log.i(
+                    TAG,
+                    "group position ${viewModel.groupModel.positionPlayingValue}/${viewModel.groupModel.tvGroupValue.size - 1}"
+                )
+                if (viewModel.groupModel.positionPlayingValue != viewModel.groupModel.positionValue) {
                     viewModel.groupModel.setPosition(position)
                 }
                 groupAdapter.scrollToPositionAndSelect(position)

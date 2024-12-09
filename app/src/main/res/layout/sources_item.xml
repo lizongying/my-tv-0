@@ -9,15 +9,29 @@
     android:background="@color/blur">
 
     <TextView
-        android:id="@+id/title"
-        android:layout_width="270dp"
+        android:id="@+id/num"
+        android:layout_width="50dp"
         android:layout_height="50dp"
-        android:paddingEnd="30dp"
         android:singleLine="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginStart="5dp"
+        android:textColor="@color/title_blur"
+        tools:text="99"
+        android:ellipsize="start"
+        android:textSize="16sp"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="520dp"
+        android:layout_height="50dp"
+        android:paddingEnd="30dp"
+        android:singleLine="true"
+        app:layout_constraintStart_toStartOf="@id/num"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="50dp"
         android:textColor="@color/title_blur"
         tools:text="https://ali-m-l.cztv.com/channels/lantian/channel007/1080p.m3u8"
         android:ellipsize="start"

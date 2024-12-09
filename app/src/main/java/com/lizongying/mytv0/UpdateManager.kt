@@ -127,7 +127,7 @@ class UpdateManager(
         val response = okHttpClient.newCall(request).execute()
         if (!response.isSuccessful) throw IOException("Unexpected code $response")
 
-        val body = response.body() ?: throw IOException("Null response body")
+        val body = response.bodyAlias() ?: throw IOException("Null response body")
         val actualMimeType = body.contentType()?.toString()
         if (actualMimeType != "application/vnd.android.package-archive") {
             throw IOException("Unexpected MIME type: $actualMimeType. Expected: application/vnd.android.package-archive")

@@ -69,7 +69,7 @@ class MyTVExceptionHandler(private val context: Context) : Thread.UncaughtExcept
                     if (response.isSuccessful) {
                         Log.i(TAG, "log success")
                     } else {
-                        Log.e(TAG, "log failed: ${response.code()}")
+                        Log.e(TAG, "log failed: ${response.codeAlias()}")
                     }
                 }
             } catch (e: Exception) {

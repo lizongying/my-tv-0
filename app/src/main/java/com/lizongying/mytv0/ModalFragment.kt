@@ -1,7 +1,6 @@
 package com.lizongying.mytv0
 
 import android.content.Intent
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -43,19 +42,23 @@ class ModalFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val bitmap: Bitmap? = arguments?.getParcelable(KEY_BITMAP)
+        val url = arguments?.getString(KEY_URL)
+        if (!url.isNullOrEmpty()) {
+            val size = Utils.dpToPx(200)
+            val img = QrCodeUtil().createQRCodeBitmap(url, size, size)
 
-        if (bitmap != null) {
             Glide.with(requireContext())
-                .load(bitmap)
+                .load(img)
                 .into(binding.modalImage)
-            val text = arguments?.getString(KEY_TEXT)
-            binding.modalText.text = text
+            binding.modalText.text = url.removePrefix("http://")
             binding.modalText.visibility = View.VISIBLE
             binding.modal.setOnClickListener {
-                val url = "http://$text"
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                startActivity(intent)
+                try {
+                    startActivity(intent)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
         } else {
             Glide.with(requireContext())
@@ -81,8 +84,7 @@ class ModalFragment : DialogFragment() {
 
     companion object {
         const val KEY_DRAWABLE_ID = "drawable_id"
-        const val KEY_BITMAP = "bitmap"
-        const val KEY_TEXT = "text"
+        const val KEY_URL = "url"
         const val TAG = "ModalFragment"
     }
 }

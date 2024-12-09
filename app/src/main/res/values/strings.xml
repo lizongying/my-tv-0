@@ -50,4 +50,5 @@
     <string name="all_channels">All Channels</string>
     <string name="compact_menu">Compact Menu</string>
     <string name="display_seconds">Display Seconds</string>
+    <string name="no_video_source">No Video Source</string>
 </resources>

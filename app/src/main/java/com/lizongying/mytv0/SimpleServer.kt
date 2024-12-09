@@ -11,10 +11,10 @@ import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.lizongying.mytv0.data.ReqSettings
+import com.lizongying.mytv0.data.ReqSourceAdd
 import com.lizongying.mytv0.data.ReqSources
 import com.lizongying.mytv0.data.RespSettings
 import com.lizongying.mytv0.data.Source
-import com.lizongying.mytv0.models.Sources
 import fi.iki.elonen.NanoHTTPD
 import java.io.File
 import java.io.IOException
@@ -62,25 +62,19 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
 
             var history = mutableListOf<Source>()
 
-            SP.sources?.let {
-                if (it.isEmpty()) {
-                    Log.i(Sources.TAG, "sources is empty")
-                    return@let
-                }
-
-                val type = object : TypeToken<List<Source>>() {}.type
-                val sources: List<Source> = Gson().fromJson(it, type)
-                history = sources.toMutableList()
-            }
-
-            if (history.size == 0) {
-                if (!SP.config.isNullOrEmpty()) {
-                    history.add(Source(uri = SP.config!!))
+            if (!SP.sources.isNullOrEmpty()) {
+                try {
+                    val type = object : TypeToken<List<Source>>() {}.type
+                    val sources: List<Source> = Gson().fromJson(SP.sources!!, type)
+                    history = sources.toMutableList()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    SP.sources = SP.DEFAULT_SOURCES
                 }
             }
 
             val respSettings = RespSettings(
-                channelUri = SP.config ?: "",
+                channelUri = SP.configUrl ?: "",
                 channelText = str,
                 channelDefault = SP.channel,
                 proxy = SP.proxy ?: "",
@@ -106,7 +100,7 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
         try {
             readBody(session)?.let {
                 handler.post {
-                    viewModel.tryStr2List(it, null, "")
+                    viewModel.tryStr2Channels(it, null, "")
                 }
             }
         } catch (e: Exception) {
@@ -125,12 +119,10 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
         val response = ""
         try {
             readBody(session)?.let {
-                val req = Gson().fromJson(it, ReqSettings::class.java)
-                if (req.uri != null) {
-                    val uri = Uri.parse(req.uri)
-                    handler.post {
-                        viewModel.parseUri(uri)
-                    }
+                val req = Gson().fromJson(it, ReqSourceAdd::class.java)
+                val uri = Uri.parse(req.uri)
+                handler.post {
+                    viewModel.importFromUri(uri, req.id)
                 }
             }
         } catch (e: IOException) {
@@ -227,8 +219,14 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
                     val req = Gson().fromJson(it, ReqSources::class.java)
                     Log.i(TAG, "req $req")
                     if (req.sourceId.isNotEmpty()) {
-                        viewModel.sources.removeSource(req.sourceId)
+                        val res = viewModel.sources.removeSource(req.sourceId)
+                        if (res) {
+                            Log.i(TAG, "remove source success ${req.sourceId}")
+                        } else {
+                            Log.i(TAG, "remove source failure ${req.sourceId}")
+                        }
                     } else {
+                        Log.i(TAG, "remove source failure, sourceId is empty")
                     }
                 }
             }

@@ -15,6 +15,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.Response
+import okhttp3.ResponseBody
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -92,7 +94,7 @@ object Utils {
             try {
                 HttpClient.okHttpClient.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) return@withContext 0
-                    response.body()?.string()?.toLong() ?: 0
+                    response.bodyAlias()?.string()?.toLong() ?: 0
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -109,7 +111,7 @@ object Utils {
             try {
                 HttpClient.okHttpClient.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) return@withContext UNKNOWN
-                    val string = response.body()?.string()
+                    val string = response.bodyAlias()?.string()
                     val isp = Gson().fromJson(string, IpInfo::class.java).location.isp_domain
                     when (isp) {
                         "ChinaMobile" -> CHINA_MOBILE

@@ -215,8 +215,7 @@ class GroupAdapter(
         this.listener = listener
     }
 
-    fun update(tvGroupModel: TVGroupModel) {
-        this.tvGroupModel = tvGroupModel
+    fun changed() {
         recyclerView.post {
             notifyDataSetChanged()
         }

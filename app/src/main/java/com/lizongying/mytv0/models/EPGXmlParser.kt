@@ -48,6 +48,7 @@ class EPGXmlParser {
                 parser.next()
             }
         }
-        return epg
+
+        return epg.toSortedMap { a, b -> b.compareTo(a) }
     }
 }

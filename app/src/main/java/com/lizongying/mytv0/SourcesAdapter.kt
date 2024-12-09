@@ -9,7 +9,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.marginStart
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.lizongying.mytv0.data.Source
 import com.lizongying.mytv0.databinding.SourcesItemBinding
 import com.lizongying.mytv0.models.Sources
 
@@ -21,11 +20,6 @@ class SourcesAdapter(
 ) :
     RecyclerView.Adapter<SourcesAdapter.ViewHolder>() {
     private var listener: ItemListener? = null
-    private var focused: View? = null
-    private var defaultFocused = false
-    private var defaultFocus: Int = -1
-
-    var visiable = false
 
     val application = context.applicationContext as MyTVApplication
 
@@ -49,60 +43,26 @@ class SourcesAdapter(
         return ViewHolder(context, binding)
     }
 
-    fun update(sources: Sources) {
-        this.sources = sources
-        recyclerView.post {
-            notifyDataSetChanged()
-        }
-    }
-
-    fun clear() {
-        focused?.clearFocus()
-        recyclerView.invalidate()
-    }
-
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         sources.let {
             val source = it.getSource(position)!!
 
             val view = viewHolder.itemView
-
             view.isFocusable = true
             view.isFocusableInTouchMode = true
 
-            viewHolder.check(position == it.checkedValue)
+            viewHolder.checked(source.checked)
 
-            viewHolder.binding.heart.setOnClickListener { _ ->
-                it.setChecked(position)
-                viewHolder.check(true)
+            view.setOnFocusChangeListener { _, hasFocus ->
+                listener?.onItemFocusChange(position, hasFocus)
+
+                viewHolder.focus(hasFocus)
             }
-
-            if (!defaultFocused && position == defaultFocus) {
-                view.requestFocus()
-                defaultFocused = true
-            }
-
-            val onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
-                listener?.onItemFocusChange(source, hasFocus)
-
-                if (hasFocus) {
-                    viewHolder.focus(true)
-                    focused = view
-                    if (visiable) {
-                        if (position != it.focusedValue) {
-                            it.setFocused(position)
-                        }
-                    } else {
-                        visiable = true
-                    }
-                } else {
-                    viewHolder.focus(false)
-                }
-            }
-
-            view.onFocusChangeListener = onFocusChangeListener
 
             view.setOnClickListener { _ ->
+                it.setChecked(position)
+                // ui
+                check(position)
                 listener?.onItemClicked(position)
             }
 
@@ -138,20 +98,12 @@ class SourcesAdapter(
                         }, 0)
                     }
 
-                    if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT
-                        || keyCode == KeyEvent.KEYCODE_DPAD_CENTER
-                        || keyCode == KeyEvent.KEYCODE_ENTER
-                    ) {
-                        it.setChecked(position)
-                        check(position)
-                        listener?.onItemClicked(position)
-                    }
-
-                    return@setOnKeyListener listener?.onKey(this, keyCode) ?: false
+                    return@setOnKeyListener listener?.onKey(keyCode) ?: false
                 }
                 false
             }
 
+            viewHolder.bindNum(String.format("%02d", position))
             viewHolder.bindTitle(source.uri)
         }
     }
@@ -160,6 +112,10 @@ class SourcesAdapter(
 
     class ViewHolder(private val context: Context, val binding: SourcesItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
+        fun bindNum(text: String) {
+            binding.num.text = text
+        }
+
         fun bindTitle(text: String) {
             binding.title.text = text
         }
@@ -174,8 +130,9 @@ class SourcesAdapter(
             }
         }
 
-        fun check(checked: Boolean) {
-            binding.heart.visibility = if (checked) View.VISIBLE else View.GONE
+        // show done icon
+        fun checked(isChecked: Boolean) {
+            binding.heart.visibility = if (isChecked) View.VISIBLE else View.GONE
         }
     }
 
@@ -202,6 +159,12 @@ class SourcesAdapter(
         }
     }
 
+    fun changed() {
+        recyclerView.post {
+            notifyDataSetChanged()
+        }
+    }
+
     fun toPosition(position: Int) {
         recyclerView.post {
             (recyclerView.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(
@@ -217,9 +180,9 @@ class SourcesAdapter(
     }
 
     interface ItemListener {
-        fun onItemFocusChange(source: Source, hasFocus: Boolean)
-        fun onItemClicked(position: Int, tag: String = "sources")
-        fun onKey(listAdapter: SourcesAdapter, keyCode: Int): Boolean
+        fun onItemFocusChange(position: Int, hasFocus: Boolean, tag: String = TAG)
+        fun onItemClicked(position: Int, tag: String = TAG)
+        fun onKey(keyCode: Int, tag: String = TAG): Boolean
     }
 
     fun setItemListener(listener: ItemListener) {
@@ -227,7 +190,7 @@ class SourcesAdapter(
     }
 
     companion object {
-        private const val TAG = "ListAdapter"
+        private const val TAG = "SourcesAdapter"
     }
 }
 
