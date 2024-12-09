@@ -85,6 +85,11 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
     }
 
     private fun getList(): TVListModel? {
+        if (this::viewModel.isInitialized) {
+            Log.e(TAG, "viewModel is not initialized")
+            return null
+        }
+
         // 如果不存在當前組，則切換到收藏組
         if (viewModel.groupModel.getCurrentList() == null) {
             viewModel.groupModel.setPosition(0)
@@ -121,6 +126,11 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
     }
 
     fun updateList(position: Int) {
+        if (this::viewModel.isInitialized) {
+            Log.e(TAG, "viewModel is not initialized")
+            return
+        }
+
         viewModel.groupModel.setPosition(position)
         SP.positionGroup = position
 
@@ -155,6 +165,11 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
     }
 
     override fun onItemClicked(position: Int, type: String) {
+        if (this::viewModel.isInitialized) {
+            Log.e(TAG, "viewModel is not initialized")
+            return
+        }
+
         viewModel.groupModel.setPositionPlaying()
         viewModel.groupModel.getCurrentList()?.let {
             it.setPosition(position)
