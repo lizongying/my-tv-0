@@ -378,7 +378,7 @@ class SettingFragment : Fragment() {
     private fun hideSelf() {
         requireActivity().supportFragmentManager.beginTransaction()
             .hide(this)
-            .commit()
+            .commitAllowingStateLoss()
         (activity as MainActivity).showTime()
     }
 

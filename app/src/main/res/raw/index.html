@@ -62,12 +62,12 @@
             flex-direction: row;
         }
 
-        input[type="text"], textarea {
+        input[type="text"], input[type="number"], textarea {
             flex: 1;
             box-sizing: border-box;
         }
 
-        input[type="text"], input[type="file"], input[type="button"] {
+        input[type="text"], input[type="number"], input[type="file"], input[type="button"] {
             height: 2.6rem;
         }
 
@@ -83,7 +83,7 @@
             margin-top: 10px;
         }
 
-        .history > input[type="text"] {
+        .history > input[type="text"], .history > input[type="number"] {
             color: #EEEEEE;
         }
     </style>
@@ -126,7 +126,7 @@
 <div class="item">
     <label for="channel" id="channel-label">默認播放頻道號，從1開始。0代表默認設置</label>
     <div class="container">
-        <input type="text" id="channel"/>
+        <input type="number" id="channel" min="0" max="99"/>
         <input type="button" id="confirm-channel" value="確認" class="confirm"/>
     </div>
 </div>

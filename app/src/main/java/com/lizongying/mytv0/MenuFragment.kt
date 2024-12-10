@@ -85,7 +85,7 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
     }
 
     private fun getList(): TVListModel? {
-        if (this::viewModel.isInitialized) {
+        if (!this::viewModel.isInitialized) {
             Log.e(TAG, "viewModel is not initialized")
             return null
         }
@@ -100,7 +100,6 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
 
     fun update() {
         view?.post {
-            Log.e(TAG, "changed")
             groupAdapter.changed()
 
             getList()?.let {
@@ -126,7 +125,7 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
     }
 
     fun updateList(position: Int) {
-        if (this::viewModel.isInitialized) {
+        if (!this::viewModel.isInitialized) {
             Log.e(TAG, "viewModel is not initialized")
             return
         }
@@ -142,7 +141,7 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
     private fun hideSelf() {
         requireActivity().supportFragmentManager.beginTransaction()
             .hide(this)
-            .commit()
+            .commitAllowingStateLoss()
     }
 
     override fun onItemFocusChange(listTVModel: TVListModel, hasFocus: Boolean) {
@@ -165,7 +164,7 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
     }
 
     override fun onItemClicked(position: Int, type: String) {
-        if (this::viewModel.isInitialized) {
+        if (!this::viewModel.isInitialized) {
             Log.e(TAG, "viewModel is not initialized")
             return
         }

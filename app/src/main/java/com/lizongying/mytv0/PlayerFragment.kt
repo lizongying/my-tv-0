@@ -112,7 +112,7 @@ class PlayerFragment : Fragment() {
                     }
 
                     override fun onPlayerError(error: PlaybackException) {
-                        Log.i(TAG, "player: ${error.errorCodeName}")
+                        super.onPlayerError(error)
                         tvModel?.setErrInfo(R.string.play_error.getString())
 
                         if (tvModel!!.retryTimes < tvModel!!.retryMaxTimes) {

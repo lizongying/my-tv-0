@@ -10,6 +10,8 @@ import com.google.gson.JsonSyntaxException
 import com.lizongying.mytv0.R
 import com.lizongying.mytv0.SP
 import com.lizongying.mytv0.Utils.getDateFormat
+import com.lizongying.mytv0.bodyAlias
+import com.lizongying.mytv0.codeAlias
 import com.lizongying.mytv0.data.Source
 import com.lizongying.mytv0.data.SourceType
 import com.lizongying.mytv0.data.TV
@@ -125,7 +127,7 @@ class MainViewModel : ViewModel() {
                     val response = HttpClient.okHttpClient.newCall(request).execute()
 
                     if (response.isSuccessful) {
-                        val res = EPGXmlParser().parse(response.body!!.byteStream())
+                        val res = EPGXmlParser().parse(response.bodyAlias()!!.byteStream())
 
                         withContext(Dispatchers.Main) {
                             for (m in listModel) {
@@ -149,7 +151,7 @@ class MainViewModel : ViewModel() {
                         shouldBreak = true
                         Log.i(TAG, "EPG success")
                     } else {
-                        Log.e(TAG, "EPG ${response.code}")
+                        Log.e(TAG, "EPG ${response.codeAlias()}")
                     }
                 }
             } catch (e: Exception) {
@@ -200,14 +202,14 @@ class MainViewModel : ViewModel() {
                     val response = HttpClient.okHttpClient.newCall(request).execute()
 
                     if (response.isSuccessful) {
-                        val str = response.body?.string() ?: ""
+                        val str = response.bodyAlias()?.string() ?: ""
                         withContext(Dispatchers.Main) {
                             tryStr2Channels(str, null, b, id)
                         }
                         err = 0
                         shouldBreak = true
                     } else {
-                        Log.e(TAG, "Request status ${response.code}")
+                        Log.e(TAG, "Request status ${response.codeAlias()}")
                         err = R.string.channel_status_error
                     }
                 }
