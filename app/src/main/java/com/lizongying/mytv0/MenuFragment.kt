@@ -141,7 +141,7 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
     private fun hideSelf() {
         requireActivity().supportFragmentManager.beginTransaction()
             .hide(this)
-            .commit()
+            .commitAllowingStateLoss()
     }
 
     override fun onItemFocusChange(listTVModel: TVListModel, hasFocus: Boolean) {
@@ -243,7 +243,8 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
 //                    listAdapter.focusable(true)
 //                }
 
-                if (viewModel.groupModel.tvGroupValue.size < 2 || viewModel.groupModel.getAllList()?.size() == 0
+                if (viewModel.groupModel.tvGroupValue.size < 2 || viewModel.groupModel.getAllList()
+                        ?.size() == 0
                 ) {
                     R.string.channel_not_exist.showToast()
                     return

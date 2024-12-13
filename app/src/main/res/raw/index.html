@@ -62,12 +62,12 @@
             flex-direction: row;
         }
 
-        input[type="text"], textarea {
+        input[type="text"], input[type="number"], textarea {
             flex: 1;
             box-sizing: border-box;
         }
 
-        input[type="text"], input[type="file"], input[type="button"] {
+        input[type="text"], input[type="number"], input[type="file"], input[type="button"] {
             height: 2.6rem;
         }
 
@@ -75,15 +75,19 @@
             margin-left: .6rem;
         }
 
-        input[readonly] {
+        .source-grey {
             background-color: grey;
+        }
+
+        .source-green {
+            background-color: darkslategray;
         }
 
         .history {
             margin-top: 10px;
         }
 
-        .history > input[type="text"] {
+        .history > input[type="text"], .history > input[type="number"] {
             color: #EEEEEE;
         }
     </style>
@@ -97,8 +101,9 @@
     <label for="uri" id="uri-label">視頻源地址</label>
     <div class="container">
         <input type="text" id="uri"/>
-        <input type="button" id="confirm-uri" value="新增" class="insert"/>
+        <input type="button" id="confirm-uri" value="新增" class="add"/>
     </div>
+    <div id="sources-new"></div>
     <div id="source"></div>
 </div>
 
@@ -126,7 +131,7 @@
 <div class="item">
     <label for="channel" id="channel-label">默認播放頻道號，從1開始。0代表默認設置</label>
     <div class="container">
-        <input type="text" id="channel"/>
+        <input type="number" id="channel" min="0" max="99"/>
         <input type="button" id="confirm-channel" value="確認" class="confirm"/>
     </div>
 </div>
@@ -166,7 +171,7 @@
             proxyLabel: '代理地址',
             confirm: '確認',
             remove: '刪除',
-            insert: '新增',
+            add: '新增',
         },
         SIMPLIFIED_CHINESE: {
             appName: '我的电视·〇',
@@ -179,7 +184,7 @@
             proxyLabel: '代理地址',
             confirm: '确认',
             remove: '删除',
-            insert: '新增',
+            add: '新增',
         }
     };
     const t = (key) => lang['TRADITIONAL_CHINESE'][key];
@@ -191,12 +196,11 @@
     document.querySelector('#channel-label').innerText = t('channelLabel');
     document.querySelector('#epg-label').innerText = t('epgLabel');
     document.querySelector('#proxy-label').innerText = t('proxyLabel');
-    document.querySelector('#confirm-uri').innerText = t('insert');
     document.querySelectorAll('.confirm').forEach(
         i => i.value = t('confirm')
     );
-    document.querySelectorAll('.insert').forEach(
-        i => i.value = t('insert')
+    document.querySelectorAll('.add').forEach(
+        i => i.value = t('add')
     );
 
     const source = document.querySelector('#source');
@@ -225,12 +229,12 @@
         const uri = document.querySelector('#uri').value.trim();
         if (uri.length > 0) {
             const uuid = uuidV4()
-            save('/api/uri', JSON.stringify({
+            save('/api/import-uri', JSON.stringify({
                 id: uuid,
                 uri: uri,
             }))
 
-            let htmlString = `<div class="container history"><input type="text" readonly value="${uri}" /><input type="button" value="删除" class="remove" data-source-id="${uuid}"/></div>`;
+            let htmlString = `<div class="container history"><input type="text" readonly value="${uri}" class="source-grey"/><input type="button" value="删除" class="remove" data-source-id="${uuid}"/></div>`;
             let doc = new DOMParser().parseFromString(htmlString, 'text/html');
             const firstChild = source.firstChild;
             if (firstChild) {
@@ -246,7 +250,7 @@
     document.querySelector('#confirm-plain-text').onclick = () => {
         const content = document.querySelector('#plain-text').value.trim();
         if (content.length > 0) {
-            save('/api/channels', content)
+            save('/api/import-text', content)
         }
     }
 
@@ -297,6 +301,38 @@
         })
     }
 
+    const handleAdd = () => {
+        const addList = document.querySelectorAll('.add');
+        [...addList].forEach(add => {
+            add.value = t('add');
+            add.onclick = () => {
+                const uri = add.dataset.uri.trim();
+                console.log('uri', uri);
+
+                const uuid = uuidV4();
+                save('/api/import-uri', JSON.stringify({
+                    id: uuid,
+                    uri: uri,
+                }));
+
+                add.parentElement.remove();
+
+                let htmlString = `<div class="container history"><input type="text" readonly value="${uri}" class="source-grey"/><input type="button" value="删除" class="remove" data-source-id="${uuid}"/></div>`;
+                let doc = new DOMParser().parseFromString(htmlString, 'text/html');
+                const firstChild = source.firstChild;
+                if (firstChild) {
+                    source.insertBefore(doc.body.firstChild, firstChild);
+                } else {
+                    source.appendChild(doc.body.firstChild);
+                }
+
+                handleRemove();
+
+                document.querySelector('#uri').value = uri;
+            }
+        })
+    }
+
     const uuidV4 = () => {
         return ([1e7] + '-' + 1e3 + '-' + 4e3 + '-' + 8e3 + '-' + 1e11).replace(/[018]/g, c =>
             (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
@@ -314,12 +350,31 @@
         document.querySelector('#proxy').value = json.proxy;
 
         json.history.forEach(v => {
-            let htmlString = `<div class="container history"><input type="text" readonly value="${v.uri}" /><input type="button" value="删除" class="remove" data-source-id="${v.id}"/></div>`;
+            let htmlString = `<div class="container history"><input type="text" readonly value="${v.uri}" class="source-grey"/><input type="button" value="删除" class="remove" data-source-id="${v.id}"/></div>`;
             let doc = new DOMParser().parseFromString(htmlString, 'text/html');
             source.appendChild(doc.body.firstChild);
         })
 
         handleRemove()
+
+        const sources = await fetch('/api/sources');
+        const sourcesText = await sources.text();
+        console.log(sourcesText);
+
+        const histories = json.history.map(v => v.uri)
+
+        const sourcesNew = document.querySelector('#sources-new');
+        sourcesText.trim().split("\n").forEach(v => {
+            if (histories.includes(v)) {
+                return
+            }
+
+            let htmlString = `<div class="container history"><input type="text" readonly value="${v}" class="source-green"/><input type="button" value="增加" class="add" data-uri="${v}"/></div>`;
+            let doc = new DOMParser().parseFromString(htmlString, 'text/html');
+            sourcesNew.appendChild(doc.body.firstChild);
+        })
+
+        handleAdd()
     })()
 </script>
 </html>

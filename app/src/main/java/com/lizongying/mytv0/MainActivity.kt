@@ -123,7 +123,7 @@ class MainActivity : AppCompatActivity() {
                 .hide(errorFragment)
                 .hide(loadingFragment)
                 .hide(timeFragment)
-                .commitNow()
+                .commitNowAllowingStateLoss()
         }
 
         gestureDetector = GestureDetector(this, GestureListener(this))
@@ -215,9 +215,9 @@ class MainActivity : AppCompatActivity() {
 
             Utils.isp.observe(this) {
                 Log.i(TAG, "isp $it")
-//                val id = R.raw.mobile
                 val id = when (it) {
-                    ISP.CHINA_MOBILE -> R.raw.mobile
+//                    ISP.CHINA_MOBILE -> R.raw.mobile
+//                    ISP.IPV6->R.raw.ipv6
                     else -> 0
                 }
 
@@ -473,7 +473,7 @@ class MainActivity : AppCompatActivity() {
 
         supportFragmentManager.beginTransaction()
             .show(fragment)
-            .commitNow()
+            .commitNowAllowingStateLoss()
     }
 
     private fun hideFragment(fragment: Fragment) {
@@ -483,7 +483,7 @@ class MainActivity : AppCompatActivity() {
 
         supportFragmentManager.beginTransaction()
             .hide(fragment)
-            .commitNow()
+            .commitAllowingStateLoss()
     }
 
     fun menuActive() {
@@ -494,7 +494,9 @@ class MainActivity : AppCompatActivity() {
     private val hideMenu = Runnable {
         if (!isFinishing && !supportFragmentManager.isStateSaved) {
             if (!menuFragment.isHidden) {
-                supportFragmentManager.beginTransaction().hide(menuFragment).commit()
+                supportFragmentManager.beginTransaction()
+                    .hide(menuFragment)
+                    .commitAllowingStateLoss()
             }
         }
     }
@@ -510,7 +512,7 @@ class MainActivity : AppCompatActivity() {
                 try {
                     supportFragmentManager.beginTransaction()
                         .hide(settingFragment)
-                        .commitNow()
+                        .commitAllowingStateLoss()
                     showTime()
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -594,20 +596,20 @@ class MainActivity : AppCompatActivity() {
 
         supportFragmentManager.beginTransaction()
             .show(settingFragment)
-            .commit()
+            .commitAllowingStateLoss()
         settingActive()
     }
 
     fun hideMenuFragment() {
         supportFragmentManager.beginTransaction()
             .hide(menuFragment)
-            .commit()
+            .commitAllowingStateLoss()
     }
 
     private fun hideSettingFragment() {
         supportFragmentManager.beginTransaction()
             .hide(settingFragment)
-            .commit()
+            .commitAllowingStateLoss()
         showTime()
     }
 

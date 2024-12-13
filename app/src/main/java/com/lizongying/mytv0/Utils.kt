@@ -15,8 +15,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.Response
-import okhttp3.ResponseBody
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -26,6 +24,7 @@ enum class ISP {
     CHINA_MOBILE,
     CHINA_UNICOM,
     CHINA_TELECOM,
+    IPV6,
 }
 
 data class IpInfo(
