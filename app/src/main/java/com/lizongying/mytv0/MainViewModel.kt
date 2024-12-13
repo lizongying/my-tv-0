@@ -99,7 +99,7 @@ class MainViewModel : ViewModel() {
         cacheChannels = getCache()
 
         if (cacheChannels.isEmpty()) {
-            cacheChannels = context.resources.openRawResource(R.raw.channels).bufferedReader()
+            cacheChannels = context.resources.openRawResource(DEFAULT_CHANNELS_FILE).bufferedReader()
                 .use { it.readText() }
         }
 
@@ -237,7 +237,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun reset(context: Context) {
-        val str = context.resources.openRawResource(R.raw.channels).bufferedReader()
+        val str = context.resources.openRawResource(DEFAULT_CHANNELS_FILE).bufferedReader()
             .use { it.readText() }
 
         try {
@@ -485,5 +485,6 @@ class MainViewModel : ViewModel() {
     companion object {
         private const val TAG = "MainViewModel"
         const val CACHE_FILE_NAME = "channels.txt"
+        val DEFAULT_CHANNELS_FILE = R.raw.channels
     }
 }

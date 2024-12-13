@@ -24,6 +24,7 @@ enum class ISP {
     CHINA_MOBILE,
     CHINA_UNICOM,
     CHINA_TELECOM,
+    IPV6,
 }
 
 data class IpInfo(
