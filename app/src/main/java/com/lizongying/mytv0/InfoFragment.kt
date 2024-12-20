@@ -3,7 +3,6 @@ package com.lizongying.mytv0
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -15,7 +14,7 @@ import androidx.core.view.marginBottom
 import androidx.core.view.marginStart
 import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
-import com.bumptech.glide.Glide
+import com.lizongying.mytv0.Utils.getUrls
 import com.lizongying.mytv0.databinding.InfoBinding
 import com.lizongying.mytv0.models.TVModel
 
@@ -104,18 +103,17 @@ class InfoFragment : Fragment() {
                 val y = height / 2f - (paint.descent() + paint.ascent()) / 2
                 canvas.drawText(text, x, y, paint)
 
-                if (tvModel.tv.logo.isNullOrBlank()) {
-                    Glide.with(this)
-                        .load(BitmapDrawable(context.resources, bitmap))
-//                        .centerInside()
-                        .into(binding.logo)
-                } else {
-                    Glide.with(this)
-                        .load(tvModel.tv.logo)
-//                        .placeholder(BitmapDrawable(context.resources, bitmap))
-                        .error(BitmapDrawable(context.resources, bitmap))
-//                        .centerInside()
-                        .into(binding.logo)
+                val url = tvModel.tv.logo
+                val name = tvModel.tv.name
+                var urls =
+                    getUrls(
+                        "live.fanmingming.com/tv/$name.png"
+                    ) + getUrls("https://raw.githubusercontent.com/fanmingming/live/main/tv/$name.png")
+                if (url.isNotEmpty()) {
+                    urls = (getUrls(url) + urls).distinct()
+                }
+                loadNextUrl(context, binding.logo, bitmap, urls, 0, handler) {
+                    tvModel.tv.logo = urls[it]
                 }
             }
         }

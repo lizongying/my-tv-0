@@ -14,7 +14,7 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:textColor="@color/blur"
-            android:textStyle="bold"
+            android:textStyle="normal"
             android:textSize="14sp"
             tools:text="暂无视频源"
             android:visibility="gone"
