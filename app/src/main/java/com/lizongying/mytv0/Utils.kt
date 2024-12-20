@@ -152,4 +152,27 @@ object Utils {
         // Otherwise, add "http://" to the beginning of the URL
         return "http://${url}"
     }
+
+    fun getUrls(url: String): List<String> {
+        return if (url.startsWith("https://raw.githubusercontent.com") || url.startsWith("https://github.com")) {
+            listOf(
+                "https://gh.llkk.cc/",
+                "https://github.moeyy.xyz/",
+                "https://mirror.ghproxy.com/",
+                "https://ghproxy.cn/",
+                "https://ghproxy.net/",
+                "https://ghproxy.click/",
+                "https://ghproxy.com/",
+                "https://github.moeyy.cn/",
+                "https://gh-proxy.llyke.com/",
+                "https://www.ghproxy.cc/",
+                "https://cf.ghproxy.cc/",
+                "https://ghp.ci/",
+            ).map {
+                "$it$url"
+            }
+        } else {
+            listOf(url)
+        }
+    }
 }

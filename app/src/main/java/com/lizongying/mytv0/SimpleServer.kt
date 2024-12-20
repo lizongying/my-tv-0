@@ -236,6 +236,7 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
                     val req = Gson().fromJson(it, ReqSettings::class.java)
                     if (req.epg != null) {
                         SP.epg = req.epg
+                        viewModel.updateEPG()
                         R.string.default_epg_set_success.showToast()
                     } else {
                         R.string.default_epg_set_failure.showToast()

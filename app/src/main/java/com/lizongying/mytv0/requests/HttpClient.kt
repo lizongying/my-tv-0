@@ -42,12 +42,12 @@ object HttpClient {
             .build().create(ConfigService::class.java)
     }
 
-    private fun enableTls12OnPreLollipop(client: OkHttpClient.Builder): OkHttpClient.Builder {
+    private fun enableTls12OnPreLollipop(builder: OkHttpClient.Builder): OkHttpClient.Builder {
         if (Build.VERSION.SDK_INT < 22) {
             try {
                 val sc = SSLContext.getInstance("TLSv1.2")
 
-                sc.init(null, null, null)
+                sc.init(null, null, java.security.SecureRandom())
 
                 // a more robust version is to pass a custom X509TrustManager
                 // as the second parameter and make checkServerTrusted to accept your server.
@@ -58,29 +58,27 @@ object HttpClient {
                 trustManagerFactory.init(null as KeyStore?)
                 val trustManagers = trustManagerFactory.trustManagers
                 check(!(trustManagers.size != 1 || trustManagers[0] !is X509TrustManager)) {
-                    ("Unexpected default trust managers:"
-                            + trustManagers.contentToString())
+                    ("Unexpected default trust managers: ${trustManagers.contentToString()}")
                 }
                 val trustManager = trustManagers[0] as X509TrustManager
 
-                client.sslSocketFactory(Tls12SocketFactory(sc.socketFactory), trustManager)
-
-                val cs = ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
-                    .tlsVersions(TlsVersion.TLS_1_2)
-                    .build()
-
-                val specs: MutableList<ConnectionSpec> = ArrayList()
-                specs.add(cs)
-                specs.add(ConnectionSpec.COMPATIBLE_TLS)
-                specs.add(ConnectionSpec.CLEARTEXT)
-
-                client.connectionSpecs(specs)
-            } catch (exc: java.lang.Exception) {
-                Log.e("OkHttpTLSCompat", "Error while setting TLS 1.2", exc)
+                builder
+                    .sslSocketFactory(Tls12SocketFactory(sc.socketFactory), trustManager)
+                    .connectionSpecs(
+                        listOf(
+                            ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
+                                .tlsVersions(TlsVersion.TLS_1_2)
+                                .build(),
+                            ConnectionSpec.COMPATIBLE_TLS,
+                            ConnectionSpec.CLEARTEXT
+                        )
+                    )
+            } catch (e: Exception) {
+                Log.e("OkHttpTLSCompat", "Error while setting TLS 1.2", e)
             }
         }
 
-        return client
+        return builder
     }
 
     private fun getUnsafeOkHttpClient(): OkHttpClient {
@@ -105,7 +103,7 @@ object HttpClient {
                 }
             )
 
-            val sslContext = SSLContext.getInstance("SSL")
+            val sslContext = SSLContext.getInstance("TLS")
             sslContext.init(null, trustAllCerts, java.security.SecureRandom())
 
             val builder = OkHttpClient.Builder()

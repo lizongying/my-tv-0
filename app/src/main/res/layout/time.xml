@@ -25,7 +25,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|bottom"
                 android:textColor="@color/white"
-                android:textStyle="bold"
+                android:textStyle="normal"
                 android:textSize="36sp"
                 tools:text="999"
                 android:layout_alignBaseline="@+id/content"/>
@@ -35,7 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|bottom"
                 android:textColor="@color/white"
-                android:textStyle="bold"
+                android:textStyle="normal"
                 android:textSize="30sp"
                 tools:text="12:34:56" />
         </RelativeLayout>

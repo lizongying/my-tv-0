@@ -5,7 +5,8 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.drawable.BitmapDrawable
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -18,7 +19,7 @@ import androidx.core.view.marginStart
 import androidx.core.view.setPadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import com.lizongying.mytv0.Utils.getUrls
 import com.lizongying.mytv0.databinding.ListItemBinding
 import com.lizongying.mytv0.models.TVListModel
 import com.lizongying.mytv0.models.TVModel
@@ -176,7 +177,7 @@ class ListAdapter(
 
             viewHolder.bindTitle(tvModel.tv.title)
 
-            viewHolder.bindImage(tvModel.tv.logo, tvModel.tv.id)
+            viewHolder.bindImage(tvModel.tv.logo, tvModel.tv.id, tvModel.tv.name, tvModel)
         }
     }
 
@@ -184,11 +185,14 @@ class ListAdapter(
 
     class ViewHolder(private val context: Context, val binding: ListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
+
+        val handler = Handler(Looper.getMainLooper())
+
         fun bindTitle(text: String) {
             binding.title.text = text
         }
 
-        fun bindImage(url: String?, id: Int) {
+        fun bindImage(url: String?, id: Int, name: String, tvModel: TVModel) {
             val width = Utils.dpToPx(40)
             val height = Utils.dpToPx(40)
             val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
@@ -204,18 +208,15 @@ class ListAdapter(
             val y = height / 2f - (paint.descent() + paint.ascent()) / 2
             canvas.drawText(text, x, y, paint)
 
-            if (url.isNullOrBlank()) {
-                Glide.with(context)
-                    .load(BitmapDrawable(context.resources, bitmap))
-                    .centerInside()
-                    .into(binding.icon)
-//                binding.imageView.setImageDrawable(null)
-            } else {
-                Glide.with(context)
-                    .load(url)
-                    .centerInside()
-                    .error(BitmapDrawable(context.resources, bitmap))
-                    .into(binding.icon)
+            var urls =
+                getUrls(
+                    "live.fanmingming.com/tv/$name.png"
+                ) + getUrls("https://raw.githubusercontent.com/fanmingming/live/main/tv/$name.png")
+            if (!url.isNullOrEmpty()) {
+                urls = (getUrls(url) + urls).distinct()
+            }
+            loadNextUrl(context, binding.icon, bitmap, urls, 0, handler) {
+                tvModel.tv.logo = urls[it]
             }
         }
 

@@ -1,17 +1,17 @@
 package com.lizongying.mytv0.requests
 
-import android.text.TextUtils
 import okhttp3.Dns
 import java.net.Inet4Address
+import java.net.Inet6Address
 import java.net.InetAddress
 import java.util.concurrent.ConcurrentHashMap
 
 
 class DnsCache : Dns {
-    private val dnsCache: MutableMap<String, List<InetAddress>> = ConcurrentHashMap()
+    private val dnsCache = ConcurrentHashMap<String, List<InetAddress>>()
 
     override fun lookup(hostname: String): List<InetAddress> {
-        if (TextUtils.isEmpty(hostname)) {
+        if (hostname.isEmpty()) {
             return Dns.SYSTEM.lookup(hostname);
         }
 
@@ -19,16 +19,18 @@ class DnsCache : Dns {
             return it
         }
 
-        val addressesNew: MutableList<InetAddress> = ArrayList()
+        val ipv4Addresses = mutableListOf<InetAddress>()
+        val ipv6Addresses = mutableListOf<InetAddress>()
 
-        val addresses = InetAddress.getAllByName(hostname).toList()
-        for (address in addresses) {
+        for (address in InetAddress.getAllByName(hostname)) {
             if (address is Inet4Address) {
-                addressesNew.add(0, address);
-            } else {
-                addressesNew.add(address);
+                ipv4Addresses.add(address)
+            } else if (address is Inet6Address) {
+                ipv6Addresses.add(address)
             }
         }
+
+        val addressesNew = ipv4Addresses + ipv6Addresses
 
         if (addressesNew.isNotEmpty()) {
             dnsCache[hostname] = addressesNew

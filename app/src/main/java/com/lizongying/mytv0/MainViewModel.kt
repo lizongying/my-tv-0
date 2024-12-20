@@ -10,6 +10,7 @@ import com.google.gson.JsonSyntaxException
 import com.lizongying.mytv0.R
 import com.lizongying.mytv0.SP
 import com.lizongying.mytv0.Utils.getDateFormat
+import com.lizongying.mytv0.Utils.getUrls
 import com.lizongying.mytv0.bodyAlias
 import com.lizongying.mytv0.codeAlias
 import com.lizongying.mytv0.data.Source
@@ -39,6 +40,8 @@ class MainViewModel : ViewModel() {
     private var cacheChannels = ""
     private var initialized = false
 
+    private var epgUrl = SP.epg
+
     val sources = Sources()
 
     private val _channelsOk = MutableLiveData<Boolean>()
@@ -55,8 +58,12 @@ class MainViewModel : ViewModel() {
     }
 
     fun updateEPG() {
-        if (!SP.epg.isNullOrEmpty()) {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            var success = false
+            if (!epgUrl.isNullOrEmpty()) {
+                success = updateEPG(epgUrl!!)
+            }
+            if (!success && !SP.epg.isNullOrEmpty()) {
                 updateEPG(SP.epg!!)
             }
         }
@@ -69,9 +76,7 @@ class MainViewModel : ViewModel() {
                     viewModelScope.launch {
                         Log.i(TAG, "updateConfig $it")
                         importFromUrl(it)
-                        SP.epg?.let { i ->
-                            updateEPG(i)
-                        }
+                        updateEPG()
                     }
                 }
             }
@@ -99,8 +104,9 @@ class MainViewModel : ViewModel() {
         cacheChannels = getCache()
 
         if (cacheChannels.isEmpty()) {
-            cacheChannels = context.resources.openRawResource(DEFAULT_CHANNELS_FILE).bufferedReader()
-                .use { it.readText() }
+            cacheChannels =
+                context.resources.openRawResource(DEFAULT_CHANNELS_FILE).bufferedReader()
+                    .use { it.readText() }
         }
 
         Log.i(TAG, "cacheChannels $cacheChannels")
@@ -118,12 +124,15 @@ class MainViewModel : ViewModel() {
         _channelsOk.value = true
     }
 
-    private suspend fun updateEPG(epg: String) {
-        var shouldBreak = false
-        val request = okhttp3.Request.Builder().url(epg).build()
-        for (i in 0..2) {
+    private suspend fun updateEPG(url: String): Boolean {
+        val urls = getUrls(url)
+
+        var success = false
+        for (a in urls) {
+            Log.i(TAG, "request $a")
             try {
                 withContext(Dispatchers.IO) {
+                    val request = okhttp3.Request.Builder().url(a).build()
                     val response = HttpClient.okHttpClient.newCall(request).execute()
 
                     if (response.isSuccessful) {
@@ -136,11 +145,11 @@ class MainViewModel : ViewModel() {
                                     continue
                                 }
 
-                                for ((a, b) in res) {
-                                    if (name.contains(a, ignoreCase = true)) {
-                                        m.setEpg(b)
+                                for ((n, epg) in res) {
+                                    if (name.contains(n, ignoreCase = true)) {
+                                        m.setEpg(epg)
                                         if (m.tv.logo.isEmpty()) {
-                                            m.tv.logo = "https://live.fanmingming.com/tv/$a.png"
+                                            m.tv.logo = "https://live.fanmingming.com/tv/$n.png"
                                         }
                                         break
                                     }
@@ -148,49 +157,31 @@ class MainViewModel : ViewModel() {
                             }
                         }
 
-                        shouldBreak = true
+                        success = true
                         Log.i(TAG, "EPG success")
                     } else {
                         Log.e(TAG, "EPG ${response.codeAlias()}")
                     }
                 }
             } catch (e: Exception) {
-                Log.i(TAG, "EPG request error:", e)
+                Log.i(TAG, "EPG request error: $a", e)
 //            R.string.epg_request_err.showToast()
             }
 
-            if (shouldBreak) {
+            if (success) {
                 break
             }
         }
 
-        if (!shouldBreak) {
+        if (!success) {
 //            R.string.epg_status_err.showToast()
         }
+
+        return success
     }
 
     private suspend fun importFromUrl(url: String, id: String = "") {
-        val urls =
-            if (url.startsWith("https://raw.githubusercontent.com") || url.startsWith("https://github.com")) {
-                listOf(
-                    "https://ghp.ci/",
-                    "https://gh.llkk.cc/",
-                    "https://github.moeyy.xyz/",
-                    "https://mirror.ghproxy.com/",
-                    "https://ghproxy.cn/",
-                    "https://ghproxy.net/",
-                    "https://ghproxy.click/",
-                    "https://ghproxy.com/",
-                    "https://github.moeyy.cn/",
-                    "https://gh-proxy.llyke.com/",
-                    "https://www.ghproxy.cc/",
-                    "https://cf.ghproxy.cc/"
-                ).map {
-                    Pair("$it$url", url)
-                }
-            } else {
-                listOf(Pair(url, url))
-            }
+        val urls = getUrls(url).map { Pair(it, url) }
 
         var err = 0
         var shouldBreak = false
@@ -343,7 +334,7 @@ class MainViewModel : ViewModel() {
                 for ((index, line) in lines.withIndex()) {
                     val trimmedLine = line.trim()
                     if (trimmedLine.startsWith("#EXTM3U")) {
-                        SP.epg = epgRegex.find(trimmedLine)?.groupValues?.get(1)?.trim()
+                        epgUrl = epgRegex.find(trimmedLine)?.groupValues?.get(1)?.trim()
                     } else if (trimmedLine.startsWith("#EXTINF")) {
                         val info = trimmedLine.split(",")
                         val title = info.last().trim()
@@ -380,7 +371,7 @@ class MainViewModel : ViewModel() {
                     val t1 = TV(
                         -1,
                         t0.name,
-                        t0.name,
+                        t0.title,
                         "",
                         t0.logo,
                         "",
