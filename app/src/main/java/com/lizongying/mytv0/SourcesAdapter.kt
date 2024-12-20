@@ -6,7 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.view.marginEnd
 import androidx.core.view.marginStart
+import androidx.core.view.setPadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.lizongying.mytv0.databinding.SourcesItemBinding
@@ -28,18 +30,21 @@ class SourcesAdapter(
         val inflater = LayoutInflater.from(context)
         val binding = SourcesItemBinding.inflate(inflater, parent, false)
 
+        binding.num.layoutParams.width = application.px2Px(binding.num.layoutParams.width)
+        binding.num.layoutParams.height = application.px2Px(binding.num.layoutParams.height)
+        binding.num.textSize = application.px2PxFont(binding.num.textSize)
+
+        binding.title.layoutParams.width = application.px2Px(binding.title.layoutParams.width)
+        binding.title.layoutParams.height = application.px2Px(binding.title.layoutParams.height)
         val layoutParams = binding.title.layoutParams as ViewGroup.MarginLayoutParams
         layoutParams.marginStart = application.px2Px(binding.title.marginStart)
+        layoutParams.marginEnd = application.px2Px(binding.title.marginEnd)
         binding.title.layoutParams = layoutParams
+        binding.title.textSize = application.px2PxFont(binding.title.textSize)
 
         binding.heart.layoutParams.width = application.px2Px(binding.heart.layoutParams.width)
         binding.heart.layoutParams.height = application.px2Px(binding.heart.layoutParams.height)
-
-        binding.title.textSize = application.px2PxFont(binding.title.textSize)
-
-        val layoutParamsHeart = binding.heart.layoutParams as ViewGroup.MarginLayoutParams
-        layoutParamsHeart.marginStart = application.px2Px(binding.heart.marginStart)
-        binding.heart.layoutParams = layoutParamsHeart
+        binding.heart.setPadding(application.px2Px(binding.heart.paddingTop))
 
         return ViewHolder(context, binding)
     }
