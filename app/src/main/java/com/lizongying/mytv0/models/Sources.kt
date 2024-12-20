@@ -51,6 +51,8 @@ class Sources {
 //                Log.i(TAG, "setChecked $position")
 //                setChecked(position)
 //            }
+//
+//            SP.sources = gson.toJson(sources, type) ?: ""
             return true
         }
     }
@@ -111,7 +113,7 @@ class Sources {
         if (!SP.sources.isNullOrEmpty()) {
             try {
                 val sources: List<Source> = gson.fromJson(SP.sources!!, type)
-                setSources(sources)
+                setSources(sources.map { it.apply { checked = false } })
             } catch (e: Exception) {
                 e.printStackTrace()
                 SP.sources = SP.DEFAULT_SOURCES

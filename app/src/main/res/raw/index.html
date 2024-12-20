@@ -302,7 +302,7 @@
     }
 
     const handleAdd = () => {
-        const addList = document.querySelectorAll('.add');
+        const addList = document.querySelectorAll('.new-source');
         [...addList].forEach(add => {
             add.value = t('add');
             add.onclick = () => {
@@ -369,7 +369,7 @@
                 return
             }
 
-            let htmlString = `<div class="container history"><input type="text" readonly value="${v}" class="source-green"/><input type="button" value="增加" class="add" data-uri="${v}"/></div>`;
+            let htmlString = `<div class="container history"><input type="text" readonly value="${v}" class="source-green"/><input type="button" value="新增" class="add new-source" data-uri="${v}"/></div>`;
             let doc = new DOMParser().parseFromString(htmlString, 'text/html');
             sourcesNew.appendChild(doc.body.firstChild);
         })
