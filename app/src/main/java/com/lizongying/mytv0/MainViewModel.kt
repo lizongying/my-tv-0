@@ -398,6 +398,9 @@ class MainViewModel : ViewModel() {
                         if (trimmedLine.contains("#genre#")) {
                             group = trimmedLine.split(',', limit = 2)[0].trim()
                         } else {
+                            if (!trimmedLine.contains(",")) {
+                                continue
+                            }
                             val arr = trimmedLine.split(',').map { it.trim() }
                             val title = arr.first().trim()
                             val uris = arr.drop(1)

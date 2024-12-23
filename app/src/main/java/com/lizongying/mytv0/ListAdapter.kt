@@ -49,20 +49,13 @@ class ListAdapter(
         binding.icon.layoutParams.height = application.px2Px(binding.icon.layoutParams.height)
         binding.icon.setPadding(application.px2Px(binding.icon.paddingTop))
 
-        val layoutParams = binding.title.layoutParams as ViewGroup.MarginLayoutParams
-        layoutParams.marginStart = application.px2Px(binding.title.marginStart)
-        binding.title.layoutParams = layoutParams
+        binding.title.layoutParams.width = application.px2Px(binding.title.layoutParams.width)
+        binding.title.layoutParams.height = application.px2Px(binding.title.layoutParams.height)
+        binding.title.textSize = application.px2PxFont(binding.title.textSize)
 
         binding.heart.layoutParams.width = application.px2Px(binding.heart.layoutParams.width)
         binding.heart.layoutParams.height = application.px2Px(binding.heart.layoutParams.height)
-
-        binding.title.textSize = application.px2PxFont(binding.title.textSize)
-
-        val layoutParamsHeart = binding.heart.layoutParams as ViewGroup.MarginLayoutParams
-        layoutParamsHeart.marginStart = application.px2Px(binding.heart.marginStart)
-        binding.heart.layoutParams = layoutParamsHeart
-
-        binding.description.textSize = application.px2PxFont(binding.description.textSize)
+        binding.heart.setPadding(application.px2Px(binding.heart.paddingTop))
 
         return ViewHolder(context, binding)
     }
@@ -223,16 +216,9 @@ class ListAdapter(
         fun focus(hasFocus: Boolean) {
             if (hasFocus) {
                 binding.title.setTextColor(ContextCompat.getColor(context, R.color.white))
-                binding.description.setTextColor(ContextCompat.getColor(context, R.color.white))
                 binding.root.setBackgroundResource(R.color.focus)
             } else {
                 binding.title.setTextColor(ContextCompat.getColor(context, R.color.title_blur))
-                binding.description.setTextColor(
-                    ContextCompat.getColor(
-                        context,
-                        R.color.description_blur
-                    )
-                )
                 binding.root.setBackgroundResource(R.color.blur)
             }
         }

@@ -23,6 +23,8 @@
             android:paddingHorizontal="10dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/modal_image"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:textColor="@color/title_blur"
             android:textSize="14sp"
             tools:text=""/>

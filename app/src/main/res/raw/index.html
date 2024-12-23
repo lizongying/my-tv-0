@@ -220,7 +220,7 @@
     const read = async (file) => {
         const reader = new FileReader();
         reader.onload = (e) => {
-            save('/api/channels', e.target.result);
+            save('/api/import-text', e.target.result);
         };
         reader.readAsText(file);
     }
