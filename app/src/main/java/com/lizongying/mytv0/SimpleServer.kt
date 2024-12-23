@@ -9,9 +9,9 @@ import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.lizongying.mytv0.Utils.getUrls
+import com.lizongying.mytv0.data.Global.gson
+import com.lizongying.mytv0.data.Global.typeSourceList
 import com.lizongying.mytv0.data.ReqSettings
 import com.lizongying.mytv0.data.ReqSourceAdd
 import com.lizongying.mytv0.data.ReqSources
@@ -30,7 +30,6 @@ import java.nio.charset.StandardCharsets
 class SimpleServer(private val context: Context, private val viewModel: MainViewModel) :
     NanoHTTPD(PORT) {
     private val handler = Handler(Looper.getMainLooper())
-    private val gson = Gson()
 
     init {
         try {
@@ -72,8 +71,7 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
 
             if (!SP.sources.isNullOrEmpty()) {
                 try {
-                    val type = object : TypeToken<List<Source>>() {}.type
-                    val sources: List<Source> = gson.fromJson(SP.sources!!, type)
+                    val sources: List<Source> = gson.fromJson(SP.sources!!, typeSourceList)
                     history = sources.toMutableList()
                 } catch (e: Exception) {
                     e.printStackTrace()

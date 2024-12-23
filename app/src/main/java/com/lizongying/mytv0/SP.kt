@@ -4,8 +4,8 @@ package com.lizongying.mytv0
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.lizongying.mytv0.data.Global.gson
+import com.lizongying.mytv0.data.Global.typeSourceList
 import com.lizongying.mytv0.data.Source
 import io.github.lizongying.Gua
 
@@ -93,11 +93,12 @@ object SP {
             .use {
                 val str = it.readText()
                 if (str.isNotEmpty()) {
-                    DEFAULT_SOURCES = Gson().toJson(Gua().decode(str).trim().split("\n").map { i ->
-                        Source(
-                            uri = i
-                        )
-                    }, object : TypeToken<List<Source>>() {}.type
+                    DEFAULT_SOURCES = gson.toJson(
+                        Gua().decode(str).trim().split("\n").map { i ->
+                            Source(
+                                uri = i
+                            )
+                        }, typeSourceList
                     ) ?: ""
                 }
             }

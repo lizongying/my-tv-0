@@ -5,11 +5,11 @@ import android.util.Log
 import android.util.TypedValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.google.gson.Gson
 import com.lizongying.mytv0.ISP.CHINA_MOBILE
 import com.lizongying.mytv0.ISP.CHINA_TELECOM
 import com.lizongying.mytv0.ISP.CHINA_UNICOM
 import com.lizongying.mytv0.ISP.UNKNOWN
+import com.lizongying.mytv0.data.Global.gson
 import com.lizongying.mytv0.requests.HttpClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -111,7 +111,7 @@ object Utils {
                 HttpClient.okHttpClient.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) return@withContext UNKNOWN
                     val string = response.bodyAlias()?.string()
-                    val isp = Gson().fromJson(string, IpInfo::class.java).location.isp_domain
+                    val isp = gson.fromJson(string, IpInfo::class.java).location.isp_domain
                     when (isp) {
                         "ChinaMobile" -> CHINA_MOBILE
                         "ChinaUnicom" -> CHINA_UNICOM

@@ -13,6 +13,8 @@ import com.lizongying.mytv0.Utils.getDateFormat
 import com.lizongying.mytv0.Utils.getUrls
 import com.lizongying.mytv0.bodyAlias
 import com.lizongying.mytv0.codeAlias
+import com.lizongying.mytv0.data.Global.gson
+import com.lizongying.mytv0.data.Global.typeTvList
 import com.lizongying.mytv0.data.Source
 import com.lizongying.mytv0.data.SourceType
 import com.lizongying.mytv0.data.TV
@@ -312,8 +314,7 @@ class MainViewModel : ViewModel() {
         when (string[0]) {
             '[' -> {
                 try {
-                    val type = object : com.google.gson.reflect.TypeToken<List<TV>>() {}.type
-                    list = com.google.gson.Gson().fromJson(string, type)
+                    list = gson.fromJson(string, typeTvList)
                     Log.i(TAG, "导入频道 ${list.size}")
                 } catch (e: Exception) {
                     Log.i(TAG, "parse error $string")
