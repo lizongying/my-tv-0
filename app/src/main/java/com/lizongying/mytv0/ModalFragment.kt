@@ -46,7 +46,7 @@ class ModalFragment : DialogFragment() {
         val url = arguments?.getString(KEY_URL)
         if (!url.isNullOrEmpty()) {
             val size = Utils.dpToPx(200)
-            val u = "$url?${getDateTimestamp()}"
+            val u = "$url?${getDateTimestamp().toString().reversed()}"
             val img = QrCodeUtil().createQRCodeBitmap(u, size, size)
 
             Glide.with(requireContext())

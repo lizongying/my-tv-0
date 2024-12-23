@@ -14,6 +14,7 @@
             android:background="@color/white"
             android:contentDescription="@string/app_name"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
         <TextView
             android:id="@+id/modal_text"
@@ -22,6 +23,7 @@
             android:background="@color/blur"
             android:paddingHorizontal="10dp"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/modal_image"
             android:maxLines="1"
             android:ellipsize="end"
