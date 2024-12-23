@@ -26,3 +26,7 @@
 
 -dontwarn com.android.org.conscrypt.**
 -dontwarn org.apache.harmony.xnet.provider.jsse.**
+
+-keepattributes Signature, RuntimeVisibleAnnotations, AnnotationDefault
+-keep class com.google.gson.** { *; }
+-keep interface com.google.gson.** { *; }
