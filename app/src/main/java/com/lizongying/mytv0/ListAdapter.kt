@@ -3,7 +3,6 @@ package com.lizongying.mytv0
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.os.Handler
 import android.os.Looper
@@ -15,7 +14,6 @@ import android.view.ViewGroup
 import android.view.ViewGroup.FOCUS_BEFORE_DESCENDANTS
 import android.view.ViewGroup.FOCUS_BLOCK_DESCENDANTS
 import androidx.core.content.ContextCompat
-import androidx.core.view.marginStart
 import androidx.core.view.setPadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,7 +21,6 @@ import com.lizongying.mytv0.Utils.getUrls
 import com.lizongying.mytv0.databinding.ListItemBinding
 import com.lizongying.mytv0.models.TVListModel
 import com.lizongying.mytv0.models.TVModel
-import java.util.Locale
 
 
 class ListAdapter(
@@ -186,20 +183,27 @@ class ListAdapter(
         }
 
         fun bindImage(url: String?, id: Int, name: String, tvModel: TVModel) {
-            val width = Utils.dpToPx(40)
-            val height = Utils.dpToPx(40)
+            val width = 300
+            val height = 180
             val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
             val canvas = Canvas(bitmap)
 
+            val channelNum = id + 1
+            var size = 150f
+            if (channelNum > 99) {
+                size = 100f
+            }
+            if (channelNum > 999) {
+                size = 75f
+            }
             val paint = Paint().apply {
-                color = Color.WHITE
-                textSize = 32f
+                color = ContextCompat.getColor(context, R.color.title_blur)
+                textSize = size
                 textAlign = Paint.Align.CENTER
             }
-            val text = String.format(Locale.getDefault(), "%3d", id + 1)
             val x = width / 2f
             val y = height / 2f - (paint.descent() + paint.ascent()) / 2
-            canvas.drawText(text, x, y, paint)
+            canvas.drawText(channelNum.toString(), x, y, paint)
 
             var urls =
                 getUrls(
