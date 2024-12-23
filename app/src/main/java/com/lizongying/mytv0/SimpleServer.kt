@@ -11,6 +11,7 @@ import android.os.Looper
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.lizongying.mytv0.Utils.getUrls
 import com.lizongying.mytv0.data.ReqSettings
 import com.lizongying.mytv0.data.ReqSourceAdd
 import com.lizongying.mytv0.data.ReqSources
@@ -23,19 +24,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.io.IOException
 import java.nio.charset.StandardCharsets
 
 
 class SimpleServer(private val context: Context, private val viewModel: MainViewModel) :
     NanoHTTPD(PORT) {
     private val handler = Handler(Looper.getMainLooper())
+    private val gson = Gson()
 
     init {
         try {
             start()
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e(TAG, "init", e)
         }
     }
 
@@ -72,7 +73,7 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
             if (!SP.sources.isNullOrEmpty()) {
                 try {
                     val type = object : TypeToken<List<Source>>() {}.type
-                    val sources: List<Source> = Gson().fromJson(SP.sources!!, type)
+                    val sources: List<Source> = gson.fromJson(SP.sources!!, type)
                     history = sources.toMutableList()
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -88,9 +89,9 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
                 epg = SP.epg ?: "",
                 history = history
             )
-            response = Gson().toJson(respSettings) ?: ""
+            response = gson.toJson(respSettings) ?: ""
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e(TAG, "handleSettings", e)
             return newFixedLengthResponse(
                 Response.Status.INTERNAL_ERROR,
                 MIME_PLAINTEXT,
@@ -102,31 +103,11 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
     }
 
     private suspend fun fetchSources(url: String): String {
-        val urls =
-            if (url.startsWith("https://raw.githubusercontent.com") || url.startsWith("https://github.com")) {
-                listOf(
-                    "https://ghp.ci/",
-                    "https://gh.llkk.cc/",
-                    "https://github.moeyy.xyz/",
-                    "https://mirror.ghproxy.com/",
-                    "https://ghproxy.cn/",
-                    "https://ghproxy.net/",
-                    "https://ghproxy.click/",
-                    "https://ghproxy.com/",
-                    "https://github.moeyy.cn/",
-                    "https://gh-proxy.llyke.com/",
-                    "https://www.ghproxy.cc/",
-                    "https://cf.ghproxy.cc/"
-                ).map {
-                    Pair("$it$url", url)
-                }
-            } else {
-                listOf(Pair(url, url))
-            }
+        val urls = getUrls(url)
 
         var sources = ""
         var success = false
-        for ((a, b) in urls) {
+        for (a in urls) {
             Log.i(TAG, "request $a")
             try {
                 withContext(Dispatchers.IO) {
@@ -141,7 +122,6 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
                     }
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
                 Log.e(TAG, "fetchSources", e)
             }
 
@@ -173,7 +153,7 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
                 }
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e(TAG, "handleImportFromText", e)
             return newFixedLengthResponse(
                 Response.Status.INTERNAL_ERROR,
                 MIME_PLAINTEXT,
@@ -188,13 +168,14 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
         val response = ""
         try {
             readBody(session)?.let {
-                val req = Gson().fromJson(it, ReqSourceAdd::class.java)
+                val req = gson.fromJson(it, ReqSourceAdd::class.java)
                 val uri = Uri.parse(req.uri)
                 handler.post {
                     viewModel.importFromUri(uri, req.id)
                 }
             }
-        } catch (e: IOException) {
+        } catch (e: Exception) {
+            Log.e(TAG, "handleImportFromUri", e)
             return newFixedLengthResponse(
                 Response.Status.INTERNAL_ERROR,
                 MIME_PLAINTEXT,
@@ -208,7 +189,7 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
         try {
             readBody(session)?.let {
                 handler.post {
-                    val req = Gson().fromJson(it, ReqSettings::class.java)
+                    val req = gson.fromJson(it, ReqSettings::class.java)
                     if (req.proxy != null) {
                         SP.proxy = req.proxy
                         R.string.default_proxy_set_success.showToast()
@@ -218,7 +199,7 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
                 }
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e(TAG, "handleProxy", e)
             return newFixedLengthResponse(
                 Response.Status.INTERNAL_ERROR,
                 MIME_PLAINTEXT,
@@ -233,7 +214,7 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
         try {
             readBody(session)?.let {
                 handler.post {
-                    val req = Gson().fromJson(it, ReqSettings::class.java)
+                    val req = gson.fromJson(it, ReqSettings::class.java)
                     if (req.epg != null) {
                         SP.epg = req.epg
                         viewModel.updateEPG()
@@ -244,7 +225,7 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
                 }
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e(TAG, "handleEPG", e)
             return newFixedLengthResponse(
                 Response.Status.INTERNAL_ERROR,
                 MIME_PLAINTEXT,
@@ -261,7 +242,7 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
         try {
             readBody(session)?.let {
                 handler.post {
-                    val req = Gson().fromJson(it, ReqSettings::class.java)
+                    val req = gson.fromJson(it, ReqSettings::class.java)
                     if (req.channel != null && req.channel > -1) {
                         SP.channel = req.channel
                         R.string.default_channel_set_success.showToast()
@@ -271,7 +252,7 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
                 }
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e(TAG, "handleDefaultChannel", e)
             return newFixedLengthResponse(
                 Response.Status.INTERNAL_ERROR,
                 MIME_PLAINTEXT,
@@ -286,7 +267,7 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
         try {
             readBody(session)?.let {
                 handler.post {
-                    val req = Gson().fromJson(it, ReqSources::class.java)
+                    val req = gson.fromJson(it, ReqSources::class.java)
                     Log.i(TAG, "req $req")
                     if (req.sourceId.isNotEmpty()) {
                         val res = viewModel.sources.removeSource(req.sourceId)
@@ -301,7 +282,7 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
                 }
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e(TAG, "handleRemoveSource", e)
             return newFixedLengthResponse(
                 Response.Status.INTERNAL_ERROR,
                 MIME_PLAINTEXT,

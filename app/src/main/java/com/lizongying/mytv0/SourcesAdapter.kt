@@ -35,10 +35,6 @@ class SourcesAdapter(
 
         binding.title.layoutParams.width = application.px2Px(binding.title.layoutParams.width)
         binding.title.layoutParams.height = application.px2Px(binding.title.layoutParams.height)
-        val layoutParams = binding.title.layoutParams as ViewGroup.MarginLayoutParams
-        layoutParams.marginStart = application.px2Px(binding.title.marginStart)
-        layoutParams.marginEnd = application.px2Px(binding.title.marginEnd)
-        binding.title.layoutParams = layoutParams
         binding.title.textSize = application.px2PxFont(binding.title.textSize)
 
         binding.heart.layoutParams.width = application.px2Px(binding.heart.layoutParams.width)

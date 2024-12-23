@@ -65,12 +65,17 @@ class Sources {
     fun addSource(source: Source) {
         val index = sourcesValue.indexOfFirst { it.uri == source.uri }
         if (index == -1) {
+            setSourceChecked(checkedValue, false)
+
             _sources.value = sourcesValue.toMutableList().apply {
                 add(0, source)
             }
+
+            _checked.value = 0
+            setSourceChecked(checkedValue, true)
             SP.sources = gson.toJson(sourcesValue, type) ?: ""
 
-            _added.value = Pair(sourcesValue.size - 1, version)
+            _changed.value = version
             version++
         }
     }
