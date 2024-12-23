@@ -28,6 +28,10 @@ class ModalFragment : DialogFragment() {
         dialog?.window?.apply {
             addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
             decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+
+            setBackgroundDrawableResource(android.R.color.transparent)
+
+            setLayout(binding.modalImage.layoutParams.width, WindowManager.LayoutParams.WRAP_CONTENT)
         }
     }
 

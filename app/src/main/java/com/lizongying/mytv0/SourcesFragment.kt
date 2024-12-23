@@ -28,7 +28,12 @@ class SourcesFragment : DialogFragment(), SourcesAdapter.ItemListener {
         super.onStart()
         dialog?.window?.apply {
             addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-            decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+            decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+                    View.SYSTEM_UI_FLAG_FULLSCREEN
+
+            setBackgroundDrawableResource(android.R.color.transparent)
+
+            setLayout(binding.list.layoutParams.width, WindowManager.LayoutParams.WRAP_CONTENT)
         }
     }
 

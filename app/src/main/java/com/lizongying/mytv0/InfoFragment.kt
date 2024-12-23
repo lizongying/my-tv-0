@@ -84,15 +84,18 @@ class InfoFragment : Fragment() {
 
         when (tvModel.tv.title) {
             else -> {
-                val width = Utils.dpToPx(100)
-                val height = Utils.dpToPx(60)
+                val width = 300
+                val height = 180
                 val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
                 val canvas = Canvas(bitmap)
 
-                val text = "${tvModel.tv.id + 1}"
-                var size = 100f
-                if (tvModel.tv.id > 999) {
-                    size = 90f
+                val channelNum = tvModel.tv.id + 1
+                var size = 150f
+                if (channelNum > 99) {
+                    size = 100f
+                }
+                if (channelNum > 999) {
+                    size = 75f
                 }
                 val paint = Paint().apply {
                     color = ContextCompat.getColor(context, R.color.title_blur)
@@ -101,7 +104,7 @@ class InfoFragment : Fragment() {
                 }
                 val x = width / 2f
                 val y = height / 2f - (paint.descent() + paint.ascent()) / 2
-                canvas.drawText(text, x, y, paint)
+                canvas.drawText(channelNum.toString(), x, y, paint)
 
                 val url = tvModel.tv.logo
                 val name = tvModel.tv.name
