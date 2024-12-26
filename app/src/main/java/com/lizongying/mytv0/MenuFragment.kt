@@ -81,7 +81,6 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
         binding.menu.setOnClickListener {
             hideSelf()
         }
-        (activity as MainActivity).ready(TAG)
     }
 
     private fun getList(): TVListModel? {
@@ -175,7 +174,10 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
             it.setPositionPlaying()
             it.getCurrent()?.setReady()
         }
-        (activity as MainActivity).hideMenuFragment()
+
+        requireActivity().supportFragmentManager.beginTransaction()
+            .hide(this)
+            .commitAllowingStateLoss()
     }
 
     override fun onKey(keyCode: Int): Boolean {

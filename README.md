@@ -92,7 +92,7 @@ adb install my-tv-0.apk
 
 ## 讚賞
 
-![image](./screenshots/appreciate.jpeg)
+![image](./screenshots/appreciate.png)
 
 ## 感謝
 

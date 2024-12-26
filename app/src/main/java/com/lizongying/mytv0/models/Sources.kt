@@ -3,14 +3,12 @@ package com.lizongying.mytv0.models
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.lizongying.mytv0.SP
+import com.lizongying.mytv0.data.Global.gson
+import com.lizongying.mytv0.data.Global.typeSourceList
 import com.lizongying.mytv0.data.Source
 
 class Sources {
-    private val type = object : TypeToken<List<Source>>() {}.type
-    private val gson = Gson()
     var version = 0
 
     private val _removed = MutableLiveData<Pair<Int, Int>>()
@@ -59,7 +57,7 @@ class Sources {
 
     private fun setSources(sources: List<Source>) {
         _sources.value = sources
-        SP.sources = gson.toJson(sources, type) ?: ""
+        SP.sources = gson.toJson(sources, typeSourceList) ?: ""
     }
 
     fun addSource(source: Source) {
@@ -73,7 +71,7 @@ class Sources {
 
             _checked.value = 0
             setSourceChecked(checkedValue, true)
-            SP.sources = gson.toJson(sourcesValue, type) ?: ""
+            SP.sources = gson.toJson(sourcesValue, typeSourceList) ?: ""
 
             _changed.value = version
             version++
@@ -91,7 +89,7 @@ class Sources {
             _sources.value = sourcesValue.toMutableList().apply {
                 removeAt(index)
             }
-            SP.sources = gson.toJson(sourcesValue, type) ?: ""
+            SP.sources = gson.toJson(sourcesValue, typeSourceList) ?: ""
 
             _removed.value = Pair(index, version)
             version++
@@ -117,7 +115,7 @@ class Sources {
     fun init() {
         if (!SP.sources.isNullOrEmpty()) {
             try {
-                val sources: List<Source> = gson.fromJson(SP.sources!!, type)
+                val sources: List<Source> = gson.fromJson(SP.sources!!, typeSourceList)
                 setSources(sources.map { it.apply { checked = false } })
             } catch (e: Exception) {
                 e.printStackTrace()

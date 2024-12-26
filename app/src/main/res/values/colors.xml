@@ -3,11 +3,11 @@
     <color name="blur">#FF263238</color>
     <color name="black">#000</color>
     <color name="white">#FFF</color>
+    <color name="red">#F00</color>
     <color name="title_blur">#FFEEEEEE</color>
     <color name="description_blur">#B3EEEEEE</color>
-    <color name="track_checked_color">#400096A6</color>
-    <color name="track_unchecked_color">#B3EEEEEE</color>
-    <color name="thumb_checked_color">#0096A6</color>
-    <color name="thumb_unchecked_color">#B3EEEEEE</color>
-    <color name="heart">#FF0000</color>
+    <color name="track_checked">#400096A6</color>
+    <color name="track_unchecked">#B3EEEEEE</color>
+    <color name="thumb_checked">#0096A6</color>
+    <color name="thumb_unchecked">#FFEEEEEE</color>
 </resources>

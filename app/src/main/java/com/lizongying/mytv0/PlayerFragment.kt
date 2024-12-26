@@ -1,12 +1,15 @@
 package com.lizongying.mytv0
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import androidx.annotation.OptIn
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.PlaybackException
@@ -32,6 +35,9 @@ class PlayerFragment : Fragment() {
 
     private var tvModel: TVModel? = null
     private val aspectRatio = 16f / 9f
+
+    private val handler = Handler(Looper.myLooper()!!)
+    private val delayHideVolume = 2 * 1000L
 
     private lateinit var mainActivity: MainActivity
 
@@ -188,7 +194,7 @@ class PlayerFragment : Fragment() {
                 requiresTunnelingDecoder
             )
             if (mimeType == MimeTypes.VIDEO_H265 && !requiresSecureDecoder && !requiresTunnelingDecoder) {
-                if (infos.size > 0) {
+                if (infos.isNotEmpty()) {
                     val infosNew = infos.find { it.name == "c2.android.hevc.decoder" }
                         ?.let { mutableListOf(it) }
                     if (infosNew != null) {
@@ -198,6 +204,46 @@ class PlayerFragment : Fragment() {
             }
             return infos
         }
+    }
+
+    fun showVolume(visibility: Int) {
+        binding.icon.visibility = visibility
+        binding.volume.visibility = visibility
+        hideVolume()
+    }
+
+    fun setVolumeMax(volume: Int) {
+        binding.volume.max = volume
+    }
+
+    fun setVolume(progress: Int, volume: Boolean = false) {
+        val context = requireContext()
+        binding.volume.progress = progress
+        binding.icon.setImageDrawable(
+            ContextCompat.getDrawable(
+                context,
+                if (volume) {
+                    if (progress > 0) R.drawable.volume_up_24px else R.drawable.volume_off_24px
+                } else {
+                    R.drawable.light_mode_24px
+                }
+            )
+        )
+    }
+
+    fun hideVolume() {
+        handler.removeCallbacks(hideVolumeRunnable)
+        handler.postDelayed(hideVolumeRunnable, delayHideVolume)
+    }
+
+    fun hideVolumeNow() {
+        handler.removeCallbacks(hideVolumeRunnable)
+        handler.postDelayed(hideVolumeRunnable, 0)
+    }
+
+    private val hideVolumeRunnable = Runnable {
+        binding.icon.visibility = View.GONE
+        binding.volume.visibility = View.GONE
     }
 
     override fun onStart() {
