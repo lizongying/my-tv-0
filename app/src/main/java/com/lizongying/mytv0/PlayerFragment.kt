@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import androidx.annotation.OptIn
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -39,117 +38,117 @@ class PlayerFragment : Fragment() {
     private val handler = Handler(Looper.myLooper()!!)
     private val delayHideVolume = 2 * 1000L
 
-    private lateinit var mainActivity: MainActivity
-
-    @Deprecated("Deprecated in Java")
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        mainActivity = activity as MainActivity
-        super.onActivityCreated(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = PlayerBinding.inflate(inflater, container, false)
-        val playerView = _binding!!.playerView
+        return binding.root
+    }
 
-        playerView.viewTreeObserver?.addOnGlobalLayoutListener(object :
-            ViewTreeObserver.OnGlobalLayoutListener {
-            @OptIn(UnstableApi::class)
-            override fun onGlobalLayout() {
-                playerView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        updatePlayer()
+        (activity as MainActivity).ready(TAG)
+    }
 
-                val renderersFactory = context?.let { DefaultRenderersFactory(it) }
-                val playerMediaCodecSelector = PlayerMediaCodecSelector()
-                renderersFactory?.setMediaCodecSelector(playerMediaCodecSelector)
-                renderersFactory?.setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
+    @OptIn(UnstableApi::class)
+    fun updatePlayer() {
+        val playerView = binding.playerView
 
-                player = context?.let {
-                    ExoPlayer.Builder(it)
-                        .setRenderersFactory(renderersFactory!!)
-                        .build()
+        val renderersFactory = context?.let { DefaultRenderersFactory(it) }
+        val playerMediaCodecSelector = PlayerMediaCodecSelector()
+        renderersFactory?.setMediaCodecSelector(playerMediaCodecSelector)
+        renderersFactory?.setExtensionRendererMode(
+            if (SP.softDecode) DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER else DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF
+        )
+
+        if (player != null) {
+            player?.release()
+        }
+
+        player = context?.let {
+            ExoPlayer.Builder(it)
+                .setRenderersFactory(renderersFactory!!)
+                .build()
+        }
+        player?.repeatMode = REPEAT_MODE_ALL
+        player?.playWhenReady = true
+        player?.addListener(object : Player.Listener {
+            override fun onVideoSizeChanged(videoSize: VideoSize) {
+                val ratio = playerView.measuredWidth.div(playerView.measuredHeight)
+                val layoutParams = playerView.layoutParams
+                if (ratio < aspectRatio) {
+                    layoutParams?.height =
+                        (playerView.measuredWidth.div(aspectRatio)).toInt()
+                    playerView.layoutParams = layoutParams
+                } else if (ratio > aspectRatio) {
+                    layoutParams?.width =
+                        (playerView.measuredHeight.times(aspectRatio)).toInt()
+                    playerView.layoutParams = layoutParams
                 }
-                playerView.player = player
-                player?.repeatMode = REPEAT_MODE_ALL
-                player?.playWhenReady = true
-                player?.addListener(object : Player.Listener {
-                    override fun onVideoSizeChanged(videoSize: VideoSize) {
-                        val ratio = playerView.measuredWidth.div(playerView.measuredHeight)
-                        val layoutParams = playerView.layoutParams
-                        if (ratio < aspectRatio) {
-                            layoutParams?.height =
-                                (playerView.measuredWidth.div(aspectRatio)).toInt()
-                            playerView.layoutParams = layoutParams
-                        } else if (ratio > aspectRatio) {
-                            layoutParams?.width =
-                                (playerView.measuredHeight.times(aspectRatio)).toInt()
-                            playerView.layoutParams = layoutParams
-                        }
-                    }
+            }
 
-                    override fun onIsPlayingChanged(isPlaying: Boolean) {
-                        super.onIsPlayingChanged(isPlaying)
-                        if (isPlaying) {
-                            tvModel?.confirmSourceType()
-                            tvModel?.setErrInfo("")
-                            tvModel!!.retryTimes = 0
-                        } else {
-                            Log.i(TAG, "${tvModel?.tv?.title} 播放停止")
+            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                super.onIsPlayingChanged(isPlaying)
+                if (isPlaying) {
+                    tvModel?.confirmSourceType()
+                    tvModel?.setErrInfo("")
+                    tvModel!!.retryTimes = 0
+                } else {
+                    Log.i(TAG, "${tvModel?.tv?.title} 播放停止")
 //                                tvModel?.setErrInfo("播放停止")
-                        }
+                }
+            }
+
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                Log.d(TAG, "playbackState $playbackState")
+                super.onPlaybackStateChanged(playbackState)
+            }
+
+
+            override fun onPositionDiscontinuity(
+                oldPosition: Player.PositionInfo,
+                newPosition: Player.PositionInfo,
+                reason: Int
+            ) {
+                if (reason == DISCONTINUITY_REASON_AUTO_TRANSITION) {
+                    (activity as MainActivity).onPlayEnd()
+                }
+                super.onPositionDiscontinuity(oldPosition, newPosition, reason)
+            }
+
+            override fun onPlayerError(error: PlaybackException) {
+                super.onPlayerError(error)
+                tvModel?.setErrInfo(R.string.play_error.getString())
+
+                if (tvModel!!.retryTimes < tvModel!!.retryMaxTimes) {
+                    var last = true
+                    if (tvModel?.getSourceTypeDefault() == SourceType.UNKNOWN) {
+                        last = tvModel!!.nextSourceType()
                     }
-
-                    override fun onPlaybackStateChanged(playbackState: Int) {
-                        Log.d(TAG, "playbackState $playbackState")
-                        super.onPlaybackStateChanged(playbackState)
+                    tvModel?.setReady()
+                    if (last) {
+                        tvModel!!.retryTimes++
                     }
-
-
-                    override fun onPositionDiscontinuity(
-                        oldPosition: Player.PositionInfo,
-                        newPosition: Player.PositionInfo,
-                        reason: Int
-                    ) {
-                        if (reason == DISCONTINUITY_REASON_AUTO_TRANSITION) {
-                            mainActivity.onPlayEnd()
-                        }
-                        super.onPositionDiscontinuity(oldPosition, newPosition, reason)
+                    Log.i(
+                        TAG,
+                        "retry ${tvModel!!.videoIndex.value} ${tvModel!!.getSourceTypeCurrent()} ${tvModel!!.retryTimes}/${tvModel!!.retryMaxTimes}"
+                    )
+                } else {
+                    if (!tvModel!!.isLastVideo()) {
+                        tvModel!!.nextVideo()
+                        tvModel?.setReady()
+                        tvModel!!.retryTimes = 0
                     }
-
-                    override fun onPlayerError(error: PlaybackException) {
-                        super.onPlayerError(error)
-                        tvModel?.setErrInfo(R.string.play_error.getString())
-
-                        if (tvModel!!.retryTimes < tvModel!!.retryMaxTimes) {
-                            var last = true
-                            if (tvModel?.getSourceTypeDefault() == SourceType.UNKNOWN) {
-                                last = tvModel!!.nextSourceType()
-                            }
-                            tvModel?.setReady()
-                            if (last) {
-                                tvModel!!.retryTimes++
-                            }
-                            Log.i(
-                                TAG,
-                                "retry ${tvModel!!.videoIndex.value} ${tvModel!!.getSourceTypeCurrent()} ${tvModel!!.retryTimes}/${tvModel!!.retryMaxTimes}"
-                            )
-                        } else {
-                            if (!tvModel!!.isLastVideo()) {
-                                tvModel!!.nextVideo()
-                                tvModel?.setReady()
-                                tvModel!!.retryTimes = 0
-                            }
-                        }
-                    }
-                })
-
-                (activity as MainActivity).ready(TAG)
-                Log.i(TAG, "player ready")
+                }
             }
         })
 
-        return _binding!!.root
+        playerView.player = player
+        if (tvModel != null) {
+            play(tvModel!!)
+        }
     }
 
     @OptIn(UnstableApi::class)
@@ -246,10 +245,9 @@ class PlayerFragment : Fragment() {
         binding.volume.visibility = View.GONE
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onResume() {
+        super.onResume()
         if (player?.isPlaying == false) {
-            Log.i(TAG, "replay")
             player?.prepare()
             player?.play()
         }

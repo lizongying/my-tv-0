@@ -537,6 +537,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun switchSoftDecode() {
+        if (!playerFragment.isAdded || playerFragment.isHidden) {
+            return
+        }
+
+        playerFragment.updatePlayer()
+    }
+
     fun settingActive() {
         handler.removeCallbacks(hideSetting)
         handler.postDelayed(hideSetting, delayHideSetting)

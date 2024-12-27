@@ -65,7 +65,7 @@
             android:orientation="horizontal"
             >
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/qrcode"
+                android:id="@+id/remote_settings"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:background="@color/description_blur"
@@ -234,6 +234,17 @@
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switch_display_seconds"
             android:text="@string/display_seconds"
+            android:textColor="@color/title_blur"
+            android:textSize="14sp"
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:thumbTint="@color/switch_thumb_color"
+            app:trackTint="@color/switch_track_color"
+            />
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switch_soft_decode"
+            android:text="@string/soft_decode"
             android:textColor="@color/title_blur"
             android:textSize="14sp"
             android:layout_marginTop="5dp"
