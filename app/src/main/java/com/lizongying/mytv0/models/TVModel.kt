@@ -43,8 +43,8 @@ class TVModel(var tv: TV) : ViewModel() {
 
     var listIndex = 0
 
-    private var sourceTypeList: MutableList<SourceType> =
-        mutableListOf(
+    private var sourceTypeList: List<SourceType> =
+        listOf(
             SourceType.UNKNOWN,
         )
     private var sourceTypeIndex = 0
@@ -69,17 +69,18 @@ class TVModel(var tv: TV) : ViewModel() {
     val program: LiveData<MutableList<Program>>
         get() = _program
 
+    private val _videoIndex = MutableLiveData<Int>()
+    val videoIndex: LiveData<Int>
+        get() = _videoIndex
+    val videoIndexValue: Int
+        get() = _videoIndex.value ?: 0
+
     fun getVideoUrl(): String? {
-        if (_videoIndex.value == null || tv.uris.isEmpty()) {
+        if (videoIndexValue >= tv.uris.size) {
             return null
         }
 
-        if (videoIndex.value!! >= tv.uris.size) {
-            return null
-        }
-
-        val index = min(max(_videoIndex.value!!, 0), tv.uris.size - 1)
-        return tv.uris[index]
+        return tv.uris[videoIndexValue]
     }
 
     private val _like = MutableLiveData<Boolean>()
@@ -94,13 +95,17 @@ class TVModel(var tv: TV) : ViewModel() {
     val ready: LiveData<Boolean>
         get() = _ready
 
-    fun setReady() {
+    fun setReady(retry: Boolean = false) {
+        if (!retry) {
+            setErrInfo("")
+            retryTimes = 0
+
+            _videoIndex.value = max(0, min(tv.uris.size - 1, tv.videoIndex))
+            sourceTypeIndex =
+                max(0, min(sourceTypeList.size - 1, sourceTypeList.indexOf(tv.sourceType)))
+        }
         _ready.value = true
     }
-
-    private val _videoIndex = MutableLiveData<Int>()
-    val videoIndex: LiveData<Int>
-        get() = _videoIndex
 
     private var userAgent = ""
 
@@ -133,19 +138,18 @@ class TVModel(var tv: TV) : ViewModel() {
 
             _httpDataSource = defaultHttpDataSource
 
-            if (path.lowercase().endsWith(".m3u8")) {
-                sourceTypeList[0] = SourceType.HLS
+            sourceTypeList = if (path.lowercase().endsWith(".m3u8")) {
+                listOf(SourceType.HLS)
             } else if (path.lowercase().endsWith(".mpd")) {
-                sourceTypeList[0] = SourceType.DASH
+                listOf(SourceType.DASH)
             } else if (scheme.lowercase() == "rtsp") {
-                sourceTypeList[0] = SourceType.RTSP
+                listOf(SourceType.RTSP)
             } else if (scheme.lowercase() == "rtmp") {
-                sourceTypeList[0] = SourceType.RTMP
+                listOf(SourceType.RTMP)
             } else if (scheme.lowercase() == "rtp") {
-                sourceTypeList[0] = SourceType.RTP
+                listOf(SourceType.RTP)
             } else {
-                sourceTypeList[0] = SourceType.HLS
-                sourceTypeList.add(SourceType.PROGRESSIVE)
+                listOf(SourceType.HLS, SourceType.PROGRESSIVE)
             }
 
             MediaItem.fromUri(it)
@@ -158,7 +162,7 @@ class TVModel(var tv: TV) : ViewModel() {
     }
 
     fun getSourceTypeCurrent(): SourceType {
-        sourceTypeIndex = min(max(0, sourceTypeIndex), sourceTypeList.size - 1)
+        sourceTypeIndex = max(0, min(sourceTypeList.size - 1, sourceTypeIndex))
         return sourceTypeList[sourceTypeIndex]
     }
 
@@ -171,6 +175,10 @@ class TVModel(var tv: TV) : ViewModel() {
     fun confirmSourceType() {
         // TODO save default sourceType
         tv.sourceType = getSourceTypeCurrent()
+    }
+
+    fun confirmVideoIndex() {
+        tv.videoIndex = videoIndexValue
     }
 
     @OptIn(UnstableApi::class)
@@ -214,7 +222,7 @@ class TVModel(var tv: TV) : ViewModel() {
     }
 
     fun isLastVideo(): Boolean {
-        return _videoIndex.value!! == tv.uris.size - 1
+        return videoIndexValue == tv.uris.size - 1
     }
 
     fun nextVideo(): Boolean {
@@ -222,11 +230,12 @@ class TVModel(var tv: TV) : ViewModel() {
             return false
         }
 
-        _videoIndex.value = (_videoIndex.value!! + 1) % tv.uris.size
-        sourceTypeList = mutableListOf(
+        _videoIndex.value = (videoIndexValue + 1) % tv.uris.size
+        sourceTypeList = listOf(
             SourceType.UNKNOWN,
         )
-        return _videoIndex.value!! == tv.uris.size - 1
+
+        return isLastVideo()
     }
 
     fun update(t: TV) {
@@ -234,7 +243,7 @@ class TVModel(var tv: TV) : ViewModel() {
     }
 
     init {
-        _videoIndex.value = min(0, tv.uris.size - 1)
+        _videoIndex.value = max(0, min(tv.uris.size - 1, tv.videoIndex))
         _like.value = SP.getLike(tv.id)
         _program.value = mutableListOf()
     }
