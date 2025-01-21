@@ -193,7 +193,6 @@ class MainActivity : AppCompatActivity() {
             }
 
             Utils.isp.observe(this) {
-                Log.i(TAG, "isp $it")
                 val id = when (it) {
 //                    ISP.CHINA_MOBILE -> R.raw.mobile
 //                    ISP.IPV6->R.raw.ipv6

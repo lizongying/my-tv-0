@@ -102,6 +102,8 @@ class SourcesFragment : DialogFragment(), SourcesAdapter.ItemListener {
                 viewModel.importFromUri(uri)
             }
         }
+
+        handler.postDelayed(hideFragment, 0)
     }
 
     override fun onKey(keyCode: Int, tag: String): Boolean {

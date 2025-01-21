@@ -72,16 +72,16 @@ object Utils {
                     between = System.currentTimeMillis() - currentTimeMillis
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e(TAG, "init", e)
             }
 
-            try {
-                withContext(Dispatchers.Main) {
-                    _isp.value = getISP()
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+//            try {
+//                withContext(Dispatchers.Main) {
+//                    _isp.value = getISP()
+//                }
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//            }
         }
     }
 
@@ -96,7 +96,7 @@ object Utils {
                     response.bodyAlias()?.string()?.toLong() ?: 0
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e(TAG, "getTimestampFromServer", e)
                 0
             }
         }
@@ -120,7 +120,7 @@ object Utils {
                     }
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e(TAG, "getISP", e)
                 UNKNOWN
             }
         }

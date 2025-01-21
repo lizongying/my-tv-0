@@ -9,6 +9,7 @@ import android.os.Looper
 import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.FOCUS_BEFORE_DESCENDANTS
@@ -34,7 +35,7 @@ class ListAdapter(
     private var defaultFocused = false
     private var defaultFocus: Int = -1
 
-    var visiable = false
+    var visible = false
 
     val application = context.applicationContext as MyTVApplication
 
@@ -105,12 +106,12 @@ class ListAdapter(
                 if (hasFocus) {
                     viewHolder.focus(true)
                     focused = view
-                    if (visiable) {
+                    if (visible) {
                         if (position != it.positionValue) {
                             it.setPosition(position)
                         }
                     } else {
-                        visiable = true
+                        visible = true
                     }
                 } else {
                     viewHolder.focus(false)
@@ -122,6 +123,25 @@ class ListAdapter(
             view.setOnClickListener { _ ->
                 listener?.onItemClicked(position)
             }
+
+            view.setOnTouchListener(object : View.OnTouchListener {
+                override fun onTouch(
+                    v: View?,
+                    event: MotionEvent?
+                ): Boolean {
+                    v ?: return false
+                    event ?: return false
+
+                    when (event.action) {
+                        MotionEvent.ACTION_UP -> {
+                            v.performClick()
+                            return true
+                        }
+                    }
+
+                    return false
+                }
+            })
 
             view.setOnKeyListener { _, keyCode, event: KeyEvent? ->
                 if (event?.action == KeyEvent.ACTION_DOWN) {

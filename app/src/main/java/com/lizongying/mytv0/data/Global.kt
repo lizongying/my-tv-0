@@ -9,4 +9,6 @@ object Global {
     val typeTvList = object : TypeToken<List<TV>>() {}.type
 
     val typeSourceList = object : TypeToken<List<Source>>() {}.type
+
+    val typeEPGMap = object : TypeToken<Map<String, List<EPG>>>() {}.type
 }

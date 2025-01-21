@@ -9,7 +9,6 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -75,12 +74,18 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
         } else {
             listWidth
         }
-        listAdapter.focusable(false)
         listAdapter.setItemListener(this)
 
         binding.menu.setOnClickListener {
             hideSelf()
         }
+
+//        groupAdapter.focusable(false)
+
+        groupAdapter.focusable(true)
+        listAdapter.focusable(true)
+
+        onVisible()
     }
 
     private fun getList(): TVListModel? {
@@ -157,9 +162,10 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
     }
 
     override fun onItemClicked(position: Int) {
-//        Log.i(TAG, "onItemClicked ${tvModel.tv.id} ${tvModel.tv.title}")
-//        TVList.setPosition(tvModel.tv.id)
-//        (activity as MainActivity).hideMenuFragment()
+        if (!this::viewModel.isInitialized) {
+            Log.e(TAG, "viewModel is not initialized")
+            return
+        }
     }
 
     override fun onItemClicked(position: Int, type: String) {
@@ -187,9 +193,10 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
                     R.string.channel_not_exist.showToast()
                     return true
                 }
-                binding.group.visibility = GONE
-                groupAdapter.focusable(false)
-                listAdapter.focusable(true)
+
+//                binding.group.visibility = GONE
+//                groupAdapter.focusable(false)
+//                listAdapter.focusable(true)
 
                 if (viewModel.groupModel.positionPlayingValue == viewModel.groupModel.positionValue) {
                     viewModel.groupModel.getCurrentList()?.let {
@@ -201,11 +208,6 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
 
                 return true
             }
-
-            KeyEvent.KEYCODE_DPAD_LEFT -> {
-//                (activity as MainActivity).hideMenuFragment()
-                return true
-            }
         }
         return false
     }
@@ -213,76 +215,49 @@ class MenuFragment : Fragment(), GroupAdapter.ItemListener, ListAdapter.ItemList
     override fun onKey(listAdapter: ListAdapter, keyCode: Int): Boolean {
         when (keyCode) {
             KeyEvent.KEYCODE_DPAD_LEFT -> {
-                binding.group.visibility = VISIBLE
-                groupAdapter.focusable(true)
-                listAdapter.focusable(false)
+//                binding.group.visibility = VISIBLE
+//                groupAdapter.focusable(true)
+//                listAdapter.focusable(false)
                 listAdapter.clear()
                 groupAdapter.scrollToPositionAndSelect(viewModel.groupModel.positionValue)
                 return true
             }
-//            KeyEvent.KEYCODE_DPAD_RIGHT -> {
-//                binding.group.visibility = VISIBLE
-//                groupAdapter.focusable(true)
-//                listAdapter.focusable(false)
-//                listAdapter.clear()
-//                Log.i(TAG, "group toPosition on left")
-//                groupAdapter.toPosition(TVList.groupModel.positionValue)
-//                return true
-//            }
         }
         return false
+    }
+
+    fun onVisible() {
+        if (viewModel.groupModel.tvGroupValue.size < 2 || viewModel.groupModel.getAllList()
+                ?.size() == 0
+        ) {
+            R.string.channel_not_exist.showToast()
+            return
+        }
+
+        val position = viewModel.groupModel.positionPlayingValue
+        if (position != viewModel.groupModel.positionValue
+        ) {
+            updateList(position)
+        }
+        viewModel.groupModel.getCurrentList()?.let {
+            listAdapter.toPosition(it.positionPlayingValue)
+        }
+
+        (activity as MainActivity).menuActive()
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         if (!hidden) {
-            if (binding.list.isVisible) {
-//                if (binding.group.isVisible) {
-//                    groupAdapter.focusable(true)
-//                    listAdapter.focusable(false)
-//                } else {
-//                    groupAdapter.focusable(false)
-//                    listAdapter.focusable(true)
-//                }
-
-                if (viewModel.groupModel.tvGroupValue.size < 2 || viewModel.groupModel.getAllList()
-                        ?.size() == 0
-                ) {
-                    R.string.channel_not_exist.showToast()
-                    return
-                }
-
-                val position = viewModel.groupModel.positionPlayingValue
-                if (position != viewModel.groupModel.positionValue
-                ) {
-                    updateList(position)
-                }
-                viewModel.groupModel.getCurrentList()?.let {
-                    listAdapter.toPosition(it.positionPlayingValue)
-                }
-            }
-            if (binding.group.isVisible) {
-//                groupAdapter.focusable(true)
-//                listAdapter.focusable(false)
-
-                val position = viewModel.groupModel.positionPlayingValue
-                if (position >= viewModel.groupModel.tvGroupValue.size) {
-                    viewModel.groupModel.setPositionPlaying(viewModel.groupModel.defaultPosition())
-                }
-                Log.i(
-                    TAG,
-                    "group position ${viewModel.groupModel.positionPlayingValue}/${viewModel.groupModel.tvGroupValue.size - 1}"
-                )
-                if (viewModel.groupModel.positionPlayingValue != viewModel.groupModel.positionValue) {
-                    viewModel.groupModel.setPosition(position)
-                }
-                groupAdapter.scrollToPositionAndSelect(position)
-            }
-            (activity as MainActivity).menuActive()
+            onVisible()
         } else {
             view?.post {
-                groupAdapter.visiable = false
-                listAdapter.visiable = false
+//                binding.group.visibility = GONE
+//                groupAdapter.focusable(false)
+//                listAdapter.focusable(true)
+
+                groupAdapter.visible = false
+                listAdapter.visible = false
             }
         }
     }
