@@ -2,6 +2,7 @@ package com.lizongying.mytv0
 
 import MainViewModel
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,9 +10,8 @@ import androidx.core.view.marginEnd
 import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.lizongying.mytv0.databinding.TimeBinding
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -55,12 +55,29 @@ class TimeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
+
+        job = viewLifecycleOwner.lifecycleScope.launch {
+            while (isActive) {
+                binding.content.text = viewModel.getTime()
+                delay(delay)
+            }
+        }
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         if (!hidden) {
-            job = CoroutineScope(Dispatchers.Main).launch {
+            if (_binding == null) {
+                Log.w(TAG, "_binding is null")
+                return
+            }
+
+            if (!this::viewModel.isInitialized) {
+                Log.w(TAG, "viewModel is not initialized")
+                return
+            }
+
+            job = viewLifecycleOwner.lifecycleScope.launch {
                 while (isActive) {
                     binding.content.text = viewModel.getTime()
                     delay(delay)
@@ -68,6 +85,7 @@ class TimeFragment : Fragment() {
             }
         } else {
             job?.cancel()
+            job = null
         }
     }
 
@@ -75,6 +93,7 @@ class TimeFragment : Fragment() {
         super.onDestroyView()
         _binding = null
         job?.cancel()
+        job = null
     }
 
     companion object {

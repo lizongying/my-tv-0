@@ -15,7 +15,6 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -23,6 +22,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import java.util.Locale
+import kotlin.math.abs
 
 
 class MainActivity : AppCompatActivity() {
@@ -48,6 +48,8 @@ class MainActivity : AppCompatActivity() {
     private var server: SimpleServer? = null
 
     private lateinit var viewModel: MainViewModel
+
+    private var isSafeToPerformFragmentTransactions = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -111,28 +113,10 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                 .add(R.id.main_browse_fragment, playerFragment)
-                .add(R.id.main_browse_fragment, errorFragment)
-                .add(R.id.main_browse_fragment, loadingFragment)
-                .add(R.id.main_browse_fragment, timeFragment)
                 .add(R.id.main_browse_fragment, infoFragment)
                 .add(R.id.main_browse_fragment, channelFragment)
-                .add(R.id.main_browse_fragment, menuFragment)
-                .add(R.id.main_browse_fragment, settingFragment)
-                .hide(menuFragment)
-                .hide(settingFragment)
-                .hide(errorFragment)
-                .hide(loadingFragment)
-                .hide(timeFragment)
                 .commitNowAllowingStateLoss()
         }
-
-        gestureDetector = GestureDetector(this, GestureListener(this))
-
-        showTime()
-    }
-
-    fun update() {
-        menuFragment.update()
     }
 
     fun updateMenuSize() {
@@ -142,8 +126,11 @@ class MainActivity : AppCompatActivity() {
     fun ready(tag: String) {
         Log.i(TAG, "ready $tag")
         ok++
-        if (ok == 5) {
+        if (ok == 2) {
             Log.i(TAG, "all ready")
+
+            gestureDetector = GestureDetector(this, GestureListener(this))
+
             viewModel.groupModel.change.observe(this) { _ ->
                 Log.i(TAG, "group changed")
                 if (viewModel.groupModel.tvGroup.value != null) {
@@ -214,7 +201,6 @@ class MainActivity : AppCompatActivity() {
             }
 
             Utils.isp.observe(this) {
-                Log.i(TAG, "isp $it")
                 val id = when (it) {
 //                    ISP.CHINA_MOBILE -> R.raw.mobile
 //                    ISP.IPV6->R.raw.ipv6
@@ -305,7 +291,20 @@ class MainActivity : AppCompatActivity() {
     private inner class GestureListener(private val context: Context) :
         GestureDetector.SimpleOnGestureListener() {
 
-        private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        private var screenWidth = windowManager.defaultDisplay.width
+        private var screenHeight = windowManager.defaultDisplay.height
+        private val audioManager = context.getSystemService(AUDIO_SERVICE) as AudioManager
+
+        private var maxVolume = 0
+
+        init {
+            maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+        }
+
+        override fun onDown(e: MotionEvent): Boolean {
+            playerFragment.hideVolumeNow()
+            return true
+        }
 
         override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
             showFragment(menuFragment)
@@ -327,16 +326,18 @@ class MainActivity : AppCompatActivity() {
             velocityX: Float,
             velocityY: Float
         ): Boolean {
-            if ((e1?.x ?: 0f) > windowManager.defaultDisplay.width / 3
-                && (e1?.x ?: 0f) < windowManager.defaultDisplay.width * 2 / 3
-            ) {
+            val oldX = e1?.rawX ?: 0f
+            val oldY = e1?.rawY ?: 0f
+            val newX = e2.rawX
+            val newY = e2.rawY
+            if (oldX > screenWidth / 3 && oldX < screenWidth * 2 / 3 && abs(newX - oldX) < abs(newY - oldY)) {
                 if (velocityY > 0) {
-                    if (menuFragment.isHidden && settingFragment.isHidden) {
+                    if ((!menuFragment.isAdded || menuFragment.isHidden) && (!settingFragment.isAdded || settingFragment.isHidden)) {
                         prev()
                     }
                 }
                 if (velocityY < 0) {
-                    if (menuFragment.isHidden && settingFragment.isHidden) {
+                    if ((!menuFragment.isAdded || menuFragment.isHidden) && (!settingFragment.isAdded || settingFragment.isHidden)) {
                         next()
                     }
                 }
@@ -345,57 +346,84 @@ class MainActivity : AppCompatActivity() {
             return super.onFling(e1, e2, velocityX, velocityY)
         }
 
-//        override fun onScroll(
-//            e1: MotionEvent?,
-//            e2: MotionEvent,
-//            distanceX: Float,
-//            distanceY: Float
-//        ): Boolean {
-//            val deltaY = e1?.y?.let { e2.y.minus(it) } ?: 0f
-//            val deltaX = e1?.x?.let { e2.x.minus(it) } ?: 0f
-//
-//            if (abs(deltaY) > abs(deltaX)) {
-//                if ((e1?.x ?: 0f) > windowManager.defaultDisplay.width * 2 / 3) {
-//                    adjustVolume(deltaY)
-//                }
-//            }
-//
-//            return super.onScroll(e1, e2, distanceX, distanceY)
-//        }
+        private var lastScrollTime: Long = 0
+        private var decayFactor: Float = 1.0f
 
-        private fun adjustVolume(deltaY: Float) {
-            val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-            val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-            val deltaVolume = deltaY / 1000 * maxVolume / windowManager.defaultDisplay.height
+        override fun onScroll(
+            e1: MotionEvent?,
+            e2: MotionEvent,
+            distanceX: Float,
+            distanceY: Float
+        ): Boolean {
+            val oldX = e1?.rawX ?: 0f
+            val oldY = e1?.rawY ?: 0f
+            val newX = e2.rawX
+            val newY = e2.rawY
 
-            var newVolume = currentVolume + deltaVolume
-            if (newVolume < 0) {
-                newVolume = 0F
-            } else if (newVolume > maxVolume) {
-                newVolume = maxVolume.toFloat()
+            if (oldX < screenWidth / 3) {
+                val currentTime = System.currentTimeMillis()
+                val deltaTime = currentTime - lastScrollTime
+                lastScrollTime = currentTime
+
+                decayFactor =
+                    0.01f.coerceAtLeast(decayFactor - 0.03f * deltaTime)
+                val delta =
+                    ((oldY - newY) * decayFactor * 0.2 / screenHeight).toFloat()
+                adjustBrightness(delta)
+                decayFactor = 1.0f
+                return super.onScroll(e1, e2, distanceX, distanceY)
             }
 
-            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, newVolume.toInt(), 0)
+            if (oldX > screenWidth * 2 / 3 && abs(distanceY) > abs(distanceX)) {
+                val currentTime = System.currentTimeMillis()
+                val deltaTime = currentTime - lastScrollTime
+                lastScrollTime = currentTime
 
-            // 可以添加一个toast来显示当前音量
-            Toast.makeText(context, "Volume: $newVolume / $maxVolume", Toast.LENGTH_SHORT).show()
+                decayFactor =
+                    0.01f.coerceAtLeast(decayFactor - 0.03f * deltaTime)
+                val delta =
+                    ((oldY - newY) * maxVolume * decayFactor * 0.2 / screenHeight).toInt()
+                adjustVolume(delta)
+                decayFactor = 1.0f
+                return super.onScroll(e1, e2, distanceX, distanceY)
+            }
+
+            return super.onScroll(e1, e2, distanceX, distanceY)
         }
 
-//        private fun changeBrightness(deltaBrightness: Float) {
-//            brightness += deltaBrightness
-//            if (brightness < 0) {
-//                brightness = 0f
-//            } else if (brightness > 1) {
-//                brightness = 1f
-//            }
-//
-//            val layoutParams = windowManager.attributes
-//            layoutParams.screenBrightness = brightness
-//            windowManager.attributes = layoutParams
-//
-//            // 可以添加一个toast来显示当前亮度
-//            Toast.makeText(context, "Brightness: $brightness", Toast.LENGTH_SHORT).show()
-//        }
+        private fun adjustVolume(deltaVolume: Int) {
+            val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+
+            var newVolume = currentVolume + deltaVolume
+
+            if (newVolume < 0) {
+                newVolume = 0
+            } else if (newVolume > maxVolume) {
+                newVolume = maxVolume
+            }
+
+            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, newVolume, 0)
+
+            playerFragment.setVolumeMax(maxVolume * 100)
+            playerFragment.setVolume(newVolume.toInt() * 100, true)
+            playerFragment.showVolume(View.VISIBLE)
+        }
+
+        private fun adjustBrightness(deltaBrightness: Float) {
+            var brightness = window.attributes.screenBrightness
+
+            brightness += deltaBrightness
+            brightness = 0.1f.coerceAtLeast(0.9f.coerceAtMost(brightness))
+
+            val attributes = window.attributes.apply {
+                screenBrightness = brightness
+            }
+            window.attributes = attributes
+
+            playerFragment.setVolumeMax(100)
+            playerFragment.setVolume((brightness * 100).toInt())
+            playerFragment.showVolume(View.VISIBLE)
+        }
     }
 
     fun onPlayEnd() {
@@ -467,17 +495,32 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showFragment(fragment: Fragment) {
+        if (!isSafeToPerformFragmentTransactions) {
+            return
+        }
+
+        if (!fragment.isAdded) {
+            supportFragmentManager.beginTransaction()
+                .add(R.id.main_browse_fragment, fragment)
+                .commitAllowingStateLoss()
+            return
+        }
+
         if (!fragment.isHidden) {
             return
         }
 
         supportFragmentManager.beginTransaction()
             .show(fragment)
-            .commitNowAllowingStateLoss()
+            .commitAllowingStateLoss()
     }
 
     private fun hideFragment(fragment: Fragment) {
-        if (fragment.isHidden) {
+        if (!isSafeToPerformFragmentTransactions) {
+            return
+        }
+
+        if (!fragment.isAdded || fragment.isHidden) {
             return
         }
 
@@ -501,27 +544,25 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun switchSoftDecode() {
+        if (!playerFragment.isAdded || playerFragment.isHidden) {
+            return
+        }
+
+        playerFragment.updatePlayer()
+    }
+
     fun settingActive() {
         handler.removeCallbacks(hideSetting)
         handler.postDelayed(hideSetting, delayHideSetting)
     }
 
     private val hideSetting = Runnable {
-        if (!isFinishing && !isDestroyed && !supportFragmentManager.isDestroyed) {
-            if (settingFragment.isAdded && !settingFragment.isHidden) {
-                try {
-                    supportFragmentManager.beginTransaction()
-                        .hide(settingFragment)
-                        .commitAllowingStateLoss()
-                    showTime()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
-        }
+        hideFragment(settingFragment)
+        addTimeFragment()
     }
 
-    fun showTime() {
+    fun addTimeFragment() {
         if (SP.time) {
             showFragment(timeFragment)
         } else {
@@ -546,7 +587,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun channelUp() {
-        if (menuFragment.isHidden && settingFragment.isHidden) {
+        if ((!menuFragment.isAdded || menuFragment.isHidden) && (!settingFragment.isAdded || settingFragment.isHidden)) {
             if (SP.channelReversal) {
                 next()
                 return
@@ -556,7 +597,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun channelDown() {
-        if (menuFragment.isHidden && settingFragment.isHidden) {
+        if ((!menuFragment.isAdded || menuFragment.isHidden) && (!settingFragment.isAdded || settingFragment.isHidden)) {
             if (SP.channelReversal) {
                 prev()
                 return
@@ -566,13 +607,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun back() {
-        if (!menuFragment.isHidden) {
-            hideMenuFragment()
+        if (menuFragment.isAdded && !menuFragment.isHidden) {
+            hideFragment(menuFragment)
             return
         }
 
-        if (!settingFragment.isHidden) {
-            hideSettingFragment()
+        if (settingFragment.isAdded && !settingFragment.isHidden) {
+            hideFragment(settingFragment)
+            addTimeFragment()
             return
         }
 
@@ -590,27 +632,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showSetting() {
-        if (!menuFragment.isHidden) {
+        if (menuFragment.isAdded && !menuFragment.isHidden) {
             return
         }
 
-        supportFragmentManager.beginTransaction()
-            .show(settingFragment)
-            .commitAllowingStateLoss()
+        showFragment(settingFragment)
+
         settingActive()
-    }
-
-    fun hideMenuFragment() {
-        supportFragmentManager.beginTransaction()
-            .hide(menuFragment)
-            .commitAllowingStateLoss()
-    }
-
-    private fun hideSettingFragment() {
-        supportFragmentManager.beginTransaction()
-            .hide(settingFragment)
-            .commitAllowingStateLoss()
-        showTime()
     }
 
     fun onKey(keyCode: Int): Boolean {
@@ -726,7 +754,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             KeyEvent.KEYCODE_DPAD_LEFT -> {
-                if (settingFragment.isHidden) {
+                if (!settingFragment.isAdded || settingFragment.isHidden) {
                     showFragment(menuFragment)
                 }
             }
@@ -745,6 +773,20 @@ class MainActivity : AppCompatActivity() {
         }
 
         return super.onKeyDown(keyCode, event)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        isSafeToPerformFragmentTransactions = true
+
+        addTimeFragment()
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        isSafeToPerformFragmentTransactions = false
     }
 
     override fun onDestroy() {

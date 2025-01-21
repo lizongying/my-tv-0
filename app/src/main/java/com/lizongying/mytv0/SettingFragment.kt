@@ -116,7 +116,15 @@ class SettingFragment : Fragment() {
         val switchDisplaySeconds = _binding?.switchDisplaySeconds
         switchDisplaySeconds?.isChecked = SP.displaySeconds
 
-        binding.qrcode.setOnClickListener {
+        val switchSoftDecode = _binding?.switchSoftDecode
+        switchSoftDecode?.isChecked = SP.softDecode
+        switchSoftDecode?.setOnCheckedChangeListener { _, isChecked ->
+            SP.softDecode = isChecked
+            mainActivity.switchSoftDecode()
+            mainActivity.settingActive()
+        }
+
+        binding.remoteSettings.setOnClickListener {
             val imageModalFragment = ModalFragment()
             val args = Bundle()
             args.putString(KEY_URL, server)
@@ -186,7 +194,7 @@ class SettingFragment : Fragment() {
         binding.versionName.textSize = txtTextSize
 
         for (i in listOf(
-            binding.qrcode,
+            binding.remoteSettings,
             binding.confirmConfig,
             binding.clear,
             binding.checkVersion,
@@ -245,6 +253,7 @@ class SettingFragment : Fragment() {
             binding.switchShowAllChannels,
             binding.switchCompactMenu,
             binding.switchDisplaySeconds,
+            binding.switchSoftDecode,
         )) {
             i.textSize = textSizeSwitch
             i.layoutParams = layoutParamsSwitch
@@ -297,6 +306,9 @@ class SettingFragment : Fragment() {
             SP.configAutoLoad = SP.DEFAULT_CONFIG_AUTO_LOAD
             SP.proxy = SP.DEFAULT_PROXY
 
+            // TODO update player
+            SP.softDecode = SP.DEFAULT_SOFT_DECODE
+
             SP.configUrl = SP.DEFAULT_CONFIG_URL
             Log.i(TAG, "config url: ${SP.configUrl}")
             context.deleteFile(CACHE_FILE_NAME)
@@ -344,6 +356,8 @@ class SettingFragment : Fragment() {
 
             mainActivity.settingActive()
         }
+
+        binding.remoteSettings.requestFocus()
     }
 
     private fun confirmConfig() {
@@ -379,13 +393,13 @@ class SettingFragment : Fragment() {
         requireActivity().supportFragmentManager.beginTransaction()
             .hide(this)
             .commitAllowingStateLoss()
-        (activity as MainActivity).showTime()
+        (activity as MainActivity).addTimeFragment()
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         if (_binding != null && !hidden) {
-            binding.qrcode.requestFocus()
+            binding.remoteSettings.requestFocus()
         }
     }
 

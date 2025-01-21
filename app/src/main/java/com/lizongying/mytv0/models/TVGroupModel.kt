@@ -1,5 +1,6 @@
 package com.lizongying.mytv0.models
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -207,11 +208,12 @@ class TVGroupModel : ViewModel() {
 
     fun initPosition() {
         setPosition(defaultPosition())
-        setPositionPlaying(defaultPosition())
+        setPositionPlaying()
     }
 
     init {
-        _position.value = SP.positionGroup
+        setPosition(SP.positionGroup)
+        setPositionPlaying()
         isInLikeMode = SP.defaultLike && positionValue == 0
     }
 

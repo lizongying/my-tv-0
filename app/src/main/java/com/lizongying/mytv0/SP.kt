@@ -58,6 +58,8 @@ object SP {
 
     private const val KEY_SOURCES = "sources"
 
+    private const val KEY_SOFT_DECODE = "soft_decode"
+
     const val DEFAULT_CHANNEL_REVERSAL = false
     const val DEFAULT_CONFIG_URL = ""
     const val DEFAULT_CHANNEL_NUM = false
@@ -70,6 +72,7 @@ object SP {
     const val DEFAULT_COMPACT_MENU = true
     const val DEFAULT_DISPLAY_SECONDS = true
     const val DEFAULT_LOG_TIMES = 10
+    const val DEFAULT_SOFT_DECODE = false
 
     // 0 favorite; 1 all
     const val DEFAULT_POSITION_GROUP = 1
@@ -168,6 +171,10 @@ object SP {
     var displaySeconds: Boolean
         get() = sp.getBoolean(KEY_DISPLAY_SECONDS, DEFAULT_DISPLAY_SECONDS)
         set(value) = sp.edit().putBoolean(KEY_DISPLAY_SECONDS, value).apply()
+
+    var softDecode: Boolean
+        get() = sp.getBoolean(KEY_SOFT_DECODE, DEFAULT_SOFT_DECODE)
+        set(value) = sp.edit().putBoolean(KEY_SOFT_DECODE, value).apply()
 
     fun getLike(id: Int): Boolean {
         val stringSet = sp.getStringSet(KEY_LIKE, emptySet())

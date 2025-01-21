@@ -3,6 +3,7 @@ package com.lizongying.mytv0
 import android.content.Context
 import android.view.KeyEvent
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.lizongying.mytv0.databinding.SourcesItemBinding
 import com.lizongying.mytv0.models.Sources
+import java.util.Locale
 
 
 class SourcesAdapter(
@@ -66,6 +68,25 @@ class SourcesAdapter(
                 check(position)
                 listener?.onItemClicked(position)
             }
+
+            view.setOnTouchListener(object : View.OnTouchListener {
+                override fun onTouch(
+                    v: View?,
+                    event: MotionEvent?
+                ): Boolean {
+                    v ?: return false
+                    event ?: return false
+
+                    when (event.action) {
+                        MotionEvent.ACTION_UP -> {
+                            v.performClick()
+                            return true
+                        }
+                    }
+
+                    return false
+                }
+            })
 
             view.setOnKeyListener { _, keyCode, event: KeyEvent? ->
                 if (event?.action == KeyEvent.ACTION_DOWN) {

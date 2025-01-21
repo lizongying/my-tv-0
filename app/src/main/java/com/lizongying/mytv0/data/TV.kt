@@ -10,6 +10,7 @@ data class TV(
     var logo: String = "",
     var image: String? = null,
     var uris: List<String>,
+    var videoIndex: Int = 0,
     var headers: Map<String, String>? = null,
     var group: String = "",
     var sourceType: SourceType = SourceType.UNKNOWN,

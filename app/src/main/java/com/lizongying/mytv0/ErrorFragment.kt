@@ -35,7 +35,6 @@ class ErrorFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (activity as MainActivity).ready(TAG)
     }
 
     fun setMsg(msg: String) {

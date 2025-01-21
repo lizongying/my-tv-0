@@ -28,7 +28,7 @@ class GroupAdapter(
     private var defaultFocused = false
     private var defaultFocus: Int = -1
 
-    var visiable = false
+    var visible = false
 
     private var first = true
 
@@ -80,16 +80,24 @@ class GroupAdapter(
             if (hasFocus) {
                 viewHolder.focus(true)
                 focused = view
-                if (visiable) {
 
-                    // "position" should not be used here, as the "list" may have been filtered out.
-                    val p = listTVModel.getGroupIndex()
-                    if (p != tvGroupModel.positionValue) {
-                        tvGroupModel.setPosition(p)
-                    }
-                } else {
-                    visiable = true
+                val p = listTVModel.getGroupIndex()
+                if (p != tvGroupModel.positionValue) {
+                    tvGroupModel.setPosition(p)
                 }
+
+//                if (visible) {
+//
+//                    // "position" should not be used here, as the "list" may have been filtered out.
+//                    val p = listTVModel.getGroupIndex()
+//                    Log.e(TAG, "group getGroupIndex $p")
+//                    Log.e(TAG, "group positionValue ${tvGroupModel.positionValue}")
+//                    if (p != tvGroupModel.positionValue) {
+//                        tvGroupModel.setPosition(p)
+//                    }
+//                } else {
+//                    visible = true
+//                }
             } else {
                 viewHolder.focus(false)
             }

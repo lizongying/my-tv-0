@@ -51,4 +51,5 @@
     <string name="compact_menu">紧凑的菜单</string>
     <string name="display_seconds">时间显示秒</string>
     <string name="no_video_source">暂无视频源</string>
+    <string name="soft_decode">软解</string>
 </resources>

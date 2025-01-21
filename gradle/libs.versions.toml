@@ -17,7 +17,7 @@ constraintlayout = "2.1.4"
 serialization = "1.6.3"
 coroutines = "1.8.1"
 
-android-gradle-plugin = "8.3.2"
+android-gradle-plugin = "8.7.3"
 kotlin-android = "2.0.0"
 appcompat = "1.6.1" #api17+: 1.6.1
 

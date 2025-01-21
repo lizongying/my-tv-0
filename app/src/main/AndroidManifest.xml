@@ -12,7 +12,8 @@
         android:networkSecurityConfig="@xml/network"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyTV0"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        android:enableOnBackInvokedCallback="false">
         <activity
             android:name=".MainActivity"
             android:exported="true"
