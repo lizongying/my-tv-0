@@ -87,10 +87,11 @@ object Utils {
 
     private suspend fun getTimestampFromServer(): Long {
         return withContext(Dispatchers.IO) {
-            val request = okhttp3.Request.Builder()
-                .url("https://ip.ddnspod.com/timestamp")
-                .build()
             try {
+                val request = okhttp3.Request.Builder()
+                    .url("https://ip.ddnspod.com/timestamp")
+                    .build()
+
                 HttpClient.okHttpClient.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) return@withContext 0
                     response.bodyAlias()?.string()?.toLong() ?: 0
@@ -104,10 +105,11 @@ object Utils {
 
     private suspend fun getISP(): ISP {
         return withContext(Dispatchers.IO) {
-            val request = okhttp3.Request.Builder()
-                .url("https://api.myip.la/json")
-                .build()
             try {
+                val request = okhttp3.Request.Builder()
+                    .url("https://api.myip.la/json")
+                    .build()
+
                 HttpClient.okHttpClient.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) return@withContext UNKNOWN
                     val string = response.bodyAlias()?.string()

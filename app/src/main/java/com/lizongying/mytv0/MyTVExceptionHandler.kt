@@ -58,11 +58,12 @@ class MyTVExceptionHandler(val context: Context) : Thread.UncaughtExceptionHandl
 
     private suspend fun saveLog(crashInfo: String) {
         withContext(Dispatchers.IO) {
-            val request = okhttp3.Request.Builder()
-                .url("https://lyrics.run/my-tv-0/v1/log")
-                .method("POST", crashInfo.toRequestBody("text/plain".toMediaType()))
-                .build()
             try {
+                val request = okhttp3.Request.Builder()
+                    .url("https://lyrics.run/my-tv-0/v1/log")
+                    .method("POST", crashInfo.toRequestBody("text/plain".toMediaType()))
+                    .build()
+
                 HttpClient.okHttpClient.newCall(request).execute().use { response ->
                     if (response.isSuccessful) {
                         Log.i(TAG, "log success")
