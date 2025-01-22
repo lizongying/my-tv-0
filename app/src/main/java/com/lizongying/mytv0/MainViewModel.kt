@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonSyntaxException
+import com.lizongying.mytv0.MyTVApplication
 import com.lizongying.mytv0.R
 import com.lizongying.mytv0.SP
 import com.lizongying.mytv0.Utils.getDateFormat
@@ -139,6 +140,31 @@ class MainViewModel : ViewModel() {
             }
         }
 
+        val application = context.applicationContext as MyTVApplication
+        val imageHelper = application.imageHelper
+
+        viewModelScope.launch {
+            for (tvModel in listModel) {
+                var name = tvModel.tv.name
+                if (name.isEmpty()) {
+                    name = tvModel.tv.title
+                }
+                val url = tvModel.tv.logo
+                var urls =
+                    listOf(
+                        "https://live.fanmingming.cn/tv/$name.png"
+                    ) + getUrls("https://raw.githubusercontent.com/fanmingming/live/main/tv/$name.png")
+                if (url.isNotEmpty()) {
+                    urls = (getUrls(url) + urls).distinct()
+                }
+
+                imageHelper.preloadImage(
+                    name,
+                    urls,
+                )
+            }
+        }
+
         initialized = true
 
         _channelsOk.value = true
@@ -159,9 +185,6 @@ class MainViewModel : ViewModel() {
                     for ((n, epg) in res) {
                         if (name.contains(n, ignoreCase = true)) {
                             m.setEpg(epg)
-                            if (m.tv.logo.isEmpty()) {
-                                m.tv.logo = "https://live.fanmingming.com/tv/$n.png"
-                            }
                             e1[name] = epg
                             break
                         }
@@ -191,9 +214,6 @@ class MainViewModel : ViewModel() {
                     val epg = res[name]
                     if (epg != null) {
                         m.setEpg(epg)
-                        if (m.tv.logo.isEmpty()) {
-                            m.tv.logo = "https://live.fanmingming.com/tv/$name.png"
-                        }
                     }
                 }
             }
@@ -206,13 +226,13 @@ class MainViewModel : ViewModel() {
     }
 
     private suspend fun updateEPG(url: String): Boolean {
-        val urls = getUrls(url)
+        val urls = url.split(",").flatMap { u -> getUrls(u) }
 
         var success = false
         for (a in urls) {
             Log.i(TAG, "request $a")
-            try {
-                withContext(Dispatchers.IO) {
+            withContext(Dispatchers.IO) {
+                try {
                     val request = okhttp3.Request.Builder().url(a).build()
                     val response = HttpClient.okHttpClient.newCall(request).execute()
 
@@ -221,11 +241,11 @@ class MainViewModel : ViewModel() {
                             success = true
                         }
                     } else {
-                        Log.e(TAG, "EPG ${response.codeAlias()}")
+                        Log.e(TAG, "EPG $a ${response.codeAlias()}")
                     }
+                } catch (e: Exception) {
+                    Log.e(TAG, "EPG request error: $a", e)
                 }
-            } catch (e: Exception) {
-                Log.e(TAG, "EPG request error: $a", e)
             }
 
             if (success) {
@@ -243,8 +263,8 @@ class MainViewModel : ViewModel() {
         var shouldBreak = false
         for ((a, b) in urls) {
             Log.i(TAG, "request $a")
-            try {
-                withContext(Dispatchers.IO) {
+            withContext(Dispatchers.IO) {
+                try {
                     val request = okhttp3.Request.Builder().url(a).build()
                     val response = HttpClient.okHttpClient.newCall(request).execute()
 
@@ -259,22 +279,21 @@ class MainViewModel : ViewModel() {
                         Log.e(TAG, "Request status ${response.codeAlias()}")
                         err = R.string.channel_status_error
                     }
+                } catch (e: JsonSyntaxException) {
+                    e.printStackTrace()
+                    Log.e(TAG, "JSON Parse Error", e)
+                    err = R.string.channel_format_error
+                    shouldBreak = true
+                } catch (e: NullPointerException) {
+                    e.printStackTrace()
+                    Log.e(TAG, "Null Pointer Error", e)
+                    err = R.string.channel_read_error
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Log.e(TAG, "Request error $e")
+                    err = R.string.channel_request_error
                 }
-            } catch (e: JsonSyntaxException) {
-                e.printStackTrace()
-                Log.e(TAG, "JSON Parse Error", e)
-                err = R.string.channel_format_error
-                shouldBreak = true
-            } catch (e: NullPointerException) {
-                e.printStackTrace()
-                Log.e(TAG, "Null Pointer Error", e)
-                err = R.string.channel_read_error
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Log.e(TAG, "Request error $e")
-                err = R.string.channel_request_error
             }
-
             if (shouldBreak) break
         }
 

@@ -35,6 +35,8 @@ class MyTVApplication : MultiDexApplication() {
     private var density = 2.0f
     private var scale = 1.0f
 
+    lateinit var imageHelper:ImageHelper
+
     override fun onCreate() {
         super.onCreate()
         instance = this
@@ -67,6 +69,8 @@ class MyTVApplication : MultiDexApplication() {
         }
 
         Thread.setDefaultUncaughtExceptionHandler(MyTVExceptionHandler(this))
+
+        imageHelper = ImageHelper(this)
     }
 
     fun getDisplayMetrics(): DisplayMetrics {

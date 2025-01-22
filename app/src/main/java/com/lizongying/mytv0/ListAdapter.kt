@@ -4,8 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -18,7 +16,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.setPadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.lizongying.mytv0.Utils.getUrls
 import com.lizongying.mytv0.databinding.ListItemBinding
 import com.lizongying.mytv0.models.TVListModel
 import com.lizongying.mytv0.models.TVModel
@@ -187,7 +184,11 @@ class ListAdapter(
 
             viewHolder.bindTitle(tvModel.tv.title)
 
-            viewHolder.bindImage(tvModel.tv.logo, tvModel.tv.id, tvModel.tv.name, tvModel)
+            var name = tvModel.tv.name
+            if (name.isEmpty()) {
+                name = tvModel.tv.title
+            }
+            viewHolder.bindImage(tvModel.tv.logo, tvModel.tv.id, name, tvModel)
         }
     }
 
@@ -196,13 +197,15 @@ class ListAdapter(
     class ViewHolder(private val context: Context, val binding: ListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        val handler = Handler(Looper.getMainLooper())
+        val application = context.applicationContext as MyTVApplication
+        val imageHelper = application.imageHelper
+
 
         fun bindTitle(text: String) {
             binding.title.text = text
         }
 
-        fun bindImage(url: String?, id: Int, name: String, tvModel: TVModel) {
+        fun bindImage(url: String, id: Int, name: String, tvModel: TVModel) {
             val width = 300
             val height = 180
             val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
@@ -225,16 +228,7 @@ class ListAdapter(
             val y = height / 2f - (paint.descent() + paint.ascent()) / 2
             canvas.drawText(channelNum.toString(), x, y, paint)
 
-            var urls =
-                getUrls(
-                    "live.fanmingming.com/tv/$name.png"
-                ) + getUrls("https://raw.githubusercontent.com/fanmingming/live/main/tv/$name.png")
-            if (!url.isNullOrEmpty()) {
-                urls = (getUrls(url) + urls).distinct()
-            }
-            loadNextUrl(context, binding.icon, bitmap, urls, 0, handler) {
-                tvModel.tv.logo = urls[it]
-            }
+            imageHelper.loadImage(name, binding.icon, bitmap, tvModel.tv.logo)
         }
 
         fun focus(hasFocus: Boolean) {

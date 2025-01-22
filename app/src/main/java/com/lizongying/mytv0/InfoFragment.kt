@@ -14,7 +14,6 @@ import androidx.core.view.marginBottom
 import androidx.core.view.marginStart
 import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
-import com.lizongying.mytv0.Utils.getUrls
 import com.lizongying.mytv0.databinding.InfoBinding
 import com.lizongying.mytv0.models.TVModel
 
@@ -79,6 +78,8 @@ class InfoFragment : Fragment() {
         }
 
         val context = requireContext()
+        val application = context.applicationContext as MyTVApplication
+        val imageHelper = application.imageHelper
 
         binding.title.text = tvModel.tv.title
 
@@ -107,17 +108,12 @@ class InfoFragment : Fragment() {
                 canvas.drawText(channelNum.toString(), x, y, paint)
 
                 val url = tvModel.tv.logo
-                val name = tvModel.tv.name
-                var urls =
-                    getUrls(
-                        "live.fanmingming.com/tv/$name.png"
-                    ) + getUrls("https://raw.githubusercontent.com/fanmingming/live/main/tv/$name.png")
-                if (url.isNotEmpty()) {
-                    urls = (getUrls(url) + urls).distinct()
+                var name = tvModel.tv.name
+                if (name.isEmpty()) {
+                    name = tvModel.tv.title
                 }
-                loadNextUrl(context, binding.logo, bitmap, urls, 0, handler) {
-                    tvModel.tv.logo = urls[it]
-                }
+
+                imageHelper.loadImage(name, binding.logo, bitmap, url)
             }
         }
 

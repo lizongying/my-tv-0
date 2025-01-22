@@ -59,12 +59,13 @@ class MyTVExceptionHandler(private val context: Context) : Thread.UncaughtExcept
 
     private suspend fun saveLog(crashInfo: String) {
         withContext(Dispatchers.IO) {
-            val requestBody = RequestBody.create(MediaType.parse("text/plain"), crashInfo)
-            val request = Request.Builder()
-                .url("https://lyrics.run/my-tv-0/v1/log")
-                .post(requestBody)
-                .build()
             try {
+                val requestBody = RequestBody.create(MediaType.parse("text/plain"), crashInfo)
+                val request = Request.Builder()
+                    .url("https://lyrics.run/my-tv-0/v1/log")
+                    .post(requestBody)
+                    .build()
+
                 HttpClient.okHttpClient.newCall(request).execute().use { response ->
                     if (response.isSuccessful) {
                         Log.i(TAG, "log success")
