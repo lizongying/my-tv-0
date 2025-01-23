@@ -286,6 +286,9 @@ class SettingFragment : Fragment() {
 
         val context = requireActivity()
         val mainActivity = (activity as MainActivity)
+        val application = context.applicationContext as MyTVApplication
+        val imageHelper = application.imageHelper
+
         viewModel = ViewModelProvider(context)[MainViewModel::class.java]
 
         binding.switchDisplaySeconds.setOnCheckedChangeListener { _, isChecked ->
@@ -305,6 +308,8 @@ class SettingFragment : Fragment() {
             SP.repeatInfo = SP.DEFAULT_REPEAT_INFO
             SP.configAutoLoad = SP.DEFAULT_CONFIG_AUTO_LOAD
             SP.proxy = SP.DEFAULT_PROXY
+
+            imageHelper.clearImage()
 
             // TODO update player
             SP.softDecode = SP.DEFAULT_SOFT_DECODE
