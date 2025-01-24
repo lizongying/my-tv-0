@@ -86,7 +86,6 @@ adb install my-tv-0.apk
 * 無效的頻道？
 * 如果上次播放頻道不在收藏？
 * 當list為空，顯示group/空group不顯示？
-* 默認頻道菜單顯示
 * 遠程配置使用webView
 
 ## 讚賞

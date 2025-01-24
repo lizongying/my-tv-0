@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonSyntaxException
+import com.lizongying.mytv0.ImageHelper
 import com.lizongying.mytv0.MyTVApplication
 import com.lizongying.mytv0.R
 import com.lizongying.mytv0.SP
@@ -48,6 +49,8 @@ class MainViewModel : ViewModel() {
 
     private lateinit var cacheEPG: File
     private var epgUrl = SP.epg
+
+    private lateinit var imageHelper: ImageHelper
 
     val sources = Sources()
 
@@ -99,6 +102,9 @@ class MainViewModel : ViewModel() {
     }
 
     fun init(context: Context) {
+        val application = context.applicationContext as MyTVApplication
+        imageHelper = application.imageHelper
+
         groupModel.addTVListModel(TVListModel("我的收藏", 0))
         groupModel.addTVListModel(TVListModel("全部頻道", 1))
 
@@ -121,7 +127,7 @@ class MainViewModel : ViewModel() {
         try {
             str2Channels(cacheChannels)
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e(TAG, "init", e)
             cacheFile!!.deleteOnExit()
             R.string.channel_read_error.showToast()
         }
@@ -140,34 +146,36 @@ class MainViewModel : ViewModel() {
             }
         }
 
-        val application = context.applicationContext as MyTVApplication
-        val imageHelper = application.imageHelper
-
-        viewModelScope.launch {
-            for (tvModel in listModel) {
-                var name = tvModel.tv.name
-                if (name.isEmpty()) {
-                    name = tvModel.tv.title
-                }
-                val url = tvModel.tv.logo
-                var urls =
-                    listOf(
-                        "https://live.fanmingming.cn/tv/$name.png"
-                    ) + getUrls("https://raw.githubusercontent.com/fanmingming/live/main/tv/$name.png")
-                if (url.isNotEmpty()) {
-                    urls = (getUrls(url) + urls).distinct()
-                }
-
-                imageHelper.preloadImage(
-                    name,
-                    urls,
-                )
-            }
-        }
-
         initialized = true
 
         _channelsOk.value = true
+    }
+
+    suspend fun preloadLogo() {
+        if (!this::imageHelper.isInitialized) {
+            Log.w(TAG, "imageHelper is not initialized")
+            return
+        }
+
+        for (tvModel in listModel) {
+            var name = tvModel.tv.name
+            if (name.isEmpty()) {
+                name = tvModel.tv.title
+            }
+            val url = tvModel.tv.logo
+            var urls =
+                listOf(
+                    "https://live.fanmingming.cn/tv/$name.png"
+                ) + getUrls("https://raw.githubusercontent.com/fanmingming/live/main/tv/$name.png")
+            if (url.isNotEmpty()) {
+                urls = (getUrls(url) + urls).distinct()
+            }
+
+            imageHelper.preloadImage(
+                name,
+                urls,
+            )
+        }
     }
 
     suspend fun readEPG(input: InputStream): Boolean = withContext(Dispatchers.IO) {
@@ -200,7 +208,7 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    suspend fun readEPG(str: String): Boolean = withContext(Dispatchers.IO) {
+    private suspend fun readEPG(str: String): Boolean = withContext(Dispatchers.IO) {
         try {
             val res: Map<String, List<EPG>> = gson.fromJson(str, typeEPGMap)
 
@@ -552,6 +560,10 @@ class MainViewModel : ViewModel() {
         }
 
         groupModel.setChange()
+
+        viewModelScope.launch {
+            preloadLogo()
+        }
 
         return true
     }

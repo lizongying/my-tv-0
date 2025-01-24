@@ -10,20 +10,21 @@ import com.lizongying.mytv0.requests.HttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.util.concurrent.ConcurrentHashMap
 
 
 class ImageHelper(private val context: Context) {
-    val cacheDir = context.cacheDir
-    val files: MutableMap<String, File> = mutableMapOf()
+    private val cacheDir = context.cacheDir
+
+    private var dir: File = File(cacheDir, LOGO)
+    private val files = ConcurrentHashMap<String, File>()
 
     init {
-        val dir = File(cacheDir, LOGO)
         if (!dir.exists()) {
             dir.mkdir()
         }
         dir.listFiles()?.forEach { file ->
-            val name = file.name.substringBeforeLast(".")
-            files[name] = file
+            files[file.name] = file
         }
     }
 
@@ -62,9 +63,9 @@ class ImageHelper(private val context: Context) {
         }
 
         for (url in urlList) {
-            val ext = url.substringBeforeLast("?").substringAfterLast(".")
-            val file = File(cacheDir, "$LOGO/$key.$ext")
+            val file = File(cacheDir, "$LOGO/$key")
             if (downloadImage(url, file)) {
+                files[file.name] = file
                 Log.i(TAG, "image download success ${file.absolutePath}")
                 break
             }
@@ -98,6 +99,13 @@ class ImageHelper(private val context: Context) {
                 .placeholder(BitmapDrawable(context.resources, bitmap))
                 .fitCenter()
                 .into(imageView)
+        }
+    }
+
+    fun clearImage() {
+        val dir = File(cacheDir, LOGO)
+        if (dir.exists()) {
+            dir.deleteRecursively()
         }
     }
 
