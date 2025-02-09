@@ -27,7 +27,7 @@ class Sources {
     val sources: LiveData<List<Source>>
         get() = _sources
     private val sourcesValue: List<Source>
-        get() = _sources.value ?: listOf()
+        get() = _sources.value ?: emptyList()
 
     private val _checked = MutableLiveData<Int>()
     val checked: LiveData<Int>

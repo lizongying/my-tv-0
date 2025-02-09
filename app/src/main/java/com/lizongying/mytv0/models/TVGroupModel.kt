@@ -14,7 +14,7 @@ class TVGroupModel : ViewModel() {
     val tvGroup: LiveData<List<TVListModel>>
         get() = _tvGroup
     val tvGroupValue: List<TVListModel>
-        get() = _tvGroup.value ?: listOf()
+        get() = _tvGroup.value ?: emptyList()
 
     private val _position = MutableLiveData<Int>()
     val position: LiveData<Int>

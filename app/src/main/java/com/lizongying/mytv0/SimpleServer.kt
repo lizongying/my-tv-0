@@ -191,8 +191,10 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
                     if (req.proxy != null) {
                         SP.proxy = req.proxy
                         R.string.default_proxy_set_success.showToast()
+                        Log.i(TAG, "set proxy success")
                     } else {
                         R.string.default_proxy_set_failure.showToast()
+                        Log.i(TAG, "set proxy failure")
                     }
                 }
             }

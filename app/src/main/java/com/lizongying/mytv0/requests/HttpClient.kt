@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import com.lizongying.mytv0.SP
+import com.lizongying.mytv0.Utils.formatUrl
 import okhttp3.ConnectionSpec
 import okhttp3.OkHttpClient
 import okhttp3.TlsVersion
@@ -14,7 +15,6 @@ import java.net.InetSocketAddress
 import java.net.Proxy
 import java.security.KeyStore
 import javax.net.ssl.SSLContext
-import javax.net.ssl.TrustManager
 import javax.net.ssl.TrustManagerFactory
 import javax.net.ssl.X509TrustManager
 
@@ -24,9 +24,7 @@ object HttpClient {
     private const val HOST = "https://www.gitlink.org.cn/lizongying/my-tv-0/raw/"
     const val DOWNLOAD_HOST = "https://www.gitlink.org.cn/lizongying/my-tv-0/releases/download/"
 
-    val okHttpClient: OkHttpClient by lazy {
-        getUnsafeOkHttpClient()
-    }
+    private val clientCache = mutableMapOf<String?, OkHttpClient>()
 
     val releaseService: ReleaseService by lazy {
         Retrofit.Builder()
@@ -36,92 +34,98 @@ object HttpClient {
             .build().create(ReleaseService::class.java)
     }
 
-    val configService: ConfigService by lazy {
-        Retrofit.Builder()
-            .client(okHttpClient)
-            .build().create(ConfigService::class.java)
+    val okHttpClient: OkHttpClient by lazy {
+        getClientWithProxy()
     }
 
-    private fun enableTls12OnPreLollipop(builder: OkHttpClient.Builder): OkHttpClient.Builder {
+    val builder: OkHttpClient.Builder by lazy {
+        createBuilder()
+    }
+
+    fun getClientWithProxy(): OkHttpClient {
+        clientCache[SP.proxy]?.let {
+            return it
+        }
+
+        if (!SP.proxy.isNullOrEmpty()) {
+            try {
+                val proxyUri = Uri.parse(formatUrl(SP.proxy!!))
+                val proxyType = when (proxyUri.scheme) {
+                    "http", "https" -> Proxy.Type.HTTP
+                    "socks", "socks5" -> Proxy.Type.SOCKS
+                    else -> null
+                }
+                proxyType?.let {
+                    builder.proxy(Proxy(it, InetSocketAddress(proxyUri.host, proxyUri.port)))
+                }
+                Log.i(TAG, "apply proxy $proxyUri")
+            } catch (e: Exception) {
+                Log.e(TAG, "getClientWithProxy", e)
+            }
+        }
+
+        val client = builder.build()
+        clientCache[SP.proxy] = client
+        return client
+    }
+
+    private fun createBuilder(): OkHttpClient.Builder {
+        val trustManager =
+            object : X509TrustManager {
+                override fun checkClientTrusted(
+                    chain: Array<out java.security.cert.X509Certificate>?,
+                    authType: String?
+                ) {
+                }
+
+                override fun checkServerTrusted(
+                    chain: Array<out java.security.cert.X509Certificate>?,
+                    authType: String?
+                ) {
+                }
+
+                override fun getAcceptedIssuers(): Array<java.security.cert.X509Certificate> {
+                    return emptyArray()
+                }
+            }
+
+        val sslContext = SSLContext.getInstance("TLS")
+        sslContext.init(null, arrayOf(trustManager), java.security.SecureRandom())
+
+        return OkHttpClient.Builder()
+            .sslSocketFactory(sslContext.socketFactory, trustManager)
+            .hostnameVerifier { _, _ -> true }
+            .connectionSpecs(listOf(ConnectionSpec.COMPATIBLE_TLS, ConnectionSpec.CLEARTEXT))
+            .dns(DnsCache())
+            .apply { enableTls12OnPreLollipop() }
+    }
+
+    private fun OkHttpClient.Builder.enableTls12OnPreLollipop() {
         if (Build.VERSION.SDK_INT < 22) {
             try {
-                val sc = SSLContext.getInstance("TLSv1.2")
+                val sslContext = SSLContext.getInstance("TLSv1.2")
+                sslContext.init(null, null, java.security.SecureRandom())
 
-                sc.init(null, null, java.security.SecureRandom())
-
-                // a more robust version is to pass a custom X509TrustManager
-                // as the second parameter and make checkServerTrusted to accept your server.
-                // Credits: https://github.com/square/okhttp/issues/2372#issuecomment-1774955225
                 val trustManagerFactory = TrustManagerFactory.getInstance(
                     TrustManagerFactory.getDefaultAlgorithm()
                 )
                 trustManagerFactory.init(null as KeyStore?)
                 val trustManagers = trustManagerFactory.trustManagers
-                check(!(trustManagers.size != 1 || trustManagers[0] !is X509TrustManager)) {
-                    ("Unexpected default trust managers: ${trustManagers.contentToString()}")
-                }
                 val trustManager = trustManagers[0] as X509TrustManager
 
-                builder
-                    .sslSocketFactory(Tls12SocketFactory(sc.socketFactory), trustManager)
-                    .connectionSpecs(
-                        listOf(
-                            ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
-                                .tlsVersions(TlsVersion.TLS_1_2)
-                                .build(),
-                            ConnectionSpec.COMPATIBLE_TLS,
-                            ConnectionSpec.CLEARTEXT
-                        )
+                sslSocketFactory(Tls12SocketFactory(sslContext.socketFactory), trustManager)
+                connectionSpecs(
+                    listOf(
+                        ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
+                            .tlsVersions(TlsVersion.TLS_1_2)
+                            .build(),
+                        ConnectionSpec.COMPATIBLE_TLS,
+                        ConnectionSpec.CLEARTEXT
                     )
+                )
             } catch (e: Exception) {
-                Log.e("OkHttpTLSCompat", "Error while setting TLS 1.2", e)
+                Log.e(TAG, "enableTls12OnPreLollipop", e)
             }
-        }
-
-        return builder
-    }
-
-    private fun getUnsafeOkHttpClient(): OkHttpClient {
-        try {
-            val trustAllCerts: Array<TrustManager> = arrayOf(
-                object : X509TrustManager {
-                    override fun checkClientTrusted(
-                        chain: Array<out java.security.cert.X509Certificate>?,
-                        authType: String?
-                    ) {
-                    }
-
-                    override fun checkServerTrusted(
-                        chain: Array<out java.security.cert.X509Certificate>?,
-                        authType: String?
-                    ) {
-                    }
-
-                    override fun getAcceptedIssuers(): Array<java.security.cert.X509Certificate> {
-                        return emptyArray()
-                    }
-                }
-            )
-
-            val sslContext = SSLContext.getInstance("TLS")
-            sslContext.init(null, trustAllCerts, java.security.SecureRandom())
-
-            val builder = OkHttpClient.Builder()
-                .sslSocketFactory(sslContext.socketFactory, trustAllCerts[0] as X509TrustManager)
-                .hostnameVerifier { _, _ -> true }
-                .connectionSpecs(listOf(ConnectionSpec.COMPATIBLE_TLS, ConnectionSpec.CLEARTEXT))
-                .dns(DnsCache())
-
-            if (SP.proxy != "") {
-                val uri = Uri.parse(SP.proxy)
-                val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(uri.host, uri.port))
-                builder.proxy(proxy)
-            }
-
-            return enableTls12OnPreLollipop(builder).build()
-
-        } catch (e: Exception) {
-            throw RuntimeException(e)
         }
     }
 }

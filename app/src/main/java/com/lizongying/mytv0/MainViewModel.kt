@@ -41,7 +41,7 @@ class MainViewModel : ViewModel() {
     private var timeFormat = if (SP.displaySeconds) "HH:mm:ss" else "HH:mm"
 
     private lateinit var appDirectory: File
-    var listModel: List<TVModel> = listOf()
+    var listModel: List<TVModel> = emptyList()
     val groupModel = TVGroupModel()
     private var cacheFile: File? = null
     private var cacheChannels = ""
@@ -396,10 +396,9 @@ class MainViewModel : ViewModel() {
             '[' -> {
                 try {
                     list = gson.fromJson(string, typeTvList)
-                    Log.i(TAG, "导入频道 ${list.size}")
+                    Log.i(TAG, "导入频道 ${list.size} $list")
                 } catch (e: Exception) {
-                    Log.i(TAG, "parse error $string")
-                    Log.i(TAG, e.message, e)
+                    Log.e(TAG, "str2Channels", e)
                     return false
                 }
             }
@@ -413,40 +412,54 @@ class MainViewModel : ViewModel() {
 
                 val l = mutableListOf<TV>()
                 val tvMap = mutableMapOf<String, List<TV>>()
-                for ((index, line) in lines.withIndex()) {
+
+                var tv = TV()
+                for (line in lines) {
                     val trimmedLine = line.trim()
+                    if (trimmedLine.isEmpty()) {
+                        continue
+                    }
                     if (trimmedLine.startsWith("#EXTM3U")) {
                         epgUrl = epgRegex.find(trimmedLine)?.groupValues?.get(1)?.trim()
                     } else if (trimmedLine.startsWith("#EXTINF")) {
-                        val info = trimmedLine.split(",")
-                        val title = info.last().trim()
-                        var name = nameRegex.find(info.first())?.groupValues?.get(1)?.trim()
-                        name = name ?: title
-                        var group = groupRegex.find(info.first())?.groupValues?.get(1)?.trim()
-                        group = group ?: ""
-                        val logo = logRegex.find(info.first())?.groupValues?.get(1)?.trim()
-                        val uris =
-                            if (index + 1 < lines.size) listOf(lines[index + 1].trim()) else emptyList()
-                        val tv = TV(
-                            -1,
-                            name,
-                            title,
-                            "",
-                            logo ?: "",
-                            "",
-                            uris,
-                            0,
-                            mapOf(),
-                            group,
-                            SourceType.UNKNOWN,
-                            listOf(),
-                        )
-
-                        if (!tvMap.containsKey(group + name)) {
-                            tvMap[group + name] = listOf()
+                        Log.i(TAG, "TV $tv")
+                        val key = tv.group + tv.name
+                        if (key.isNotEmpty()) {
+                            tvMap[key] =
+                                if (!tvMap.containsKey(key)) listOf(tv) else tvMap[key]!! + tv
                         }
-                        tvMap[group + name] = tvMap[group + name]!! + tv
+                        tv = TV()
+                        val info = trimmedLine.split(",")
+                        tv.title = info.last().trim()
+                        var name = nameRegex.find(info.first())?.groupValues?.get(1)?.trim()
+                        tv.name = if (name.isNullOrEmpty()) tv.title else name
+                        tv.logo = logRegex.find(info.first())?.groupValues?.get(1)?.trim() ?: ""
+                        tv.group = groupRegex.find(info.first())?.groupValues?.get(1)?.trim() ?: ""
+                    } else if (trimmedLine.startsWith("#EXTVLCOPT:http-")) {
+                        val keyValue =
+                            trimmedLine.substringAfter("#EXTVLCOPT:http-").split("=", limit = 2)
+                        if (keyValue.size == 2) {
+                            tv.headers = if (tv.headers == null) {
+                                mapOf<String, String>(keyValue[0] to keyValue[1])
+                            } else {
+                                tv.headers!!.toMutableMap().apply {
+                                    this[keyValue[0]] = keyValue[1]
+                                }
+                            }
+                        }
+                    } else if (!trimmedLine.startsWith("#")) {
+                        tv.uris = if (tv.uris.isEmpty()) {
+                            listOf(trimmedLine)
+                        } else {
+                            tv.uris.toMutableList().apply {
+                                this.add(trimmedLine)
+                            }
+                        }
                     }
+                }
+                val key = tv.group + tv.name
+                if (key.isNotEmpty()) {
+                    tvMap[key] = if (!tvMap.containsKey(key)) listOf(tv) else tvMap[key]!! + tv
                 }
                 for ((_, tv) in tvMap) {
                     val uris = tv.map { t -> t.uris }.flatten()
@@ -460,15 +473,15 @@ class MainViewModel : ViewModel() {
                         "",
                         uris,
                         0,
-                        mapOf(),
+                        t0.headers,
                         t0.group,
                         SourceType.UNKNOWN,
-                        listOf(),
+                        emptyList(),
                     )
                     l.add(t1)
                 }
                 list = l
-                Log.i(TAG, "导入频道 ${list.size}")
+                Log.i(TAG, "导入频道 ${list.size} $list")
             }
 
             else -> {
@@ -489,11 +502,11 @@ class MainViewModel : ViewModel() {
                             val title = arr.first().trim()
                             val uris = arr.drop(1)
 
-                            if (!tvMap.containsKey(group + title)) {
-                                tvMap[group + title] = listOf()
-                                tvMap[group + title] = tvMap[group + title]!! + group
+                            val key = group + title
+                            if (!tvMap.containsKey(key)) {
+                                tvMap[key] = listOf(group)
                             }
-                            tvMap[group + title] = tvMap[group + title]!! + uris
+                            tvMap[key] = tvMap[key]!! + uris
                         }
                     }
                 }
@@ -509,10 +522,10 @@ class MainViewModel : ViewModel() {
                         "",
                         uris,
                         0,
-                        mapOf(),
+                        emptyMap(),
                         channelGroup,
                         SourceType.UNKNOWN,
-                        listOf(),
+                        emptyList(),
                     )
 
                     l.add(tv)

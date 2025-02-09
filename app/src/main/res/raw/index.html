@@ -152,7 +152,7 @@
     <label for="proxy" id="proxy-label">代理地址</label>
     <div class="container">
         <input type="text" id="proxy"/>
-        <input type="button" id="confirm-proxy" value="確認" class="confirm"/>
+        <input type="button" id="confirm-proxy" value="確認" placeholder="http://0.0.0.0:0" class="confirm"/>
     </div>
 </div>
 
@@ -226,7 +226,24 @@
     }
 
     document.querySelector('#confirm-uri').onclick = () => {
-        const uri = document.querySelector('#uri').value.trim();
+        let uri = document.querySelector('#uri').value.trim();
+        if (!uri) {
+            alert(`無效的地址${uri}`);
+            return;
+        }
+        if (!uri.startsWith('http')) {
+            uri = 'http://' + uri;
+        }
+        if (!uri.startsWith('http')) {
+            alert(`無效的地址${uri}`);
+            return;
+        }
+        if (!isValidUrl(uri)) {
+            alert(`無效的地址${uri}`);
+            return;
+        }
+        document.querySelector('#uri').value = uri;
+
         if (uri.length > 0) {
             const uuid = uuidV4()
             save('/api/import-uri', JSON.stringify({
@@ -264,7 +281,19 @@
     }
 
     document.querySelector('#confirm-proxy').onclick = () => {
-        const proxy = document.querySelector('#proxy').value.trim();
+        let proxy = document.querySelector('#proxy').value.trim();
+        if (proxy && (!proxy.startsWith('http') && !proxy.startsWith('socks'))) {
+            proxy = 'http://' + proxy;
+        }
+        if (proxy && (!proxy.startsWith('http') || !proxy.startsWith('socks'))) {
+            alert(`無效的地址${proxy}`);
+            return;
+        }
+        if (proxy && !isValidUrl(proxy)) {
+            alert(`無效的地址${proxy}`);
+            return;
+        }
+        document.querySelector('#proxy').value = proxy;
         save('/api/proxy', JSON.stringify({
             proxy: proxy
         }))
@@ -337,6 +366,15 @@
         return ([1e7] + '-' + 1e3 + '-' + 4e3 + '-' + 8e3 + '-' + 1e11).replace(/[018]/g, c =>
             (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
         );
+    }
+
+    const isValidUrl = (url) => {
+        try {
+            new URL(url);
+            return true;
+        } catch (e) {
+            return false;
+        }
     }
 
     (async () => {
