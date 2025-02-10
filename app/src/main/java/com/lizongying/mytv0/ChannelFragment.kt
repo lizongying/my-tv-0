@@ -59,7 +59,9 @@ class ChannelFragment : Fragment() {
     fun show(tvViewModel: TVModel) {
         handler.removeCallbacks(hideRunnable)
         handler.removeCallbacks(playRunnable)
-        binding.content.text = (tvViewModel.tv.id.plus(1)).toString()
+        if (_binding != null) {
+            binding.content.text = (tvViewModel.tv.id.plus(1)).toString()
+        }
         view?.visibility = View.VISIBLE
         handler.postDelayed(hideRunnable, delay)
     }

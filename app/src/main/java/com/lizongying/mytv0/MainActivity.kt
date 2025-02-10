@@ -11,16 +11,20 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.GestureDetector
+import android.view.Gravity
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
+import android.widget.PopupWindow
+import android.widget.RelativeLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.lizongying.mytv0.databinding.SettingsWebBinding
 import java.util.Locale
 import kotlin.math.abs
 
@@ -631,6 +635,26 @@ class MainActivity : AppCompatActivity() {
         showFragment(settingFragment)
 
         settingActive()
+    }
+
+    fun showWebViewPopup(url: String) {
+        val binding = SettingsWebBinding.inflate(layoutInflater)
+
+        val webView = binding.web
+        webView.settings.javaScriptEnabled = true
+        webView.loadUrl(url)
+
+        val popupWindow = PopupWindow(
+            binding.root,
+            RelativeLayout.LayoutParams.MATCH_PARENT,
+            RelativeLayout.LayoutParams.MATCH_PARENT
+        )
+
+        popupWindow.showAtLocation(this.window.decorView, Gravity.CENTER, 0, 0)
+
+        binding.close.setOnClickListener {
+            popupWindow.dismiss()
+        }
     }
 
     fun onKey(keyCode: Int): Boolean {

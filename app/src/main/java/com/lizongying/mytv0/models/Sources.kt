@@ -101,11 +101,7 @@ class Sources {
     }
 
     fun getSource(idx: Int): Source? {
-        if (idx >= size()) {
-            return null
-        }
-
-        if (sourcesValue.isEmpty()) {
+        if (idx < 0 || idx >= size()) {
             return null
         }
 

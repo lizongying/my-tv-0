@@ -17,9 +17,9 @@
 注意：
 
 * 遇到問題可以先考慮重啟/恢復默認/清除數據/重新安裝等方式自助解決
-* 如果APP運行在手機上，建議在其他設備上進行遠程配置
 * 視頻源可以設置為本地文件，格式如：file:///mnt/sdcard/tmp/channels.m3u
   /channels.m3u
+* 目前設置代理後，需要重啟生效。代理屬於全局代理，也就是視頻請求及其他請求都會使用代理。
 
 目前支持的配置格式：
 
@@ -30,8 +30,10 @@
     ```
 * m3u
     ```
-    #EXTM3U
-    #EXTINF:-1 tvg-name="標準標題" tvg-logo="图标" group-title="組名",標題
+    #EXTM3U x-tvg-url=""
+    #EXTINF:-1 tvg-id="" tvg-name="標準標題" tvg-logo="图标" group-title="組名",標題
+    #EXTVLCOPT:http-user-agent=
+    #EXTVLCOPT:http-referrer=
     視頻地址
     ```
 * json
@@ -39,9 +41,9 @@
     [
       {
         "group": "組名",
-        "logo": "图标",
         "name": "標準標題",
         "title": "標題",
+        "logo": "图标",
         "uris": [
           "視頻地址"
         ],
@@ -80,13 +82,9 @@ adb install my-tv-0.apk
 
 ## TODO
 
-* 支持回看
 * 詳細EPG
+* 支持回看
 * 淺色菜單
-* 無效的頻道？
-* 如果上次播放頻道不在收藏？
-* 當list為空，顯示group/空group不顯示？
-* 遠程配置使用webView
 
 ## 讚賞
 
