@@ -650,7 +650,15 @@ class MainActivity : AppCompatActivity() {
             RelativeLayout.LayoutParams.MATCH_PARENT
         )
 
-        popupWindow.showAtLocation(this.window.decorView, Gravity.CENTER, 0, 0)
+        popupWindow.inputMethodMode = PopupWindow.INPUT_METHOD_NEEDED
+        popupWindow.isFocusable = true
+        popupWindow.isTouchable = true
+
+        popupWindow.isClippingEnabled = false
+
+        popupWindow.showAtLocation(window.decorView, Gravity.CENTER, 0, 0)
+
+        webView.requestFocus()
 
         binding.close.setOnClickListener {
             popupWindow.dismiss()

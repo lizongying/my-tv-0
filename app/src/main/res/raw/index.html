@@ -157,6 +157,8 @@
 </div>
 
 <hr/>
+
+<div style="height: 100%"></div>
 </body>
 <script>
     const lang = {
@@ -224,6 +226,16 @@
         };
         reader.readAsText(file);
     }
+
+    ['#uri', '#plain-text', '#channel', '#epg', '#proxy'].forEach(e => {
+        const ele = document.querySelector(e);
+        ele.addEventListener('focus', function() {
+            ele.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        });
+    })
 
     document.querySelector('#confirm-uri').onclick = () => {
         let uri = document.querySelector('#uri').value.trim();
