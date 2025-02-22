@@ -642,6 +642,8 @@ class MainActivity : AppCompatActivity() {
 
         val webView = binding.web
         webView.settings.javaScriptEnabled = true
+        webView.isFocusableInTouchMode = true
+        webView.isFocusable = true
         webView.loadUrl(url)
 
         val popupWindow = PopupWindow(

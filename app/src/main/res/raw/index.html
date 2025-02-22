@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-hant">
 <head>
     <meta charset="UTF-8">
     <meta
@@ -229,7 +229,7 @@
 
     ['#uri', '#plain-text', '#channel', '#epg', '#proxy'].forEach(e => {
         const ele = document.querySelector(e);
-        ele.addEventListener('focus', function() {
+        ele.addEventListener('focus', () => {
             ele.scrollIntoView({
                 behavior: 'smooth',
                 block: 'start'
