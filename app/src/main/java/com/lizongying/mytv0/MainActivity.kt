@@ -614,6 +614,11 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
+        if (channelFragment.isAdded && !channelFragment.isHidden) {
+            channelFragment.hideSelf()
+            return
+        }
+
         if (doubleBackToExitPressedOnce) {
             super.onBackPressed()
             return

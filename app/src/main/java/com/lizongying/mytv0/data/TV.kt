@@ -14,6 +14,7 @@ data class TV(
     var headers: Map<String, String>? = null,
     var group: String = "",
     var sourceType: SourceType = SourceType.UNKNOWN,
+    var number: Int = -1,
     var child: List<TV> = emptyList(),
 ) : Serializable {
 
@@ -29,6 +30,7 @@ data class TV(
                 ", headers=" + headers +
                 ", group='" + group + '\'' +
                 ", sourceType='" + sourceType + '\'' +
+                ", number=" + number +
                 '}'
     }
 }

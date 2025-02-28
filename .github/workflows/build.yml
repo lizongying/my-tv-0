@@ -22,6 +22,22 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
 
+      - name: Run build with Gradle wrapper
+        run: ./gradlew clean && ./gradlew assembleRelease
+
+      - name: Sign app APK
+        id: sign_app
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: app/build/outputs/apk/release
+          alias: ${{ secrets.ALIAS }}
+          signingKeyBase64: ${{ secrets.KEYSTORE }}
+          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.ALIAS_PASSWORD }}
+        env:
+          # override default build-tools version (29.0.3) -- optional
+          BUILD_TOOLS_VERSION: "34.0.0"
+
       - name: Get History
         id: get_history
         run: |
@@ -40,22 +56,6 @@ jobs:
           draft: false
           prerelease: false
           body_path: history.md
-
-      - name: Run build with Gradle wrapper
-        run: ./gradlew clean && ./gradlew assembleRelease
-
-      - name: Sign app APK
-        id: sign_app
-        uses: r0adkll/sign-android-release@v1
-        with:
-          releaseDirectory: app/build/outputs/apk/release
-          alias: ${{ secrets.ALIAS }}
-          signingKeyBase64: ${{ secrets.KEYSTORE }}
-          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
-          keyPassword: ${{ secrets.ALIAS_PASSWORD }}
-        env:
-          # override default build-tools version (29.0.3) -- optional
-          BUILD_TOOLS_VERSION: "34.0.0"
 
       - name: Set Asset Name
         id: set_asset_name

@@ -3,6 +3,7 @@ package com.lizongying.mytv0
 import MainViewModel
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -60,14 +61,17 @@ class ChannelFragment : Fragment() {
         handler.removeCallbacks(hideRunnable)
         handler.removeCallbacks(playRunnable)
         if (_binding != null) {
-            binding.content.text = (tvViewModel.tv.id.plus(1)).toString()
+            binding.content.text =
+                if (tvViewModel.tv.number == -1) (tvViewModel.tv.id.plus(1)).toString() else tvViewModel.tv.number.toString()
         }
         view?.visibility = View.VISIBLE
         handler.postDelayed(hideRunnable, delay)
     }
 
     fun show(channel: String) {
-        if (viewModel.groupModel.getCurrent()!!.tv.id > 10 && viewModel.groupModel.getCurrent()!!.tv.id == this.channel - 1) {
+        Log.d(TAG, "input $channel")
+        val tv = viewModel.groupModel.getCurrent()!!.tv
+        if (tv.id > 10 && tv.id == this.channel - 1) {
             this.channel = 0
             channelCount = 0
         }
@@ -78,9 +82,10 @@ class ChannelFragment : Fragment() {
         this.channel = "${this.channel}$channel".toInt()
         handler.removeCallbacks(hideRunnable)
         handler.removeCallbacks(playRunnable)
+        Log.d(TAG, "channelCount $channelCount")
+        binding.content.text = this.channel.toString()
+        view?.visibility = View.VISIBLE
         if (channelCount < 3) {
-            binding.content.text = this.channel.toString()
-            view?.visibility = View.VISIBLE
             handler.postDelayed(playRunnable, delay)
         } else {
             handler.postDelayed(playRunnable, 0)
@@ -102,6 +107,7 @@ class ChannelFragment : Fragment() {
 
     private val hideRunnable = Runnable {
         if (_binding != null) {
+            Log.i(TAG, "channel num zero")
             binding.content.text = BLANK
         }
 
@@ -110,8 +116,16 @@ class ChannelFragment : Fragment() {
         channelCount = 0
     }
 
+    fun hideSelf() {
+        handler.postDelayed(hideRunnable, 0)
+    }
+
     private val playRunnable = Runnable {
-        (activity as MainActivity).play(channel - 1)
+        var c = channel - 1
+        viewModel.listModel.find { it.tv.number == channel }?.let {
+            c = it.tv.id
+        }
+        (activity as MainActivity).play(c)
         handler.postDelayed(hideRunnable, delay)
     }
 

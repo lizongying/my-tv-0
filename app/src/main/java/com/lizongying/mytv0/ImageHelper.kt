@@ -54,7 +54,7 @@ class ImageHelper(private val context: Context) {
     ) {
         val file = files[key]
         if (file != null) {
-            Log.i(TAG, "image exists ${file.absolutePath}")
+            Log.d(TAG, "image exists ${file.absolutePath}")
             return
         }
 
