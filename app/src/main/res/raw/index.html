@@ -333,7 +333,7 @@
         if (proxy && (!proxy.startsWith('http') && !proxy.startsWith('socks'))) {
             proxy = 'http://' + proxy;
         }
-        if (proxy && (!proxy.startsWith('http') || !proxy.startsWith('socks'))) {
+        if (proxy && (!proxy.startsWith('http') && !proxy.startsWith('socks'))) {
             alert(`無效的地址${proxy}`);
             return;
         }
