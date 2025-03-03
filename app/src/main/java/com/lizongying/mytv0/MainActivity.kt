@@ -314,7 +314,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onLongPress(e: MotionEvent) {
-            showSetting()
+            showProgram()
         }
 
         override fun onFling(
@@ -647,6 +647,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showSetting() {
+        if (programFragment.isAdded && !programFragment.isHidden) {
+            return
+        }
+
         if (menuFragment.isAdded && !menuFragment.isHidden) {
             return
         }
@@ -673,6 +677,15 @@ class MainActivity : AppCompatActivity() {
 //        }
 //
         showFragment(programFragment)
+    }
+
+    private fun hideProgram(): Boolean {
+        if (!programFragment.isAdded || programFragment.isHidden) {
+            return false
+        }
+
+        hideFragment(programFragment)
+        return true
     }
 
     fun showWebViewPopup(url: String) {
@@ -818,18 +831,11 @@ class MainActivity : AppCompatActivity() {
             }
 
             KeyEvent.KEYCODE_DPAD_LEFT -> {
-                if (programFragment.isAdded && !programFragment.isHidden) {
-                    hideFragment(programFragment)
-                    return false
-                }
-
-                if (!settingFragment.isAdded || settingFragment.isHidden) {
-                    showFragment(menuFragment)
-                }
+                showProgram()
             }
 
             KeyEvent.KEYCODE_DPAD_RIGHT -> {
-                showProgram()
+                showSetting()
             }
         }
         return false

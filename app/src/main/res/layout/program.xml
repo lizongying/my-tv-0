@@ -11,8 +11,6 @@
             android:id="@+id/list"
             android:layout_width="450dp"
             android:layout_height="match_parent"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="0dp"
             android:padding="10dp"
             android:background="@color/blur"
             >

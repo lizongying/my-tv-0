@@ -61,7 +61,7 @@ jobs:
         id: set_asset_name
         run: |
           VERSION_WITHOUT_V=$(echo '${{ github.ref_name }}' | sed 's/^v//')
-          echo "asset_name=my-tv-0.${VERSION_WITHOUT_V}.apk" >> $GITHUB_ENV
+          echo "asset_name=my-tv-0_${VERSION_WITHOUT_V}.apk" >> $GITHUB_ENV
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
