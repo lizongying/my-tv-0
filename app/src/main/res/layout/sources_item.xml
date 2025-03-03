@@ -8,7 +8,7 @@
     android:layout_marginBottom="1dp"
     android:background="@color/blur">
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/num"
         android:layout_width="50dp"
         android:layout_height="50dp"
@@ -22,7 +22,7 @@
         android:textSize="16sp"
         android:gravity="center" />
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/title"
         android:layout_width="500dp"
         android:layout_height="50dp"
@@ -36,7 +36,7 @@
         android:textSize="16sp"
         android:gravity="center_vertical" />
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/heart"
         android:layout_width="50dp"
         android:layout_height="50dp"

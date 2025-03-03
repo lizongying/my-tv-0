@@ -50,4 +50,5 @@
     <string name="display_seconds">時間顯示秒</string>
     <string name="no_video_source">暫無視頻源</string>
     <string name="soft_decode">軟解</string>
+    <string name="epg_is_empty">節目單為空</string>
 </resources>

@@ -107,7 +107,6 @@ class ChannelFragment : Fragment() {
 
     private val hideRunnable = Runnable {
         if (_binding != null) {
-            Log.i(TAG, "channel num zero")
             binding.content.text = BLANK
         }
 
