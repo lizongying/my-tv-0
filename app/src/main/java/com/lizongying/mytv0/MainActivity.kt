@@ -661,21 +661,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showProgram() {
-//        if (menuFragment.isAdded && !menuFragment.isHidden) {
-//            return
-//        }
+        if (menuFragment.isAdded && !menuFragment.isHidden) {
+            return
+        }
 
         if (settingFragment.isAdded && !settingFragment.isHidden) {
             return
         }
 
-        val tvModel = viewModel.groupModel.getCurrent()
-        Log.i(TAG, "tvModel ${tvModel?.tv}")
-//        if (tvModel.epgValue.isEmpty()) {
-//            R.string.epg_is_empty.showToast()
-//            return
-//        }
-//
+        viewModel.groupModel.getCurrent()?.let {
+            if (it.epgValue.isEmpty()) {
+                R.string.epg_is_empty.showToast()
+                return
+            }
+        }
+
         showFragment(programFragment)
     }
 
