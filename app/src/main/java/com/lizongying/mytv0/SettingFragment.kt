@@ -398,7 +398,7 @@ class SettingFragment : Fragment() {
         requireActivity().supportFragmentManager.beginTransaction()
             .hide(this)
             .commitAllowingStateLoss()
-        (activity as MainActivity).addTimeFragment()
+        (activity as MainActivity).showTimeFragment()
     }
 
     override fun onHiddenChanged(hidden: Boolean) {

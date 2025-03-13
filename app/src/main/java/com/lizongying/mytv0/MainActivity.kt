@@ -556,10 +556,10 @@ class MainActivity : AppCompatActivity() {
 
     private val hideSetting = Runnable {
         hideFragment(settingFragment)
-        addTimeFragment()
+        showTimeFragment()
     }
 
-    fun addTimeFragment() {
+    fun showTimeFragment() {
         if (SP.time) {
             showFragment(timeFragment)
         } else {
@@ -624,11 +624,11 @@ class MainActivity : AppCompatActivity() {
 
         if (settingFragment.isAdded && !settingFragment.isHidden) {
             hideFragment(settingFragment)
-            addTimeFragment()
+            showTimeFragment()
             return
         }
 
-        if (channelFragment.isAdded && !channelFragment.isHidden) {
+        if (channelFragment.isAdded && channelFragment.isVisible) {
             channelFragment.hideSelf()
             return
         }
@@ -854,7 +854,7 @@ class MainActivity : AppCompatActivity() {
 
         isSafeToPerformFragmentTransactions = true
 
-        addTimeFragment()
+        showTimeFragment()
     }
 
     override fun onPause() {

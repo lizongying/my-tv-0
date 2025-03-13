@@ -77,20 +77,22 @@ class InfoFragment : Fragment() {
             return
         }
 
+        val tv = tvModel.tv
+
         val context = requireContext()
         val application = context.applicationContext as MyTVApplication
         val imageHelper = application.imageHelper
 
-        binding.title.text = tvModel.tv.title
+        binding.title.text = tv.title
 
-        when (tvModel.tv.title) {
+        when (tv.title) {
             else -> {
                 val width = 300
                 val height = 180
                 val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
                 val canvas = Canvas(bitmap)
 
-                val channelNum = tvModel.tv.id + 1
+                val channelNum = if (tv.number == -1) tv.id.plus(1) else tv.number
                 var size = 150f
                 if (channelNum > 99) {
                     size = 100f
@@ -107,13 +109,8 @@ class InfoFragment : Fragment() {
                 val y = height / 2f - (paint.descent() + paint.ascent()) / 2
                 canvas.drawText(channelNum.toString(), x, y, paint)
 
-                val url = tvModel.tv.logo
-                var name = tvModel.tv.name
-                if (name.isEmpty()) {
-                    name = tvModel.tv.title
-                }
-
-                imageHelper.loadImage(name, binding.logo, bitmap, url)
+                val name = if (tv.name.isNotEmpty()) { tv.name } else { tv.title }
+                imageHelper.loadImage(name, binding.logo, bitmap, tv.logo)
             }
         }
 
