@@ -247,13 +247,15 @@ class MainViewModel : ViewModel() {
 
                     if (response.isSuccessful) {
                         if (readEPG(response.bodyAlias()!!.byteStream())) {
+                            Log.i(TAG, "EPG $a success")
                             success = true
                         }
                     } else {
                         Log.e(TAG, "EPG $a ${response.codeAlias()}")
                     }
                 } catch (e: Exception) {
-                    Log.e(TAG, "EPG request error: $a", e)
+//                    Log.e(TAG, "EPG $a error", e)
+                    Log.e(TAG, "EPG $a error")
                 }
             }
 
