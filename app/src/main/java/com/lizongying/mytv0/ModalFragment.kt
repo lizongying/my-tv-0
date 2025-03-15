@@ -58,14 +58,6 @@ class ModalFragment : DialogFragment() {
                 .into(binding.modalImage)
             binding.modalText.text = u.removePrefix("http://")
             binding.modalText.visibility = View.VISIBLE
-            binding.modal.setOnClickListener {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(u))
-                try {
-                    startActivity(intent)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
         } else {
             Glide.with(requireContext())
                 .load(arguments?.getInt(KEY_DRAWABLE_ID))

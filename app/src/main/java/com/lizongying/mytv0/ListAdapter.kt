@@ -175,20 +175,17 @@ class ListAdapter(
                     if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
                         tvModel.setLike(!(tvModel.like.value as Boolean))
                         viewHolder.like(tvModel.like.value as Boolean)
+                        return@setOnKeyListener true
                     }
 
-                    return@setOnKeyListener listener?.onKey(this, keyCode) ?: false
+                    return@setOnKeyListener listener?.onKey(this, keyCode) == true
                 }
                 false
             }
 
             viewHolder.bindTitle(tvModel.tv.title)
 
-            var name = tvModel.tv.name
-            if (name.isEmpty()) {
-                name = tvModel.tv.title
-            }
-            viewHolder.bindImage(tvModel.tv.logo, tvModel.tv.id, name, tvModel)
+            viewHolder.bindImage(tvModel)
         }
     }
 
@@ -205,13 +202,15 @@ class ListAdapter(
             binding.title.text = text
         }
 
-        fun bindImage(url: String, id: Int, name: String, tvModel: TVModel) {
+        fun bindImage(tvModel: TVModel) {
+            val tv = tvModel.tv
+
             val width = 300
             val height = 180
             val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
             val canvas = Canvas(bitmap)
 
-            val channelNum = id + 1
+            val channelNum = if (tv.number == -1) tv.id.plus(1) else tv.number
             var size = 150f
             if (channelNum > 99) {
                 size = 100f
@@ -228,7 +227,8 @@ class ListAdapter(
             val y = height / 2f - (paint.descent() + paint.ascent()) / 2
             canvas.drawText(channelNum.toString(), x, y, paint)
 
-            imageHelper.loadImage(name, binding.icon, bitmap, tvModel.tv.logo)
+            val name = if (tv.name.isNotEmpty()) { tv.name } else { tv.title }
+            imageHelper.loadImage(name, binding.icon, bitmap, tv.logo)
         }
 
         fun focus(hasFocus: Boolean) {

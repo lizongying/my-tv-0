@@ -6,8 +6,6 @@ import okhttp3.ConnectionSpec
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import org.conscrypt.Conscrypt
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.security.Security
 import java.util.Collections
 import java.util.concurrent.TimeUnit
@@ -15,25 +13,9 @@ import javax.net.ssl.SSLContext
 
 object HttpClient {
     const val TAG = "HttpClient"
-    private const val HOST = "https://mirror.ghproxy.com/raw.githubusercontent.com/lizongying/my-tv-0/"
-    const val DOWNLOAD_HOST = "https://mirror.ghproxy.com/github.com/lizongying/my-tv-0/releases/download/"
 
     val okHttpClient: OkHttpClient by lazy {
         getSafeOkHttpClient()
-    }
-
-    val releaseService: ReleaseService by lazy {
-        Retrofit.Builder()
-            .baseUrl(HOST)
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build().create(ReleaseService::class.java)
-    }
-
-    val configService: ConfigService by lazy {
-        Retrofit.Builder()
-            .client(okHttpClient)
-            .build().create(ConfigService::class.java)
     }
 
     private fun getSafeOkHttpClient(): OkHttpClient {

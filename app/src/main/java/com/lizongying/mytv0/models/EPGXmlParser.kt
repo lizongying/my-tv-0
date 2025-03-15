@@ -42,7 +42,7 @@ class EPGXmlParser {
                     parser.nextTag()
                     val title = parser.nextText()
                     if (formatFTime(stop) > now) {
-                        epg[channel]?.add(EPG(title, formatFTime(start)))
+                        epg[channel]?.add(EPG(title, formatFTime(start), formatFTime(stop)))
                     }
                 }
                 parser.next()

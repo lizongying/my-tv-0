@@ -61,10 +61,10 @@ object SP {
     private const val KEY_SOFT_DECODE = "soft_decode"
 
     const val DEFAULT_CHANNEL_REVERSAL = false
-    const val DEFAULT_CONFIG_URL = ""
     const val DEFAULT_CHANNEL_NUM = false
     const val DEFAULT_TIME = true
     const val DEFAULT_BOOT_STARTUP = false
+    const val DEFAULT_CONFIG_URL = ""
     const val DEFAULT_PROXY = ""
     const val DEFAULT_EPG =
         "https://live.fanmingming.cn/e.xml,https://raw.githubusercontent.com/fanmingming/live/main/e.xml"

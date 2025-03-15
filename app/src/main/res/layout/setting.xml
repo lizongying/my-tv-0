@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             >
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -37,7 +37,7 @@
                 android:text="@string/app_name"
                 android:textSize="16sp"
                 android:layout_gravity="bottom" />
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/version_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -48,7 +48,7 @@
                 android:layout_marginStart="8dp" />
         </LinearLayout>
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/version"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -166,6 +166,17 @@
             app:trackTint="@color/switch_track_color"
             />
         <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switch_display_seconds"
+            android:text="@string/display_seconds"
+            android:textColor="@color/title_blur"
+            android:textSize="14sp"
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:thumbTint="@color/switch_thumb_color"
+            app:trackTint="@color/switch_track_color"
+            />
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switch_boot_startup"
             android:text="@string/title_boot_startup"
             android:textColor="@color/title_blur"
@@ -223,17 +234,6 @@
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switch_compact_menu"
             android:text="@string/compact_menu"
-            android:textColor="@color/title_blur"
-            android:textSize="14sp"
-            android:layout_marginTop="5dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:thumbTint="@color/switch_thumb_color"
-            app:trackTint="@color/switch_track_color"
-            />
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/switch_display_seconds"
-            android:text="@string/display_seconds"
             android:textColor="@color/title_blur"
             android:textSize="14sp"
             android:layout_marginTop="5dp"

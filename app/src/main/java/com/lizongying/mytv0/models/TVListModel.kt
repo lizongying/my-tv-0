@@ -34,7 +34,7 @@ class TVListModel(private val name: String, private val groupIndex: Int) : ViewM
     val tvList: LiveData<List<TVModel>>
         get() = _tvList
     private val tvListValue: List<TVModel>
-        get() = _tvList.value ?: listOf()
+        get() = _tvList.value ?: emptyList()
 
     private val _position = MutableLiveData<Int>()
     val position: LiveData<Int>

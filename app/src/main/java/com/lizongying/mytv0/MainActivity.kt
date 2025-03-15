@@ -36,6 +36,7 @@ class MainActivity : AppCompatActivity() {
     private var timeFragment = TimeFragment()
     private var menuFragment = MenuFragment()
     private var settingFragment = SettingFragment()
+    private var programFragment = ProgramFragment()
 
     private val handler = Handler(Looper.myLooper()!!)
     private val delayHideMenu = 10 * 1000L
@@ -288,7 +289,7 @@ class MainActivity : AppCompatActivity() {
         return super.onTouchEvent(event)
     }
 
-    private inner class GestureListener(private val context: Context) :
+    private inner class GestureListener(context: Context) :
         GestureDetector.SimpleOnGestureListener() {
 
         private var screenWidth = windowManager.defaultDisplay.width
@@ -317,7 +318,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onLongPress(e: MotionEvent) {
-            Log.i(TAG, "onLongPress")
+            showProgram()
         }
 
         override fun onFling(
@@ -559,10 +560,10 @@ class MainActivity : AppCompatActivity() {
 
     private val hideSetting = Runnable {
         hideFragment(settingFragment)
-        addTimeFragment()
+        showTimeFragment()
     }
 
-    fun addTimeFragment() {
+    fun showTimeFragment() {
         if (SP.time) {
             showFragment(timeFragment)
         } else {
@@ -587,6 +588,10 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun channelUp() {
+        if (programFragment.isAdded && !programFragment.isHidden) {
+            return
+        }
+
         if ((!menuFragment.isAdded || menuFragment.isHidden) && (!settingFragment.isAdded || settingFragment.isHidden)) {
             if (SP.channelReversal) {
                 next()
@@ -597,6 +602,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun channelDown() {
+        if (programFragment.isAdded && !programFragment.isHidden) {
+            return
+        }
+
         if ((!menuFragment.isAdded || menuFragment.isHidden) && (!settingFragment.isAdded || settingFragment.isHidden)) {
             if (SP.channelReversal) {
                 prev()
@@ -612,9 +621,19 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
+        if (programFragment.isAdded && !programFragment.isHidden) {
+            hideFragment(programFragment)
+            return
+        }
+
         if (settingFragment.isAdded && !settingFragment.isHidden) {
             hideFragment(settingFragment)
-            addTimeFragment()
+            showTimeFragment()
+            return
+        }
+
+        if (channelFragment.isAdded && channelFragment.isVisible) {
+            channelFragment.hideSelf()
             return
         }
 
@@ -632,6 +651,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showSetting() {
+        if (programFragment.isAdded && !programFragment.isHidden) {
+            return
+        }
+
         if (menuFragment.isAdded && !menuFragment.isHidden) {
             return
         }
@@ -639,6 +662,34 @@ class MainActivity : AppCompatActivity() {
         showFragment(settingFragment)
 
         settingActive()
+    }
+
+    private fun showProgram() {
+        if (menuFragment.isAdded && !menuFragment.isHidden) {
+            return
+        }
+
+        if (settingFragment.isAdded && !settingFragment.isHidden) {
+            return
+        }
+
+        viewModel.groupModel.getCurrent()?.let {
+            if (it.epgValue.isEmpty()) {
+                R.string.epg_is_empty.showToast()
+                return
+            }
+        }
+
+        showFragment(programFragment)
+    }
+
+    private fun hideProgram(): Boolean {
+        if (!programFragment.isAdded || programFragment.isHidden) {
+            return false
+        }
+
+        hideFragment(programFragment)
+        return true
     }
 
     fun onKey(keyCode: Int): Boolean {
@@ -754,14 +805,11 @@ class MainActivity : AppCompatActivity() {
             }
 
             KeyEvent.KEYCODE_DPAD_LEFT -> {
-                if (!settingFragment.isAdded || settingFragment.isHidden) {
-                    showFragment(menuFragment)
-                }
+                showProgram()
             }
 
             KeyEvent.KEYCODE_DPAD_RIGHT -> {
                 showSetting()
-//                return true
             }
         }
         return false
@@ -780,7 +828,7 @@ class MainActivity : AppCompatActivity() {
 
         isSafeToPerformFragmentTransactions = true
 
-        addTimeFragment()
+        showTimeFragment()
     }
 
     override fun onPause() {

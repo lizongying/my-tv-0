@@ -7,9 +7,9 @@ import android.net.Uri
 import android.os.Environment
 import android.util.Log
 import androidx.fragment.app.FragmentActivity
-import com.lizongying.mytv0.requests.HttpClient
-import com.lizongying.mytv0.requests.ReleaseRequest
+import com.lizongying.mytv0.data.Global.gson
 import com.lizongying.mytv0.data.ReleaseResponse
+import com.lizongying.mytv0.requests.HttpClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -25,11 +25,33 @@ class UpdateManager(
     private val versionCode: Long
 ) : ConfirmationFragment.ConfirmationListener {
 
-    private var releaseRequest = ReleaseRequest()
-    private var release: ReleaseResponse? = null
     private val okHttpClient = HttpClient.okHttpClient
     private var downloadJob: Job? = null
     private var lastLoggedProgress = -1
+
+    private var release: ReleaseResponse? = null
+
+    private suspend fun getRelease(): ReleaseResponse? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val request = okhttp3.Request.Builder()
+                    .url(VERSION_URL)
+                    .build()
+
+                HttpClient.okHttpClient.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) return@withContext null
+
+                    response.bodyAlias()?.let {
+                        return@withContext gson.fromJson(it.string(), ReleaseResponse::class.java)
+                    }
+                    null
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "getRelease", e)
+                null
+            }
+        }
+    }
 
     fun checkAndUpdate() {
         Log.i(TAG, "checkAndUpdate")
@@ -37,7 +59,7 @@ class UpdateManager(
             var text = "版本获取失败"
             var update = false
             try {
-                release = releaseRequest.getRelease()
+                release = getRelease()
                 Log.i(TAG, "versionCode $versionCode ${release?.version_code}")
                 if (release?.version_code != null) {
                     if (release?.version_code!! >= versionCode) {
@@ -60,25 +82,20 @@ class UpdateManager(
     }
 
     private fun startDownload(release: ReleaseResponse) {
-        val apkName = "my-tv-0"
-        val v = release.version_name?.removePrefix("v")
-        val apkFileName = "$apkName.${v}${APK_SUFFIX}.apk"
-        val url =
-            "${HttpClient.DOWNLOAD_HOST}${release.version_name}${APK_SUFFIX}/$apkName.${v}${APK_SUFFIX}.apk"
-        Log.i(
-            TAG,
-            "url $url"
-        )
+        if (release.apk_name.isNullOrEmpty() || release.apk_url.isNullOrEmpty()) {
+            return
+        }
+
         var downloadDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
         if (downloadDir == null) {
             downloadDir = File(context.filesDir, "downloads")
         }
-        cleanupDownloadDirectory(downloadDir, apkName)
-        val file = File(downloadDir, apkFileName)
+        cleanupDownloadDirectory(downloadDir, release.apk_name)
+        val file = File(downloadDir, release.apk_name)
         file.parentFile?.mkdirs()
-        Log.i(TAG, "save dir ${file}")
+        Log.i(TAG, "save dir $file")
         downloadJob = GlobalScope.launch(Dispatchers.IO) {
-            downloadWithRetry(url, file)
+            downloadWithRetry(release.apk_url, file)
         }
     }
 
@@ -185,7 +202,8 @@ class UpdateManager(
     companion object {
         private const val TAG = "UpdateManager"
         private const val BUFFER_SIZE = 8192
-        private const val APK_SUFFIX = "-kitkat"
+        private const val VERSION_URL =
+            "https://mirror.ghproxy.com/raw.githubusercontent.com/lizongying/my-tv-0/kitkat/version.json"
     }
 
     override fun onConfirm() {

@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.util.Log
-import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.lizongying.mytv0.requests.HttpClient
 import kotlinx.coroutines.Dispatchers
@@ -38,11 +37,11 @@ class ImageHelper(private val context: Context) {
                 HttpClient.okHttpClient.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) return@withContext false
                     response.bodyAlias()?.byteStream()?.copyTo(file.outputStream())
-                    Log.i(TAG, "downloadImage success $url")
                     true
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "downloadImage", e)
+//                Log.e(TAG, "downloadImage error $url", e)
+                Log.e(TAG, "downloadImage error $url")
                 false
             }
         }
@@ -54,7 +53,7 @@ class ImageHelper(private val context: Context) {
     ) {
         val file = files[key]
         if (file != null) {
-            Log.i(TAG, "image exists ${file.absolutePath}")
+            Log.d(TAG, "image exists ${file.absolutePath}")
             return
         }
 
@@ -66,7 +65,7 @@ class ImageHelper(private val context: Context) {
             val file = File(cacheDir, "$LOGO/$key")
             if (downloadImage(url, file)) {
                 files[file.name] = file
-                Log.i(TAG, "image download success ${file.absolutePath}")
+                Log.d(TAG, "downloadImage success $url ${file.absolutePath}")
                 break
             }
         }
@@ -74,13 +73,13 @@ class ImageHelper(private val context: Context) {
 
     fun loadImage(
         key: String,
-        imageView: ImageView,
+        imageView: androidx.appcompat.widget.AppCompatImageView,
         bitmap: Bitmap,
         url: String,
     ) {
         val file = files[key]
         if (file != null) {
-            Log.i(TAG, "image exists ${file.absolutePath}")
+            Log.i(TAG, "$key image exists ${file.absolutePath}")
             Glide.with(context)
                 .load(file)
                 .fitCenter()
@@ -89,11 +88,13 @@ class ImageHelper(private val context: Context) {
         }
 
         if (url.isEmpty()) {
+            Log.i(TAG, "$key image bitmap")
             Glide.with(context)
                 .load(bitmap)
                 .fitCenter()
                 .into(imageView)
         } else {
+            Log.i(TAG, "$key image $url")
             Glide.with(context)
                 .load(url)
                 .placeholder(BitmapDrawable(context.resources, bitmap))

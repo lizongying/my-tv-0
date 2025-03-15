@@ -52,4 +52,5 @@
     <string name="display_seconds">时间显示秒</string>
     <string name="no_video_source">暂无视频源</string>
     <string name="soft_decode">软解</string>
+    <string name="epg_is_empty">节目单为空</string>
 </resources>

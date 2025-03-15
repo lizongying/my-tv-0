@@ -60,6 +60,8 @@ class TVModel(var tv: TV) : ViewModel() {
     private var _epg = MutableLiveData<List<EPG>>()
     val epg: LiveData<List<EPG>>
         get() = _epg
+    val epgValue: List<EPG>
+        get() = _epg.value ?: emptyList()
 
     fun setEpg(epg: List<EPG>) {
         _epg.value = epg

@@ -79,7 +79,7 @@ dependencies {
     implementation(libs.media3.exoplayer.hls)
     implementation(libs.media3.exoplayer.dash)
     implementation(libs.media3.exoplayer.rtsp)
-    //implementation(libs.media3.datasource.okhttp)
+//    implementation(libs.media3.datasource.okhttp)
     implementation(libs.media3.datasource.rtmp)
 
     implementation(libs.nanohttpd)
@@ -89,8 +89,6 @@ dependencies {
 
     implementation(libs.gson)
     implementation(libs.okhttp)
-    implementation(libs.converter.gson)
-    implementation(libs.retrofit)
 
     implementation(libs.core.ktx)
     implementation(libs.coroutines)

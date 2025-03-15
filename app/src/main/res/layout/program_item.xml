@@ -2,48 +2,39 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/list_item"
+    android:id="@+id/program_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="1dp"
     android:background="@color/blur">
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/icon"
-        android:layout_width="60dp"
-        android:layout_height="50dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:padding="10dp"
-        android:gravity="center" />
-
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/title"
-        android:layout_width="0dp"
+        android:layout_width="100dp"
         android:layout_height="50dp"
-        app:layout_constraintStart_toEndOf="@id/icon"
-        app:layout_constraintEnd_toStartOf="@id/heart"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/description"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:textColor="@color/title_blur"
-        tools:text="CCTV1"
+        android:textColor="@color/description_blur"
+        tools:text="12:34-13:21"
         android:maxLines="1"
         android:ellipsize="end"
         android:textSize="16sp"
         android:gravity="center_vertical" />
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/heart"
-        android:layout_width="40dp"
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/description"
+        android:layout_width="0dp"
         android:layout_height="50dp"
-        android:src="@drawable/baseline_favorite_border_24"
-        android:contentDescription="Heart Icon"
+        app:layout_constraintStart_toEndOf="@id/title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:clickable="true"
-        android:focusable="false"
-        android:padding="10dp"
-        android:gravity="center" />
+        android:textColor="@color/description_blur"
+        tools:text="精彩節目"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textSize="16sp"
+        android:gravity="center_vertical" />
 </androidx.constraintlayout.widget.ConstraintLayout>
