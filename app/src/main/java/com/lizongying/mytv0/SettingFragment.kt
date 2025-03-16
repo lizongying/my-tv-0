@@ -3,6 +3,7 @@ package com.lizongying.mytv0
 import MainViewModel
 import MainViewModel.Companion.CACHE_FILE_NAME
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
@@ -408,36 +409,29 @@ class SettingFragment : Fragment() {
         }
     }
 
+    private fun checkAndAddPermission(context: Context, permission: String, permissionsList: MutableList<String>) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+            ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+            permissionsList.add(permission)
+        }
+    }
+
     private fun requestInstallPermissions() {
         val context = requireContext()
-        val permissionsList: MutableList<String> = ArrayList()
+        val permissionsList = mutableListOf<String>()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !context.packageManager.canRequestPackageInstalls()) {
             permissionsList.add(Manifest.permission.REQUEST_INSTALL_PACKAGES)
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            permissionsList.add(Manifest.permission.READ_EXTERNAL_STORAGE)
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            permissionsList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        }
+        checkAndAddPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE, permissionsList)
+        checkAndAddPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE, permissionsList)
 
         if (permissionsList.isNotEmpty()) {
+            Log.i(TAG, "ask $permissionsList")
             ActivityCompat.requestPermissions(
                 requireActivity(),
-                permissionsList.toTypedArray<String>(),
+                permissionsList.toTypedArray(),
                 PERMISSIONS_REQUEST_CODE
             )
         } else {
@@ -447,21 +441,14 @@ class SettingFragment : Fragment() {
 
     private fun requestReadPermissions() {
         val context = requireContext()
-        val permissionsList: MutableList<String> = ArrayList()
+        val permissionsList = mutableListOf<String>()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            permissionsList.add(Manifest.permission.READ_EXTERNAL_STORAGE)
-        }
+        checkAndAddPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE, permissionsList)
 
         if (permissionsList.isNotEmpty()) {
             ActivityCompat.requestPermissions(
                 requireActivity(),
-                permissionsList.toTypedArray<String>(),
+                permissionsList.toTypedArray(),
                 PERMISSIONS_REQUEST_CODE
             )
         } else {
@@ -493,6 +480,7 @@ class SettingFragment : Fragment() {
             if (allPermissionsGranted) {
                 updateManager.checkAndUpdate()
             } else {
+                Log.w(TAG, "ask permissions failed")
                 R.string.authorization_failed.showToast()
             }
         }

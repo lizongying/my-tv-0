@@ -123,7 +123,7 @@ class SourcesAdapter(
                 false
             }
 
-            viewHolder.bindNum(String.format(Locale.getDefault(), "%02d", position))
+            viewHolder.bindNum("%02d".format(position))
             viewHolder.bindTitle(source.uri)
         }
     }

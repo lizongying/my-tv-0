@@ -577,10 +577,6 @@ class MainViewModel : ViewModel() {
 
         listModel = listModelNew
 
-        for (ii in listModel) {
-            Log.d(TAG, "${ii.tv.title} ${ii.tv.number}")
-        }
-
         // 全部频道
         groupModel.tvGroupValue[1].setTVListModel(listModel)
 

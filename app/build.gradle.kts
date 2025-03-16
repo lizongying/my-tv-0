@@ -88,8 +88,6 @@ dependencies {
 
     implementation(libs.gson)
     implementation(libs.okhttp)
-    implementation(libs.converter.gson)
-    implementation(libs.retrofit)
 
     implementation(libs.core.ktx)
     implementation(libs.coroutines)
@@ -98,8 +96,6 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.recyclerview)
     implementation(libs.lifecycle.viewmodel)
-
-//    implementation(libs.okhttp3.integration)
 
     implementation(files("libs/lib-decoder-ffmpeg-release.aar"))
 }

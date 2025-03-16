@@ -74,7 +74,7 @@ class GroupAdapter(
             defaultFocused = true
         }
 
-        val onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
+        val onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
             listener?.onItemFocusChange(listTVModel, hasFocus)
 
             if (hasFocus) {
