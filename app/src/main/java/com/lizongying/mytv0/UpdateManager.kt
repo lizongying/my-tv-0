@@ -14,6 +14,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.FragmentActivity
+import com.lizongying.mytv0.Utils.getUrls
 import com.lizongying.mytv0.data.Global.gson
 import com.lizongying.mytv0.data.ReleaseResponse
 import com.lizongying.mytv0.requests.HttpClient
@@ -31,28 +32,36 @@ class UpdateManager(
     ConfirmationFragment.ConfirmationListener {
 
     private var downloadReceiver: DownloadReceiver? = null
-    private var release: ReleaseResponse? = null
+    var release: ReleaseResponse? = null
 
     private suspend fun getRelease(): ReleaseResponse? {
-        return withContext(Dispatchers.IO) {
-            try {
-                val request = okhttp3.Request.Builder()
-                    .url(VERSION_URL)
-                    .build()
+        val urls = getUrls(VERSION_URL)
 
-                HttpClient.okHttpClient.newCall(request).execute().use { response ->
-                    if (!response.isSuccessful) return@withContext null
+        for (u in urls) {
+            Log.i(TAG, "request $u")
+            withContext(Dispatchers.IO) {
+                try {
+                    val request = okhttp3.Request.Builder().url(u).build()
+                    val response = HttpClient.okHttpClient.newCall(request).execute()
 
-                    response.bodyAlias()?.let {
-                        return@withContext gson.fromJson(it.string(), ReleaseResponse::class.java)
+                    if (response.isSuccessful) {
+                        response.bodyAlias()?.let {
+                            return@withContext gson.fromJson(
+                                it.string(),
+                                ReleaseResponse::class.java
+                            )
+                        }
+                    } else {
+                        Log.e(TAG, "getRelease $u ${response.codeAlias()}")
                     }
-                    null
+                } catch (e: Exception) {
+//                    Log.e(TAG, "getRelease $u error", e)
+                    Log.e(TAG, "getRelease $u error")
                 }
-            } catch (e: Exception) {
-                Log.e(TAG, "getRelease", e)
-                null
             }
         }
+
+        return null
     }
 
     fun checkAndUpdate() {
@@ -246,7 +255,7 @@ class UpdateManager(
         private const val TAG = "UpdateManager"
         private const val BUFFER_SIZE = 8192
         private const val VERSION_URL =
-            "https://mirror.ghproxy.com/raw.githubusercontent.com/lizongying/my-tv-0/main/version.json"
+            "https://raw.githubusercontent.com/lizongying/my-tv-0/main/version.json"
     }
 
     override fun onConfirm() {

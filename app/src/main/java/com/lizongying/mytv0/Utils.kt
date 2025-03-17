@@ -177,6 +177,7 @@ object Utils {
                 "https://www.ghproxy.cc/",
                 "https://cf.ghproxy.cc/",
                 "https://ghp.ci/",
+                "https://ghfast.top"
             ).map {
                 "$it$url"
             }

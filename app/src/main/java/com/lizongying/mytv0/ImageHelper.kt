@@ -79,7 +79,7 @@ class ImageHelper(private val context: Context) {
     ) {
         val file = files[key]
         if (file != null) {
-            Log.i(TAG, "$key image exists ${file.absolutePath}")
+            Log.d(TAG, "image exists ${file.absolutePath}")
             Glide.with(context)
                 .load(file)
                 .fitCenter()

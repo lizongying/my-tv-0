@@ -104,11 +104,11 @@ class SimpleServer(private val context: Context, private val viewModel: MainView
 
         var sources = ""
         var success = false
-        for (a in urls) {
-            Log.i(TAG, "request $a")
+        for (u in urls) {
+            Log.i(TAG, "request $u")
             withContext(Dispatchers.IO) {
                 try {
-                    val request = okhttp3.Request.Builder().url(a).build()
+                    val request = okhttp3.Request.Builder().url(u).build()
                     val response = HttpClient.okHttpClient.newCall(request).execute()
 
                     if (response.isSuccessful) {

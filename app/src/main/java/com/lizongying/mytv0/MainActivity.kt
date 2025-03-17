@@ -433,8 +433,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun play(position: Int) {
-        if (position > -1 && position < viewModel.groupModel.getAllList()!!.size()) {
+    fun play(position: Int): Boolean {
+        return if (position > -1 && position < viewModel.groupModel.getAllList()!!.size()) {
             val prevGroup = viewModel.groupModel.positionValue
             val tvModel = viewModel.groupModel.getPosition(position)
 
@@ -446,8 +446,10 @@ class MainActivity : AppCompatActivity() {
             if (currentGroup != prevGroup) {
                 menuFragment.updateList(currentGroup)
             }
+            true
         } else {
             R.string.channel_not_exist.showToast()
+            false
         }
     }
 
@@ -567,7 +569,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showChannel(channel: String) {
+    private fun showChannel(channel: Int) {
         if (!menuFragment.isHidden) {
             return
         }
@@ -721,53 +723,18 @@ class MainActivity : AppCompatActivity() {
     fun onKey(keyCode: Int): Boolean {
         Log.d(TAG, "keyCode $keyCode")
         when (keyCode) {
-            KeyEvent.KEYCODE_0 -> {
-                showChannel("0")
-                return true
-            }
-
-            KeyEvent.KEYCODE_1 -> {
-                showChannel("1")
-                return true
-            }
-
-            KeyEvent.KEYCODE_2 -> {
-                showChannel("2")
-                return true
-            }
-
-            KeyEvent.KEYCODE_3 -> {
-                showChannel("3")
-                return true
-            }
-
-            KeyEvent.KEYCODE_4 -> {
-                showChannel("4")
-                return true
-            }
-
-            KeyEvent.KEYCODE_5 -> {
-                showChannel("5")
-                return true
-            }
-
-            KeyEvent.KEYCODE_6 -> {
-                showChannel("6")
-                return true
-            }
-
-            KeyEvent.KEYCODE_7 -> {
-                showChannel("7")
-                return true
-            }
-
-            KeyEvent.KEYCODE_8 -> {
-                showChannel("8")
-                return true
-            }
-
-            KeyEvent.KEYCODE_9 -> {
-                showChannel("9")
+            KeyEvent.KEYCODE_0,
+            KeyEvent.KEYCODE_1,
+            KeyEvent.KEYCODE_2,
+            KeyEvent.KEYCODE_3,
+            KeyEvent.KEYCODE_4,
+            KeyEvent.KEYCODE_5,
+            KeyEvent.KEYCODE_6,
+            KeyEvent.KEYCODE_7,
+            KeyEvent.KEYCODE_8,
+            KeyEvent.KEYCODE_9,
+                -> {
+                showChannel(keyCode - 7)
                 return true
             }
 
@@ -807,10 +774,20 @@ class MainActivity : AppCompatActivity() {
             }
 
             KeyEvent.KEYCODE_ENTER -> {
+                if (channelFragment.isAdded && channelFragment.isVisible) {
+                    channelFragment.playNow()
+                    return true
+                }
+
                 showFragment(menuFragment)
             }
 
             KeyEvent.KEYCODE_DPAD_CENTER -> {
+                if (channelFragment.isAdded && channelFragment.isVisible) {
+                    channelFragment.playNow()
+                    return true
+                }
+
                 showFragment(menuFragment)
             }
 
